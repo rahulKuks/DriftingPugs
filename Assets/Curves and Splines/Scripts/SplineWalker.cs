@@ -12,17 +12,19 @@ public class SplineWalker : MonoBehaviour {
 	[SerializeField] private bool goingFoward = true;
     [SerializeField] private float threshold = 0.05f;
 
+    private bool isMoving = false;
+
     public void StartWalker(BezierSpline spline)
     {
         Debug.Log("Starting spline walker");
         this.spline = spline;
-        StartCoroutine("Walk");
+        isMoving = true;
     }
 
-    private void Walk () {
-        //Vector3 prevPosition = spline.GetPoint(progress);
+    private void Update () {
+        Vector3 prevPosition = spline.GetPoint(progress);
 
-        while (progress < 1f)
+        if (progress < 1f)
         {
             // Move forward on spline
             if (goingFoward)
@@ -61,6 +63,8 @@ public class SplineWalker : MonoBehaviour {
             {
                 transform.LookAt(position + spline.GetDirection(progress));
             }
+
+            isMoving = !(Vector3.Distance(prevPosition, position) < threshold);
         }
 	}
 }
