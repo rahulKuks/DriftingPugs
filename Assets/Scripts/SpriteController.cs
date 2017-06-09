@@ -20,29 +20,42 @@ public class SpriteController : MonoBehaviour
         }
     }
 
+    private SplineWalker walker;
+
     public Vector3 dir = Vector3.zero;
     public Vector3 dest = Vector3.zero;
 
-	void FixedUpdate () {
+    private void Awake()
+    {
+        walker = GetComponent<SplineWalker>();
+    }
+
+    void FixedUpdate () {
 		switch(_currentState)
         {
             case (SpriteState.Idle):
                 break;
             case (SpriteState.Moving):
-                transform.position += dir * MoveSpeed * Time.deltaTime;
+                /*transform.position += dir * MoveSpeed * Time.deltaTime;
 
                 if (Vector3.Distance(transform.position, dest) < 1.0f)
                 {
                     _currentState = SpriteState.Idle;
-                }
+                }*/
                 break;
         }
 	}
 
     public void Move(Vector3 dest)
     {
-        this.dest = dest;
-        this.dir = (dest - transform.position).normalized;
+        /*this.dest = dest;
+        this.dir = (dest - transform.position).normalized;*/
         _currentState = SpriteState.Moving;
+    }
+
+    public void Move(BezierSpline spline)
+    {
+        _currentState = SpriteState.Moving;
+        walker.StartWalker(spline);
     }
 }

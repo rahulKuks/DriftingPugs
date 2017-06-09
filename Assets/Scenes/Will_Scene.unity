@@ -540,7 +540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0c3246bd2b41648832c9431afd53d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 10
   speedH: 2
   speedV: 2
 --- !u!1 &1270193644
@@ -721,6 +721,10 @@ Prefab:
     - target: {fileID: 100040, guid: c7fee1c575779475499c4a6afef51be9, type: 3}
       propertyPath: m_Name
       value: World
+      objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: c7fee1c575779475499c4a6afef51be9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c7fee1c575779475499c4a6afef51be9, type: 3}
@@ -976,6 +980,7 @@ GameObject:
   - component: {fileID: 2119385933}
   - component: {fileID: 2119385932}
   - component: {fileID: 2119385936}
+  - component: {fileID: 2119385937}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -1061,6 +1066,23 @@ MonoBehaviour:
   MoveSpeed: 10
   dir: {x: 0, y: 0, z: 0}
   dest: {x: 0, y: 0, z: 0}
+--- !u!114 &2119385937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2119385931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 541a76f9c03874323b5154b14ac00427, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 10
+  lookForward: 1
+  mode: 0
+  progress: 0
+  goingFoward: 1
+  threshold: 0.05
 --- !u!1 &2144881226
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,6 +1094,7 @@ GameObject:
   - component: {fileID: 2144881228}
   - component: {fileID: 2144881227}
   - component: {fileID: 2144881229}
+  - component: {fileID: 2144881231}
   m_Layer: 0
   m_Name: Waypoint0
   m_TagString: Untagged
@@ -1130,3 +1153,33 @@ Transform:
   m_Father: {fileID: 152746893}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -20.725, z: 0}
+--- !u!114 &2144881231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2144881226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b154883273c2845f39445c8015d81639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 1, y: 0, z: 0}
+  - {x: -1.9688494, y: 0, z: 0.089100294}
+  - {x: -4.8600297, y: 0, z: 0.0072417334}
+  - {x: -6.0999084, y: 0, z: 0.10869791}
+  - {x: -7.2961106, y: 0, z: 0.16316879}
+  - {x: -9.049068, y: 0, z: 0.28710982}
+  - {x: -9.699163, y: 0, z: 0.37326598}
+  - {x: -10.895994, y: 0, z: 0.4878186}
+  - {x: -13.265625, y: 0, z: 0.58742255}
+  - {x: -14.018784, y: 0, z: 0.5223444}
+  - {x: -16.191132, y: 0, z: 0.45162258}
+  - {x: -17.537823, y: 0, z: 0.20429097}
+  - {x: -18.408417, y: 0, z: -0.023883605}
+  - {x: -19.154549, y: 0, z: -0.20902444}
+  - {x: -20.895573, y: 0, z: -0.9373233}
+  - {x: -22.61178, y: 0, z: -0.93143004}
+  modes: 000000000000000000000000000000000000000000000000
+  loop: 0

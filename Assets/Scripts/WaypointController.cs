@@ -36,7 +36,12 @@ public class WaypointController : MonoBehaviour
         currentWayPointIndex = index;
         int nextWayPointIndex = Mathf.Min(index+1, Waypoints.Count-1);
 
-        Vector3 nextPoint = Waypoints[nextWayPointIndex].transform.position;
-        sprite.Move(nextPoint);
+        /*Vector3 nextPoint = Waypoints[nextWayPointIndex].transform.position;
+        sprite.Move(nextPoint);*/
+
+        BezierSpline spline = Waypoints[nextWayPointIndex].gameObject.  GetComponent<BezierSpline>();
+        if (spline == null)
+            Debug.LogError("null spline");
+        //sprite.Move(spline);
     }
 }
