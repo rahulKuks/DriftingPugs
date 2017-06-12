@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class SpriteController : MonoBehaviour
 {
+    // States in which the sprite can be in
     public enum SpriteState
     {
         Idle, Moving
     };
-
-    [SerializeField] private float MoveSpeed = 10.0f;
 
     private SpriteState _currentState = SpriteState.Idle;
     public SpriteState CurrentState
@@ -20,10 +19,8 @@ public class SpriteController : MonoBehaviour
         }
     }
 
+    // The SplineWalker the sprite will move along
     private SplineWalker walker;
-
-    public Vector3 dir = Vector3.zero;
-    public Vector3 dest = Vector3.zero;
 
     private void Awake()
     {
@@ -31,7 +28,7 @@ public class SpriteController : MonoBehaviour
     }
 
     void FixedUpdate () {
-		switch(_currentState)
+		switch(CurrentState)
         {
             case (SpriteState.Idle):
                 break;
@@ -45,13 +42,6 @@ public class SpriteController : MonoBehaviour
                 break;
         }
 	}
-
-    public void Move(Vector3 dest)
-    {
-        /*this.dest = dest;
-        this.dir = (dest - transform.position).normalized;*/
-        _currentState = SpriteState.Moving;
-    }
 
     public void Move(BezierSpline spline)
     {
