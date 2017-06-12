@@ -20,27 +20,24 @@ public class KeyboardController : MonoBehaviour
 		if (Input.GetKey(KeyCode.W))
         {
             transform.position += transform.forward * Time.deltaTime * speed;
-            //transform.position += new Vector3(0,0,1) * Time.deltaTime * speed;
         }
 
 		if (Input.GetKey(KeyCode.S))
         {
             transform.position -= transform.forward * Time.deltaTime * speed;
-            //transform.position -= new Vector3(0,0,1) * Time.deltaTime * speed;
         }
 
         if (Input.GetKey(KeyCode.A))
         {
             transform.position -= transform.right * Time.deltaTime * speed;
-            //transform.position -= new Vector3(1,0,0) * Time.deltaTime * speed;
         }
 
         if (Input.GetKey(KeyCode.D))
         {
             transform.position += transform.right * Time.deltaTime * speed;
-            //transform.position += new Vector3(1,0,0) * Time.deltaTime * speed;
         }
 
+        // apply x only cuz y-rotation causes problems with a rigidbody and gravity
         yaw += speedH * Input.GetAxis("Mouse X");
         //pitch -= speedV * Input.GetAxis("Mouse Y");
 
