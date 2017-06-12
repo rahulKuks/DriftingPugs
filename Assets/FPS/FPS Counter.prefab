@@ -78,13 +78,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   averageFPSLabel: {fileID: 114817977233725448}
   coloring:
-  - color: {r: 0.5686275, g: 1, b: 0.40784317, a: 0}
+  - color: {r: 0.5686275, g: 1, b: 0.40784317, a: 1}
     minimumFPS: 60
-  - color: {r: 1, g: 1, b: 0, a: 0}
+  - color: {r: 1, g: 1, b: 0, a: 1}
     minimumFPS: 45
-  - color: {r: 1, g: 0.57254905, b: 0, a: 0}
+  - color: {r: 1, g: 0.57254905, b: 0, a: 1}
     minimumFPS: 30
-  - color: {r: 1, g: 0, b: 0, a: 0}
+  - color: {r: 1, g: 0, b: 0, a: 1}
     minimumFPS: 15
 --- !u!114 &114416181984052736
 MonoBehaviour:
