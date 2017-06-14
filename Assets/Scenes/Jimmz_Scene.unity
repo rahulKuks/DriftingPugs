@@ -14,15 +14,15 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 8
-  m_Fog: 1
-  m_FogColor: {r: 0.33594102, g: 0.38920996, b: 0.45388967, a: 1}
+  m_Fog: 0
+  m_FogColor: {r: 0.5764706, g: 0.7058824, b: 0.8784314, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.03
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.18803722, g: 0.32836494, b: 0.3805839, a: 1}
-  m_AmbientEquatorColor: {r: 0.28145695, g: 0.34938264, b: 0.350758, a: 1}
-  m_AmbientGroundColor: {r: 0.06946598, g: 0.04790757, b: 0.031139918, a: 1}
+  m_AmbientSkyColor: {r: 0.4627451, g: 0.5764706, b: 0.76862746, a: 1}
+  m_AmbientEquatorColor: {r: 0.69803923, g: 0.84313726, b: 1, a: 1}
+  m_AmbientGroundColor: {r: 0.46666667, g: 0.43529412, b: 0.41568628, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
@@ -15146,6 +15146,8 @@ GameObject:
   - component: {fileID: 475961819}
   - component: {fileID: 475961818}
   - component: {fileID: 475961823}
+  - component: {fileID: 475961825}
+  - component: {fileID: 475961824}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -15268,6 +15270,78 @@ MonoBehaviour:
         edgeDetectionThreshold: 0.125
         minimumRequiredLuminance: 0.05
   m_Method: 0
+--- !u!114 &475961824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 475961817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff5335a7357baa3489a469d0ca0f40f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distortion:
+    enabled: 0
+    amount: 0
+    centerX: 0
+    centerY: 0
+    amountX: 1
+    amountY: 1
+    scale: 1
+  vignette:
+    enabled: 1
+    color: {r: 0, g: 0, b: 0, a: 1}
+    center: {x: 0.96, y: 0.46}
+    intensity: 0.83
+    smoothness: 3
+    roundness: 1
+    blur: 0
+    desaturate: 0
+  chromaticAberration:
+    enabled: 0
+    color: {r: 0, g: 1, b: 0, a: 1}
+    amount: 0
+  m_Shader: {fileID: 4800000, guid: 136ab50fe2b9ad64d9c22adc3668abb7, type: 3}
+--- !u!114 &475961825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 475961817}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a338d679868f45439ea43c7ae035e36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings:
+    visualizeFocus: 0
+    tweakMode: 0
+    filteringQuality: 2
+    apertureShape: 0
+    apertureOrientation: 0
+  focus:
+    transform: {fileID: 0}
+    focusPlane: 20
+    range: 35
+    nearPlane: 2.5
+    nearFalloff: 15
+    farPlane: 37.5
+    farFalloff: 50
+    nearBlurRadius: 15
+    farBlurRadius: 20
+  bokehTexture:
+    texture: {fileID: 0}
+    scale: 1
+    intensity: 50
+    threshold: 2
+    spawnHeuristic: 0.15
+  m_FilmicDepthOfFieldShader: {fileID: 4800000, guid: bff0e5458fb914f5c9985ba4f09171d2,
+    type: 3}
+  m_MedianFilterShader: {fileID: 4800000, guid: a058b22d4123add4b807e832604e5e7b,
+    type: 3}
+  m_TextureBokehShader: {fileID: 4800000, guid: c961b8ed1f00f924d804ada5143bd0e8,
+    type: 3}
 --- !u!1001 &475994135
 Prefab:
   m_ObjectHideFlags: 0
@@ -16799,8 +16873,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 0.345, g: 0.459, b: 0.533, a: 1}
-  m_Intensity: 0.00045438783
+  m_Color: {r: 1, g: 0.82091624, b: 0.6651983, a: 1}
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -16833,12 +16907,12 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 514668142}
-  m_LocalRotation: {x: -1, y: -0.00000004371139, z: 0.00000004371139, w: 1.9106855e-15}
+  m_LocalRotation: {x: 0.742072, y: 0.119557254, z: -0.64507324, w: 0.13753498}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000036, y: 1.0000443, z: 1.0000385}
+  m_LocalScale: {x: 1.0000032, y: 1.0000442, z: 1.0000384}
   m_Children: []
-  m_Father: {fileID: 705125669}
-  m_RootOrder: 1
+  m_Father: {fileID: 1003942637}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &514733819
 Prefab:
@@ -22424,12 +22498,11 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 705125668}
-  m_LocalRotation: {x: 0.7530937, y: -0.042908337, z: -0.6546544, w: -0.049360394}
+  m_LocalRotation: {x: 0.7420719, y: 0.11955726, z: -0.64507324, w: 0.1375349}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 358832221}
-  - {fileID: 514668144}
   m_Father: {fileID: 1003942637}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -31576,8 +31649,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   dayInSeconds: 900
-  timeline: 18.5
-  m_SunColor: {r: 1, g: 0.7647059, b: 0.6627451, a: 1}
+  timeline: 16.6
+  m_SunColor: {r: 1, g: 0.82091624, b: 0.6651983, a: 1}
   useSunColorGradient: 1
   sunColorGradient:
     serializedVersion: 2
@@ -31608,7 +31681,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
-  m_SunLightIntensity: 0
+  m_SunLightIntensity: 1
   useSunLightIntensityCurve: 1
   sunLightIntensityCurve:
     serializedVersion: 2
@@ -31726,7 +31799,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   useMoonLightIntensityCurve: 1
-  m_MoonLightIntensity: 0.00045438783
+  m_MoonLightIntensity: 0
   moonLightIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -31771,7 +31844,7 @@ MonoBehaviour:
     m_RotationOrder: 0
   m_AmbientMode: 1
   useAmbientSkyColorGradient: 1
-  m_AmbientSkyColor: {r: 0.18803722, g: 0.32836494, b: 0.3805839, a: 1}
+  m_AmbientSkyColor: {r: 0.4627451, g: 0.5764706, b: 0.76862746, a: 1}
   ambientSkyColorGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0.1882353, b: 0.3254902, a: 1}
@@ -31802,7 +31875,7 @@ MonoBehaviour:
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   useAmbientEquatorColorGradient: 1
-  m_AmbientEquatorColor: {r: 0.28145695, g: 0.34938264, b: 0.350758, a: 1}
+  m_AmbientEquatorColor: {r: 0.69803923, g: 0.84313726, b: 1, a: 1}
   ambientEquatorColorGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0.19607843, b: 0.34117648, a: 1}
@@ -31833,7 +31906,7 @@ MonoBehaviour:
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   useAmbientGroundColorGradient: 1
-  m_AmbientGroundColor: {r: 0.06946598, g: 0.04790757, b: 0.031139918, a: 1}
+  m_AmbientGroundColor: {r: 0.46666667, g: 0.43529412, b: 0.41568628, a: 1}
   ambientGroundColorGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0, b: 0, a: 1}
@@ -31885,7 +31958,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   fogType: 0
   fogMode: 3
-  useRenderSettingsFog: 1
+  useRenderSettingsFog: 0
   useFogDensityCurve: 0
   m_FogDensity: 0.03
   fogDensityCurve:
@@ -31947,7 +32020,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useFogColorGradient: 1
-  m_FogColor: {r: 0.33594102, g: 0.38920996, b: 0.45388967, a: 1}
+  m_FogColor: {r: 0.5764706, g: 0.7058824, b: 0.8784314, a: 1}
   fogColorGradient:
     serializedVersion: 2
     key0: {r: 0.003921569, g: 0.09803922, b: 0.23921569, a: 1}
@@ -32122,7 +32195,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   useMoonIntensityCurve: 1
-  m_MoonIntensity: 0.45837593
+  m_MoonIntensity: 0
   moonIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -32238,7 +32311,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useMoonHaloIntensityCurve: 1
-  m_MoonHaloIntensity: 0.11212361
+  m_MoonHaloIntensity: 0
   moonHaloIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -32316,7 +32389,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   useStarsIntensityCurve: 1
-  m_StarsIntensity: 0.37615672
+  m_StarsIntensity: 0
   starsIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -32433,6 +32506,7 @@ Transform:
   m_Children:
   - {fileID: 705125669}
   - {fileID: 308334331}
+  - {fileID: 514668144}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -37459,6 +37533,10 @@ Prefab:
     - target: {fileID: 400000, guid: 5654f55ec01a240eeaf4634bb1722c97, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: -41.244003
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 5654f55ec01a240eeaf4634bb1722c97, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5654f55ec01a240eeaf4634bb1722c97, type: 3}
@@ -67319,7 +67397,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2109531424
 Transform:
   m_ObjectHideFlags: 0
