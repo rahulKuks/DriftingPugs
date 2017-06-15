@@ -1,14 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTK;
 
 public class PlayerControl : MonoBehaviour {
     // public variables
     [Header("GameObject Variables")]
     [Space(5)]
     public GameObject sea;
-    public GameObject cloud;
+	public GameObject cloud;
 
+	[Header("Control Variables")]
+	[Space(5)]
+	public VRTK_TouchpadControl touchpadControl;
 
     [Header("In Water Variables")]
     [Space(5)]
@@ -55,7 +59,8 @@ public class PlayerControl : MonoBehaviour {
             {
                 Debug.Log("Change state: to in water");
                 state = INWATER;
-                rb = GetComponent<Rigidbody>(); // in case the rigidbody hasn't been created by the VRTK when Start()
+				rb = GetComponent<Rigidbody>(); // in case the rigidbody hasn't been created by the VRTK when Start()
+				touchpadControl.enabled = false;
             }
         }
         else if (state == INWATER)
@@ -71,9 +76,10 @@ public class PlayerControl : MonoBehaviour {
             if (transform.position.y < enterSpaceElevaton)
             {
                 Debug.Log("Change state: to in space");
-                state = INSPACE;
                 cloud.SetActive(false);
-                sea.SetActive(false);
+				sea.SetActive(false);
+				touchpadControl.enabled = true;
+				state = INSPACE;
             }
         }
     }
