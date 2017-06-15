@@ -4,48 +4,20 @@ using UnityEngine;
 
 public class SpriteController : MonoBehaviour
 {
-    // States in which the sprite can be in
-    public enum SpriteState
-    {
-        Idle, Moving
-    };
-
-    private SpriteState _currentState = SpriteState.Idle;
-    public SpriteState CurrentState
-    {
-        get
-        {
-            return _currentState;
-        }
-    }
-
-    // The SplineWalker the sprite will move along
-    private SplineWalker walker;
+    private Animator anim;
 
     private void Awake()
     {
-        walker = GetComponent<SplineWalker>();
+        anim = GetComponent<Animator>();
     }
 
-    void FixedUpdate () {
-		switch(CurrentState)
-        {
-            case (SpriteState.Idle):
-                break;
-            case (SpriteState.Moving):
-                /*transform.position += dir * MoveSpeed * Time.deltaTime;
-
-                if (Vector3.Distance(transform.position, dest) < 1.0f)
-                {
-                    _currentState = SpriteState.Idle;
-                }*/
-                break;
-        }
-	}
-
-    public void Move(BezierSpline spline)
+    private void Start()
     {
-        _currentState = SpriteState.Moving;
-        walker.StartWalker(spline);
+        CheckpointController.Instance.CheckpointEvent.AddListener(MoveAnimation);
+    }
+
+    private void MoveAnimation()
+    {
+        anim.SetInteger("Checkpoint", CheckpointController.Instance.CurrentCheckpointIndex);
     }
 }

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Waypoint : MonoBehaviour {
+public class Checkpoint : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.tag == "Player")
         {
-            WaypointController.Instance.WaypointReached(this);
+            CheckpointController.Instance.CheckpointReached(this);
         }
     }
 
