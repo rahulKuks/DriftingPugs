@@ -1,21 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine;
 using VRTK;
 
-public class PlayerControl : MonoBehaviour {
+public class PlayerControl : MonoBehaviour
+{
     // public variables
     [Header("GameObject Variables")]
     [Space(5)]
     public GameObject sea;
-	public GameObject cloud;
+    public GameObject cloud;
     public GameObject spriteWrap;
     public GameObject spriteLake;
     public float speed = 50f;
 
     [Header("Control Variables")]
-	[Space(5)]
-	public VRTK_TouchpadControl touchpadControl;
+    [Space(5)]
+    public VRTK_TouchpadControl touchpadControl;
 
     [Header("In Water Variables")]
     [Space(5)]
@@ -42,19 +44,25 @@ public class PlayerControl : MonoBehaviour {
 
     // private variables
     private Rigidbody rb;
-	private int state;
-	const int GROUNDED = 0;
+    private int state;
+    const int GROUNDED = 0;
     const int INWATER_FALL = 1;
     const int INWATER_FLOAT = 2;
     const int INCLOUD = 3;
     const int INSPACE = 4;
+    public UnityEvent PlayerEnterWater;
+    public UnityEvent PlayerEnterSpace;
 
-    void Start () {
-		state = GROUNDED;
+    void Start()
+    {
+        state = GROUNDED;
+        PlayerEnterWater = new UnityEvent();
+        PlayerEnterSpace = new UnityEvent();
         rb = GetComponent<Rigidbody>();
     }
 
-    void Update () {
+    void Update()
+    {
         PrintState();
         //Debug.Log(spriteLake.transform.position - sprite.transform.position);
         if (state == GROUNDED)
@@ -64,6 +72,7 @@ public class PlayerControl : MonoBehaviour {
                 Debug.Log("Change state: to in water falling");
                 spriteLake.SetActive(true);
                 //spriteWrap.SetActive(false);
+                SoundController.Instance.EnterLake();
                 state = INWATER_FALL;
             }
         }
@@ -91,7 +100,7 @@ public class PlayerControl : MonoBehaviour {
             {
                 Debug.Log("Change state: to in space");
                 cloud.SetActive(false);
-				sea.SetActive(false);
+                sea.SetActive(false);
 
                 spriteWrap.transform.position = spriteLake.transform.position;
                 //spriteWrap.transform.rotation = spriteLake.transform.rotation;
@@ -99,12 +108,13 @@ public class PlayerControl : MonoBehaviour {
                 spriteLake.SetActive(false);
 
                 touchpadControl.enabled = true;
-				state = INSPACE;
+                SoundController.Instance.EnterLake();
+                state = INSPACE;
             }
         }
     }
 
-	void FixedUpdate()
+    void FixedUpdate()
     {
         if (state == INWATER_FLOAT)
         {
@@ -133,9 +143,11 @@ public class PlayerControl : MonoBehaviour {
         }
     }
 
-    private void PrintState() {
+    private void PrintState()
+    {
         string stateStr = "";
-        switch (state) {
+        switch (state)
+        {
             case GROUNDED:
                 stateStr = "on the ground";
                 break;
