@@ -20,8 +20,4 @@ public class SpriteController : MonoBehaviour
     {
         anim.SetInteger("Checkpoint", CheckpointController.Instance.CurrentCheckpointIndex);
     }
-
-    public void EnterSpace() {
-        anim.SetBool("EnterSpace", true);
-    }
 }

@@ -9,11 +9,8 @@ public class PlayerControl : MonoBehaviour {
     [Space(5)]
     public GameObject sea;
 	public GameObject cloud;
-    public GameObject spriteWrap;
-    public GameObject spriteLake;
-    public float speed = 50f;
 
-    [Header("Control Variables")]
+	[Header("Control Variables")]
 	[Space(5)]
 	public VRTK_TouchpadControl touchpadControl;
 
@@ -44,10 +41,9 @@ public class PlayerControl : MonoBehaviour {
     private Rigidbody rb;
 	private int state;
 	const int GROUNDED = 0;
-    const int INWATER_FALL = 1;
-    const int INWATER_FLOAT = 2;
-    const int INCLOUD = 3;
-    const int INSPACE = 4;
+    const int INWATER = 1;
+    const int INCLOUD = 2;
+    const int INSPACE = 3;
 
     void Start () {
 		state = GROUNDED;
@@ -56,28 +52,18 @@ public class PlayerControl : MonoBehaviour {
 
     void Update () {
         PrintState();
-        //Debug.Log(spriteLake.transform.position - sprite.transform.position);
+
         if (state == GROUNDED)
-        {
-            if (transform.position.y < -1)
-            {
-                Debug.Log("Change state: to in water falling");
-                spriteLake.SetActive(true);
-                //spriteWrap.SetActive(false);
-                state = INWATER_FALL;
-            }
-        }
-        else if (state == INWATER_FALL)
         {
             if (transform.position.y < -fallingDistance)
             {
-                Debug.Log("Change state: to in water floating");
-                rb = GetComponent<Rigidbody>(); // in case the rigidbody hasn't been created by the VRTK when Start()
-                touchpadControl.enabled = false;
-                state = INWATER_FLOAT;
+                Debug.Log("Change state: to in water");
+                state = INWATER;
+				rb = GetComponent<Rigidbody>(); // in case the rigidbody hasn't been created by the VRTK when Start()
+				touchpadControl.enabled = false;
             }
         }
-        else if (state == INWATER_FLOAT)
+        else if (state == INWATER)
         {
             if (transform.position.y < enterCloudElevaton)
             {
@@ -92,13 +78,7 @@ public class PlayerControl : MonoBehaviour {
                 Debug.Log("Change state: to in space");
                 cloud.SetActive(false);
 				sea.SetActive(false);
-
-                spriteWrap.transform.position = spriteLake.transform.position;
-                //spriteWrap.transform.rotation = spriteLake.transform.rotation;
-                spriteWrap.SetActive(true);
-                spriteLake.SetActive(false);
-
-                touchpadControl.enabled = true;
+				touchpadControl.enabled = true;
 				state = INSPACE;
             }
         }
@@ -106,13 +86,13 @@ public class PlayerControl : MonoBehaviour {
 
 	void FixedUpdate()
     {
-        if (state == INWATER_FLOAT)
+        if (state == INWATER)
         {
             Vector3 vel = rb.velocity;
             rb.useGravity = false;
             rb.AddForce(1f * Physics.gravity);
             rb.drag = -dragPercentageWater * vel.y;
-            //Debug.Log("velocity: " + vel.y);
+            Debug.Log("velocity: " + vel.y);
         }
         else if (state == INCLOUD)
         {
@@ -123,9 +103,6 @@ public class PlayerControl : MonoBehaviour {
         }
         else if (state == INSPACE)
         {
-            Debug.Log(spriteLake.transform.position - spriteWrap.transform.position);
-            spriteWrap.transform.position = Vector3.MoveTowards(spriteWrap.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
-
             Vector3 vel = rb.velocity;
             rb.useGravity = false;
             rb.drag = 0;
@@ -139,11 +116,8 @@ public class PlayerControl : MonoBehaviour {
             case GROUNDED:
                 stateStr = "on the ground";
                 break;
-            case INWATER_FALL:
-                stateStr = "in water falling";
-                break;
-            case INWATER_FLOAT:
-                stateStr = "in water floating";
+            case INWATER:
+                stateStr = "in water";
                 break;
             case INCLOUD:
                 stateStr = "in cloud";
