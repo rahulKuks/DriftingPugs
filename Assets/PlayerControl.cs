@@ -9,8 +9,6 @@ public class PlayerControl : MonoBehaviour
     // public variables
     [Header("GameObject Variables")]
     [Space(5)]
-    public GameObject sea;
-    public GameObject cloud;
     public GameObject spriteWrap;
     public GameObject spriteLake;
     public float speed = 50f;
@@ -50,14 +48,10 @@ public class PlayerControl : MonoBehaviour
     const int INWATER_FLOAT = 2;
     const int INCLOUD = 3;
     const int INSPACE = 4;
-    public UnityEvent PlayerEnterWater;
-    public UnityEvent PlayerEnterSpace;
 
     void Start()
     {
         state = GROUNDED;
-        PlayerEnterWater = new UnityEvent();
-        PlayerEnterSpace = new UnityEvent();
         rb = GetComponent<Rigidbody>();
     }
 
@@ -99,8 +93,6 @@ public class PlayerControl : MonoBehaviour
             if (transform.position.y < enterSpaceElevaton)
             {
                 Debug.Log("Change state: to in space");
-                cloud.SetActive(false);
-                sea.SetActive(false);
 
                 spriteWrap.transform.position = spriteLake.transform.position;
                 //spriteWrap.transform.rotation = spriteLake.transform.rotation;
