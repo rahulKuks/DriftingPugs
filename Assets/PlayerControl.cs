@@ -76,7 +76,6 @@ public class PlayerControl : MonoBehaviour
             {
                 Debug.Log("Change state: to in water floating");
                 rb = GetComponent<Rigidbody>(); // in case the rigidbody hasn't been created by the VRTK when Start()
-                touchpadControl.enabled = false;
                 state = INWATER_FLOAT;
             }
         }
@@ -95,11 +94,9 @@ public class PlayerControl : MonoBehaviour
                 Debug.Log("Change state: to in space");
 
                 spriteWrap.transform.position = spriteLake.transform.position;
-                //spriteWrap.transform.rotation = spriteLake.transform.rotation;
                 spriteWrap.SetActive(true);
                 spriteLake.SetActive(false);
 
-                touchpadControl.enabled = true;
                 SoundController.Instance.EnterLake();
                 state = INSPACE;
             }
