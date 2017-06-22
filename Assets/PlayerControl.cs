@@ -40,6 +40,21 @@ public class PlayerControl : MonoBehaviour
     [Range(0, 1)]
     public float dragPercentageCloud = 0.5f;
 
+    [Tooltip("A flag to determine if the player is rotation while floating in the sea.")]
+    [SerializeField] private bool doTwist = false;
+    [Tooltip("The amount the player will rotaion while floating in the sea.")]
+    [Range(0,360)]
+    [SerializeField] private int twistAngle = 90;
+    [Tooltip("The time it takes for the player to rotate the Twist Angle while floating in the sea.")]
+    [SerializeField] private float twistDuration = 20.0f;
+
+    // TODO: probably move this somewhere else
+    [Tooltip("A flag to determine if the sea will fade out while the player is floating.")]
+    [SerializeField] private bool doFade = false;
+    [Tooltip("The time it takes for the sea to fade completely away.")]
+    [SerializeField] private float fadeDuration = 20.0f;
+    [SerializeField] private GameObject Sea;
+
     // private variables
     private Rigidbody rb;
     private int state;
@@ -49,15 +64,22 @@ public class PlayerControl : MonoBehaviour
     const int INCLOUD = 3;
     const int INSPACE = 4;
 
+    private float rotateProgress = 0f;
+    private float fadeProgress = 0f;
+    private Renderer seaRenderer;
+    private Color seaColor;
+
     void Start()
     {
         state = GROUNDED;
         rb = GetComponent<Rigidbody>();
+        seaRenderer = Sea.GetComponent<Renderer>();
+        seaColor = seaRenderer.material.color;
     }
 
     void Update()
     {
-        PrintState();
+        //PrintState();
         //Debug.Log(spriteLake.transform.position - sprite.transform.position);
         if (state == GROUNDED)
         {
@@ -77,6 +99,11 @@ public class PlayerControl : MonoBehaviour
                 Debug.Log("Change state: to in water floating");
                 rb = GetComponent<Rigidbody>(); // in case the rigidbody hasn't been created by the VRTK when Start()
                 state = INWATER_FLOAT;
+
+                if (doTwist)
+                    StartCoroutine("Rotate");
+                if (doFade)
+                    StartCoroutine("FadeOut");
             }
         }
         else if (state == INWATER_FLOAT)
@@ -129,6 +156,29 @@ public class PlayerControl : MonoBehaviour
             rb.useGravity = false;
             rb.drag = 0;
             //Debug.Log("velocity: " + vel.y);
+        }
+    }
+
+    private IEnumerator Rotate()
+    {
+        while (rotateProgress < 1f)
+        {
+            rotateProgress += Time.fixedDeltaTime / twistDuration;
+            transform.root.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.AngleAxis(twistAngle, Vector3.right), rotateProgress);
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    // TODO: probably move this somewhere else
+    private IEnumerator FadeOut()
+    {
+        while (fadeProgress < 1f)
+        {
+            fadeProgress += Time.fixedDeltaTime / fadeDuration;
+            float alpha = 1 - fadeProgress;
+            Color color = new Color(seaColor.r, seaColor.g, seaColor.b, alpha);
+            seaRenderer.material.color = color;
+            yield return new WaitForFixedUpdate();
         }
     }
 
