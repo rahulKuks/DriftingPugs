@@ -53,7 +53,9 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private bool doFade = false;
     [Tooltip("The time it takes for the sea to fade completely away.")]
     [SerializeField] private float fadeDuration = 20.0f;
-    [SerializeField] private GameObject Sea;
+	[SerializeField] private GameObject Sea;
+	[SerializeField] private GameObject Jellyfishes;
+	[SerializeField] private GameObject Fishes;
 
     // private variables
     private Rigidbody rb;
@@ -102,8 +104,7 @@ public class PlayerControl : MonoBehaviour
 
                 if (doTwist)
                     StartCoroutine("Rotate");
-                if (doFade)
-                    StartCoroutine("FadeOut");
+                
             }
         }
         else if (state == INWATER_FLOAT)
@@ -112,6 +113,8 @@ public class PlayerControl : MonoBehaviour
             {
                 Debug.Log("Change state: to in cloud");
                 state = INCLOUD;
+				if (doFade)
+					StartCoroutine("FadeOut");
             }
         }
         else if (state == INCLOUD)
@@ -172,6 +175,8 @@ public class PlayerControl : MonoBehaviour
     // TODO: probably move this somewhere else
     private IEnumerator FadeOut()
     {
+		Jellyfishes.SetActive(false);
+		Fishes.SetActive(false);
         while (fadeProgress < 1f)
         {
             fadeProgress += Time.fixedDeltaTime / fadeDuration;
