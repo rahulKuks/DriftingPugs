@@ -53,112 +53,123 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private bool doFade = false;
     [Tooltip("The time it takes for the sea to fade completely away.")]
     [SerializeField] private float fadeDuration = 20.0f;
-	[SerializeField] private GameObject Sea;
-	[SerializeField] private GameObject Jellyfishes;
-	[SerializeField] private GameObject Fishes;
+	[SerializeField] private GameObject sea;
+	[SerializeField] private GameObject jellyfishes;
+	[SerializeField] private GameObject fishes;
+
+    [Tooltip("")]
+    [SerializeField] private List<GameObject> transitionColliders;
+
+    public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space };
 
     // private variables
     private Rigidbody rb;
-    private int state;
-    const int GROUNDED = 0;
-    const int INWATER_FALL = 1;
-    const int INWATER_FLOAT = 2;
-    const int INCLOUD = 3;
-    const int INSPACE = 4;
-
+    private PlayerState currentState = PlayerState.Grounded;
+    private Transform spriteParent;     // original parent of sprite
     private float rotateProgress = 0f;
     private float fadeProgress = 0f;
+    // used to get the material to change the opacity
     private Renderer seaRenderer;
     private Color seaColor;
 
     void Start()
     {
-        state = GROUNDED;
         rb = GetComponent<Rigidbody>();
-        seaRenderer = Sea.GetComponent<Renderer>();
+        if (rb == null)
+        {
+            Debug.LogError("Unable to get rigidbody.", this.gameObject);
+        }
+        spriteParent = spriteWrap.transform.parent;
+        seaRenderer = sea.GetComponent<Renderer>();
         seaColor = seaRenderer.material.color;
-    }
-
-    void Update()
-    {
-        //PrintState();
-        //Debug.Log(spriteLake.transform.position - sprite.transform.position);
-        if (state == GROUNDED)
-        {
-            if (transform.position.y < -1)
-            {
-                Debug.Log("Change state: to in water falling");
-                spriteLake.SetActive(true);
-                //spriteWrap.SetActive(false);
-                SoundController.Instance.EnterLake();
-                state = INWATER_FALL;
-            }
-        }
-        else if (state == INWATER_FALL)
-        {
-            if (transform.position.y < -fallingDistance)
-            {
-                Debug.Log("Change state: to in water floating");
-                rb = GetComponent<Rigidbody>(); // in case the rigidbody hasn't been created by the VRTK when Start()
-                state = INWATER_FLOAT;
-
-                if (doTwist)
-                    StartCoroutine("Rotate");
-                
-            }
-        }
-        else if (state == INWATER_FLOAT)
-        {
-            if (transform.position.y < enterCloudElevaton)
-            {
-                Debug.Log("Change state: to in cloud");
-                state = INCLOUD;
-				if (doFade)
-					StartCoroutine("FadeOut");
-            }
-        }
-        else if (state == INCLOUD)
-        {
-            if (transform.position.y < enterSpaceElevaton)
-            {
-                Debug.Log("Change state: to in space");
-
-                spriteWrap.transform.position = spriteLake.transform.position;
-                spriteWrap.SetActive(true);
-                spriteLake.SetActive(false);
-
-                SoundController.Instance.EnterLake();
-                state = INSPACE;
-            }
-        }
     }
 
     void FixedUpdate()
     {
-        if (state == INWATER_FLOAT)
+        Vector3 vel;
+        switch (currentState)
         {
-            Vector3 vel = rb.velocity;
-            rb.useGravity = false;
-            rb.AddForce(1f * Physics.gravity);
-            rb.drag = -dragPercentageWater * vel.y;
-            //Debug.Log("velocity: " + vel.y);
-        }
-        else if (state == INCLOUD)
-        {
-            Vector3 vel = rb.velocity;
-            rb.useGravity = false;
-            rb.drag = -dragPercentageCloud * vel.y;
-            //Debug.Log("velocity: " + vel.y);
-        }
-        else if (state == INSPACE)
-        {
-            Debug.Log(spriteLake.transform.position - spriteWrap.transform.position);
-            spriteWrap.transform.position = Vector3.MoveTowards(spriteWrap.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
+            case (PlayerState.Grounded):
+                break;
+            case (PlayerState.InWater_Falling):
+                break;
+            case (PlayerState.InWater_Float):
+                vel = rb.velocity;
+                rb.useGravity = false;
+                rb.AddForce(1f * Physics.gravity);
+                rb.drag = -dragPercentageWater * vel.y;
+                break;
+            case (PlayerState.Space):
+                spriteWrap.transform.position = Vector3.MoveTowards(spriteWrap.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
 
-            Vector3 vel = rb.velocity;
-            rb.useGravity = false;
-            rb.drag = 0;
-            //Debug.Log("velocity: " + vel.y);
+                vel = rb.velocity;
+                rb.useGravity = false;
+                rb.drag = 0;
+                break;
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        // find the collider that determines to transition to the next state
+        foreach (GameObject go in transitionColliders)
+        {
+            if (other.gameObject == go)
+            {
+                int index = transitionColliders.IndexOf(go);
+                // TODO: generalize/don't hardcode
+                switch (index)
+                {
+                    case 0:
+                        currentState = PlayerState.InWater_Falling;
+                        break;
+                    case 1:
+                        currentState = PlayerState.InWater_Float;
+                        break;
+                    case 2:
+                        currentState = PlayerState.Space;
+                        break;
+                }
+                break;
+            }
+        }
+
+        UpdateState();
+    }
+
+    private void UpdateState()
+    {
+        switch (currentState)
+        {
+            case (PlayerState.Grounded):
+                break;
+            case (PlayerState.InWater_Falling):
+                //spriteLake.SetActive(true);
+                spriteWrap.transform.SetParent(this.transform, true);
+                StartCoroutine("MoveSprite");
+                SoundController.Instance.EnterLake();
+                break;
+            case (PlayerState.InWater_Float):
+                if (doTwist)
+                    StartCoroutine("Rotate");
+                break;
+            case (PlayerState.Space):
+                /*spriteWrap.transform.position = spriteLake.transform.position;
+                spriteWrap.SetActive(true);
+                spriteLake.SetActive(false);*/
+                spriteWrap.transform.SetParent(spriteParent, true);
+                break;
+        }
+    }
+
+    private IEnumerator MoveSprite()
+    {
+        // TODO: don't hardcode
+        Vector3 dst = new Vector3(-3.6f, 1.2f, -5.5f);
+        while (Vector3.Distance(spriteWrap.transform.position, dst) < 1e-6)
+            {
+            Vector3.MoveTowards(spriteWrap.transform.position, dst, speed * Time.deltaTime);
+            yield return new WaitForEndOfFrame();
         }
     }
 
@@ -175,8 +186,8 @@ public class PlayerControl : MonoBehaviour
     // TODO: probably move this somewhere else
     private IEnumerator FadeOut()
     {
-		Jellyfishes.SetActive(false);
-		Fishes.SetActive(false);
+		jellyfishes.SetActive(false);
+		fishes.SetActive(false);
         while (fadeProgress < 1f)
         {
             fadeProgress += Time.fixedDeltaTime / fadeDuration;
@@ -185,29 +196,5 @@ public class PlayerControl : MonoBehaviour
             seaRenderer.material.color = color;
             yield return new WaitForFixedUpdate();
         }
-    }
-
-    private void PrintState()
-    {
-        string stateStr = "";
-        switch (state)
-        {
-            case GROUNDED:
-                stateStr = "on the ground";
-                break;
-            case INWATER_FALL:
-                stateStr = "in water falling";
-                break;
-            case INWATER_FLOAT:
-                stateStr = "in water floating";
-                break;
-            case INCLOUD:
-                stateStr = "in cloud";
-                break;
-            case INSPACE:
-                stateStr = "in space";
-                break;
-        }
-        Debug.Log("Current state: " + stateStr);
     }
 }

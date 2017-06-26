@@ -5,24 +5,11 @@ using UnityEngine.Events;
 
 public class CheckpointController : MonoBehaviour
 {
-    // Singleton pattern
-    private static CheckpointController _instance;
-    public static CheckpointController Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = GameObject.FindObjectOfType<CheckpointController>();
-            }
-            return _instance;
-        }
-    }
-
-    public List<Checkpoint> Checkpoints;
+    // List of Checkpoints should be a child of this game object
+    public List<Checkpoint> checkpoints;
     // Event for other objects to add listener to
-    public UnityEvent CheckpointEvent;
-    public int CurrentCheckpointIndex
+    public UnityEvent checkpointEvent;
+    public int currentCheckpointIndex
     {
         get;
         private set;
@@ -30,25 +17,25 @@ public class CheckpointController : MonoBehaviour
 
     private void Awake()
     {
-        CheckpointEvent = new UnityEvent();
+        checkpointEvent = new UnityEvent();
     }
 
     public void CheckpointReached(Checkpoint point)
     {
         // Check if the collided checkpoint exists
-        int index = Checkpoints.IndexOf(point);
+        int index = checkpoints.IndexOf(point);
         if (index < 0)
         {
             Debug.LogError("Invalid checkpoint " + point.gameObject.name);
             return;
         }
         // Don't trigger event if not first checkpoint and already hit the checkpoint
-        else if (CurrentCheckpointIndex != 0 && index == CurrentCheckpointIndex)
+        else if (currentCheckpointIndex != 0 && index == currentCheckpointIndex)
             return;
 
         Debug.Log(string.Format("Checkpoint {0} reached.", index));
-        CurrentCheckpointIndex = index;
+        currentCheckpointIndex = index;
 
-        CheckpointEvent.Invoke();
+        checkpointEvent.Invoke();
     }
 }
