@@ -15,11 +15,6 @@ public class CheckpointController : MonoBehaviour
         private set;
     }
 
-    private void Awake()
-    {
-        checkpointEvent = new UnityEvent();
-    }
-
     public void CheckpointReached(Checkpoint point)
     {
         // Check if the collided checkpoint exists

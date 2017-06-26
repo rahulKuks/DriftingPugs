@@ -17,7 +17,7 @@ public class SpriteController : MonoBehaviour
         }
     }
 
-    private void MoveAnimation()
+    public void MoveAnimation()
     {
         anim.SetInteger("Checkpoint", checkpointController.currentCheckpointIndex);
     }
