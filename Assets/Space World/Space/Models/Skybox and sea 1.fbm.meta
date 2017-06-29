@@ -1,7 +1,11 @@
 fileFormatVersion: 2
-guid: 4263d27efca50544abf5a2b225777218
+<<<<<<< HEAD:Assets/Forest World/Bagpack.meta
+guid: 5c28c7cfaa1bd384599695ad1b8e0761
+=======
+guid: eabf8dfdd6a028a409b47e0e3cc6de48
+>>>>>>> 17557e2ee5586aadea7c504f4d2e94fe259a916b:Assets/Space World/Space/Models/Skybox and sea 1.fbm.meta
 folderAsset: yes
-timeCreated: 1498686493
+timeCreated: 1498763515
 licenseType: Free
 DefaultImporter:
   userData: 
