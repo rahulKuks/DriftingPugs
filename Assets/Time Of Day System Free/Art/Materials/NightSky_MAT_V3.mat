@@ -8,7 +8,8 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: NightSky_MAT_V3
   m_Shader: {fileID: 103, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: ATMOSPHERICNIGHTCOLOR HORIZONFADE MIEPHASE MOON MOONHALO STARS
+    STARSTWINKLE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_CustomRenderQueue: -1
@@ -62,7 +63,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Exposure: 0.7
+    - _Exposure: 0.82
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
