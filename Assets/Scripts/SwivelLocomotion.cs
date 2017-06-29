@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class SwivelLocomotion : MonoBehaviour
 {
 	[SerializeField] float maxForwardSpeed=3;
 	[SerializeField] SteamVR_TrackedObject rightControllerTrackedObj;
+	[SerializeField] SteamVR_TrackedObject leftControllerTrackedObj;
 	SteamVR_Controller.Device rightControllerDevice;
+	SteamVR_Controller.Device leftControllerDevice;
 	// Use this for initialization
 	void Start ()
 	{
 		rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
+		leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
 	}
 
 	void FixedUpdate ()
@@ -21,6 +25,16 @@ public class SwivelLocomotion : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		try
+		{
+			rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
+			leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
+		}
+		catch(Exception e)
+		{
+			Debug.Log("Controller device initalisation exception");
+			return;
+		}
 		//SwivelChairLocomotion (3, 3, true); //Apply the Vive Controller data to the user position in Virtual Environment
 		SwivelChairLocomotion(maxForwardSpeed,0,false);
 	}
@@ -108,7 +122,7 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 		//if (Input.GetKeyDown ("space")) {
-		if(rightControllerDevice.GetPress(SteamVR_Controller.ButtonMask.Trigger))
+		if(rightControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
 		{
 			float yawZero = viveCameraEye.transform.rotation.eulerAngles.y;
 
@@ -147,7 +161,7 @@ public class SwivelLocomotion : MonoBehaviour
 
 
 		//if (Input.GetKeyDown (KeyCode.RightAlt)) {
-		if(rightControllerDevice.GetPress(SteamVR_Controller.ButtonMask.Trigger) && swivel360InitializeStep == 2)
+		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger) && swivel360InitializeStep == 2)
 		{
 			ViveControllerPitchZero = ViveControllerPitch;
 			InterfaceIsReady = true;
@@ -342,8 +356,8 @@ public class SwivelLocomotion : MonoBehaviour
 		ChairLocomotionDirection = (float)(ViveControllerYaw + ViveControllerYawOffset);
 
 		// Reversal of direction to compensate for tracker orientation
-		float TranslateX = -1 * (float)(LocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
-		float TranslateZ = -1 * (float)(LocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
+		float TranslateX = (float)(LocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
+		float TranslateZ = (float)(LocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
 		if (maximumSidewayVelocity != 0) {
 			TranslateX += (float)(SidewayLocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
 			TranslateZ -= (float)(SidewayLocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
