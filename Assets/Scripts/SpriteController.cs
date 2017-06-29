@@ -4,21 +4,24 @@ using UnityEngine;
 
 public class SpriteController : MonoBehaviour
 {
-    [SerializeField] private CheckpointController checkpointController;
-
     private Animator anim;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
-        if (checkpointController == null)
-        {
-            Debug.LogError("Missing checkpoint controller.", this.gameObject);
-        }
     }
 
-    public void MoveAnimation()
+	public void MoveAnimation(int index)
     {
-        anim.SetInteger("Checkpoint", checkpointController.currentCheckpointIndex);
+        anim.SetInteger("Checkpoint", index);
+		switch (index)
+		{
+			case 5:
+				anim.enabled = false;
+				break;
+			case 7:
+				anim.enabled = true;
+				break;
+		}
     }
 }

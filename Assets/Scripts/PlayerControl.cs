@@ -6,40 +6,25 @@ using VRTK;
 
 public class PlayerControl : MonoBehaviour
 {
-    // public variables
     [Header("GameObject Variables")]
     [Space(5)]
-    public GameObject spriteWrap;
-    public GameObject spriteLake;
-    public float speed = 50f;
+	[SerializeField] private GameObject sprite;
+	[SerializeField] private float speed = 50f;
+	[SerializeField] private GameObject fadeTrigger;
 
     [Header("Control Variables")]
     [Space(5)]
-    public VRTK_TouchpadControl touchpadControl;
+	[SerializeField] private VRTK_TouchpadControl touchpadControl;
 
     [Header("In Water Variables")]
     [Space(5)]
 
-    [Tooltip("Falling without drag within this period of distance")]
-    public float fallingDistance = 10.0f;
-
     [Tooltip("The factor to calculate the drag force when in the water. The bigger this percentage, the more the drag force will be according to the current speed, and the faster the player is going to reach a stable speed.")]
     [Range(0, 1)]
-    public float dragPercentageWater = 0.2f;
+	[SerializeField] private float dragPercentageWater = 0.2f;
 
-    [Header("In Cloud Variables")]
-    [Space(5)]
-
-    [Tooltip("This is to decide whether the player enters the space from the water. It should be the bottom position of the cloud.")]
-    public float enterCloudElevaton = -200.0f;
-
-    [Tooltip("This is to decide whether the player enters the space from the water. It should be the bottom position of the cloud.")]
-    public float enterSpaceElevaton = -260.0f;
-
-    [Tooltip("The factor to calculate the drag force when in the water. The bigger this percentage, the more the drag force will be according to the current speed, and the faster the player is going to reach a stable speed.")]
-    [Range(0, 1)]
-    public float dragPercentageCloud = 0.5f;
-
+	[Header("Fade Out Parameters")]
+	[Space(5)]
     [Tooltip("A flag to determine if the player is rotation while floating in the sea.")]
     [SerializeField] private bool doTwist = false;
     [Tooltip("The amount the player will rotaion while floating in the sea.")]
@@ -57,7 +42,7 @@ public class PlayerControl : MonoBehaviour
 	[SerializeField] private GameObject jellyfishes;
 	[SerializeField] private GameObject fishes;
 
-    [Tooltip("")]
+    [Tooltip("The list of GameObjects to collide with to transition into the next state.")]
     [SerializeField] private List<GameObject> transitionColliders;
 
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space };
@@ -66,8 +51,6 @@ public class PlayerControl : MonoBehaviour
     private Rigidbody rb;
     private PlayerState currentState = PlayerState.Grounded;
     private Transform spriteParent;     // original parent of sprite
-    private float rotateProgress = 0f;
-    private float fadeProgress = 0f;
     // used to get the material to change the opacity
     private Renderer seaRenderer;
     private Color seaColor;
@@ -79,7 +62,7 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.LogError("Unable to get rigidbody.", this.gameObject);
         }
-        spriteParent = spriteWrap.transform.parent;
+        spriteParent = sprite.transform.parent;
         seaRenderer = sea.GetComponent<Renderer>();
         seaColor = seaRenderer.material.color;
     }
@@ -100,11 +83,7 @@ public class PlayerControl : MonoBehaviour
                 rb.drag = -dragPercentageWater * vel.y;
                 break;
             case (PlayerState.Space):
-                spriteWrap.transform.position = Vector3.MoveTowards(spriteWrap.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
-
-                vel = rb.velocity;
-                rb.useGravity = false;
-                rb.drag = 0;
+                sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
                 break;
         }
     }
@@ -130,23 +109,26 @@ public class PlayerControl : MonoBehaviour
                         currentState = PlayerState.Space;
                         break;
                 }
+				UpdateState();
                 break;
             }
         }
 
-        UpdateState();
+		// if it is the fadeTrigger
+		if (other.gameObject == fadeTrigger)
+			StartCoroutine("FadeOut");
     }
 
     private void UpdateState()
     {
+		Debug.Log(currentState);
         switch (currentState)
         {
             case (PlayerState.Grounded):
                 break;
             case (PlayerState.InWater_Falling):
-                //spriteLake.SetActive(true);
-                spriteWrap.transform.SetParent(this.transform, true);
-                StartCoroutine("MoveSprite");
+                sprite.transform.SetParent(this.transform, true);
+				StartCoroutine("MoveSpriteLake");
                 SoundController.Instance.EnterLake();
                 break;
             case (PlayerState.InWater_Float):
@@ -154,27 +136,28 @@ public class PlayerControl : MonoBehaviour
                     StartCoroutine("Rotate");
                 break;
             case (PlayerState.Space):
-                /*spriteWrap.transform.position = spriteLake.transform.position;
-                spriteWrap.SetActive(true);
-                spriteLake.SetActive(false);*/
-                spriteWrap.transform.SetParent(spriteParent, true);
+                sprite.transform.SetParent(spriteParent, true);
+
+				rb.useGravity = false;
+				rb.drag = 0;
                 break;
         }
     }
 
-    private IEnumerator MoveSprite()
+    private IEnumerator MoveSpriteLake()
     {
         // TODO: don't hardcode
         Vector3 dst = new Vector3(-3.6f, 1.2f, -5.5f);
-        while (Vector3.Distance(spriteWrap.transform.position, dst) < 1e-6)
+		while (Vector3.Distance(sprite.transform.localPosition, dst) > 1e-6)
             {
-            Vector3.MoveTowards(spriteWrap.transform.position, dst, speed * Time.deltaTime);
+			sprite.transform.localPosition = Vector3.MoveTowards(sprite.transform.localPosition, dst, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
     }
 
     private IEnumerator Rotate()
     {
+		float rotateProgress = 0f;
         while (rotateProgress < 1f)
         {
             rotateProgress += Time.fixedDeltaTime / twistDuration;
@@ -188,6 +171,8 @@ public class PlayerControl : MonoBehaviour
     {
 		jellyfishes.SetActive(false);
 		fishes.SetActive(false);
+
+		float fadeProgress = 0f;
         while (fadeProgress < 1f)
         {
             fadeProgress += Time.fixedDeltaTime / fadeDuration;

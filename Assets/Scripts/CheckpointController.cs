@@ -5,10 +5,15 @@ using UnityEngine.Events;
 
 public class CheckpointController : MonoBehaviour
 {
+	// Custom event to allow the index of the checkpoint
+	// as an input parameter
+	[System.Serializable]
+	public class CheckpointEvent : UnityEvent<int> {}
+
     // List of Checkpoints should be a child of this game object
     public List<Checkpoint> checkpoints;
     // Event for other objects to add listener to
-    public UnityEvent checkpointEvent;
+	public CheckpointEvent checkpointEvent;
     public int currentCheckpointIndex
     {
         get;
@@ -31,6 +36,6 @@ public class CheckpointController : MonoBehaviour
         Debug.Log(string.Format("Checkpoint {0} reached.", index));
         currentCheckpointIndex = index;
 
-        checkpointEvent.Invoke();
+        checkpointEvent.Invoke(index);
     }
 }
