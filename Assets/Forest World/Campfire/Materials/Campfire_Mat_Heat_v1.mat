@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Campfire_Mat_Heat_v1
+  m_Name: Campfire_Mat_Heat_V1
   m_Shader: {fileID: 4800000, guid: 963484209d11fd7f110076aa44295342, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
