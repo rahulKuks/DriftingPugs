@@ -19588,7 +19588,7 @@ Transform:
   m_PrefabParentObject: {fileID: 400240, guid: e09ef66c54f554864b9f68b1fe00b003, type: 3}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 710820278}
-  m_LocalRotation: {x: -0.5660245, y: -0.0006750362, z: 0.8243879, w: -0.00075240654}
+  m_LocalRotation: {x: -0.5660244, y: -0.00067503616, z: 0.8243878, w: -0.0007524064}
   m_LocalPosition: {x: 67, y: 0, z: -112.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -24536,8 +24536,8 @@ GameObject:
   - component: {fileID: 1000129330}
   - component: {fileID: 1000129335}
   - component: {fileID: 1000129334}
-  - component: {fileID: 1000129331}
   - component: {fileID: 1000129332}
+  - component: {fileID: 1000129331}
   m_Layer: 0
   m_Name: Camera (eye)
   m_TagString: MainCamera
@@ -51863,6 +51863,7 @@ GameObject:
   - component: {fileID: 2123303926}
   - component: {fileID: 2123303925}
   - component: {fileID: 2123303924}
+  - component: {fileID: 2123303927}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -51933,6 +51934,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2123303927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2123303923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb96b3637f951744a74e29b57f2a129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxForwardSpeed: 3
+  rightControllerTrackedObj: {fileID: 1782997702}
+  leftControllerTrackedObj: {fileID: 1438517486}
+  viveCameraEye: {fileID: 1000129329}
+  viveRightController: {fileID: 1782997700}
+  viveLeftController: {fileID: 1438517483}
+  handBrakeAcceleration: 0.5
+  instantHandBrake: 0
+  headJoystick: 1
 --- !u!1 &2126722627
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,8 +5,8 @@ using System;
 public class SwivelLocomotion : MonoBehaviour
 {
 	[SerializeField] float maxForwardSpeed=3;
-    SteamVR_TrackedObject rightControllerTrackedObj;
-	SteamVR_TrackedObject leftControllerTrackedObj;
+	[SerializeField] SteamVR_TrackedObject rightControllerTrackedObj;
+	[SerializeField] SteamVR_TrackedObject leftControllerTrackedObj;
 	SteamVR_Controller.Device rightControllerDevice;
 	SteamVR_Controller.Device leftControllerDevice;
 
@@ -20,10 +20,10 @@ public class SwivelLocomotion : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
-		leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
-		rightControllerTrackedObj = viveRightController.GetComponent<SteamVR_TrackedObject> ();
-		leftControllerTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject> ();
+		//rightControllerTrackedObj = viveRightController.GetComponent<SteamVR_TrackedObject> ();
+		//leftControllerTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject> ();
+		//rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
+		//leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
 	}
 
 	void FixedUpdate ()
@@ -127,6 +127,7 @@ public class SwivelLocomotion : MonoBehaviour
 		//if (Input.GetKeyDown ("space")) {
 		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
 		{
+			//Debug.Log("STEP 1 COMPLETE");
 			float yawZero = viveCameraEye.transform.rotation.eulerAngles.y;
 
 			ViveControllerPitchForward = ViveControllerPitch;
@@ -166,6 +167,7 @@ public class SwivelLocomotion : MonoBehaviour
 		//if (Input.GetKeyDown (KeyCode.RightAlt)) {
 		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Grip) && swivel360InitializeStep == 2)
 		{
+			//Debug.Log("STEP 2 COMPLETE");
 			ViveControllerPitchZero = ViveControllerPitch;
 			InterfaceIsReady = true;
 			//Read the Vive Controller data
