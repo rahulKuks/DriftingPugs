@@ -5,15 +5,25 @@ using System;
 public class SwivelLocomotion : MonoBehaviour
 {
 	[SerializeField] float maxForwardSpeed=3;
-	[SerializeField] SteamVR_TrackedObject rightControllerTrackedObj;
-	[SerializeField] SteamVR_TrackedObject leftControllerTrackedObj;
+    SteamVR_TrackedObject rightControllerTrackedObj;
+	SteamVR_TrackedObject leftControllerTrackedObj;
 	SteamVR_Controller.Device rightControllerDevice;
 	SteamVR_Controller.Device leftControllerDevice;
+
+	//*** public Swivel-360 External Variables
+	public GameObject viveCameraEye;
+	public GameObject viveRightController;
+	public GameObject viveLeftController;
+	public float handBrakeAcceleration = 1f;
+	public bool instantHandBrake = true;
+
 	// Use this for initialization
 	void Start ()
 	{
 		rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
 		leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
+		rightControllerTrackedObj = viveRightController.GetComponent<SteamVR_TrackedObject> ();
+		leftControllerTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject> ();
 	}
 
 	void FixedUpdate ()
@@ -38,14 +48,7 @@ public class SwivelLocomotion : MonoBehaviour
 		//SwivelChairLocomotion (3, 3, true); //Apply the Vive Controller data to the user position in Virtual Environment
 		SwivelChairLocomotion(maxForwardSpeed,0,false);
 	}
-
-	//*** public Swivel-360 External Variables
-	public GameObject viveCameraEye;
-	public GameObject viveTracker;
-	public GameObject viveLeftController;
-	public float handBrakeAcceleration = 1f;
-	public bool instantHandBrake = true;
-
+		
 
 
 	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
@@ -78,12 +81,12 @@ public class SwivelLocomotion : MonoBehaviour
 	{
 
 		//Read all the Vive Controller data in each frame: GameObject.Find ("Controller (right)")
-		ViveControllerX = viveTracker.GetComponent<Transform> ().position.x;
-		ViveControllerY = viveTracker.GetComponent<Transform> ().position.y;
-		ViveControllerZ = viveTracker.GetComponent<Transform> ().position.z;
-		ViveControllerPitch = viveTracker.GetComponent<Transform> ().rotation.eulerAngles.x;
-		ViveControllerYaw = viveTracker.GetComponent<Transform> ().rotation.eulerAngles.y;
-		ViveControllerRoll = viveTracker.GetComponent<Transform> ().rotation.eulerAngles.z;
+		ViveControllerX = viveRightController.GetComponent<Transform> ().position.x;
+		ViveControllerY = viveRightController.GetComponent<Transform> ().position.y;
+		ViveControllerZ = viveRightController.GetComponent<Transform> ().position.z;
+		ViveControllerPitch = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.x;
+		ViveControllerYaw = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.y;
+		ViveControllerRoll = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.z;
 		//Check If the user pressed touchpad, change handBrake status
 		if (viveLeftController.GetComponent<SteamVR_TrackedController> ().padPressed && !touchPadPressingStatus) {
 			Debug.Log ("Left Controller pad is pressed!");
@@ -122,7 +125,7 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 		//if (Input.GetKeyDown ("space")) {
-		if(rightControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
+		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
 		{
 			float yawZero = viveCameraEye.transform.rotation.eulerAngles.y;
 
@@ -134,17 +137,17 @@ public class SwivelLocomotion : MonoBehaviour
 			while (ViveControllerYawOffset < -180)
 				ViveControllerYawOffset += 360;
 			//Read the Vive Controller data to calculate the ChairRotationRadious to measure the chair displacement
-			ChairPx1 = viveTracker.GetComponent<Transform> ().position.x;
-			ChairPy1 = viveTracker.GetComponent<Transform> ().position.y;
-			ChairPz1 = viveTracker.GetComponent<Transform> ().position.z;
-			ChairRx1 = viveTracker.GetComponent<Transform> ().rotation.eulerAngles.x;
+			ChairPx1 = viveRightController.GetComponent<Transform> ().position.x;
+			ChairPy1 = viveRightController.GetComponent<Transform> ().position.y;
+			ChairPz1 = viveRightController.GetComponent<Transform> ().position.z;
+			ChairRx1 = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.x;
 
 			if (headJoystick) {
-				headP1 = -viveTracker.GetComponent<Transform> ().localRotation.eulerAngles.x;
-				headControllerX1 = viveTracker.GetComponent<Transform> ().localPosition.x;
-				headControllerY1 = viveTracker.GetComponent<Transform> ().localPosition.y;
-				headControllerZ1 = viveTracker.GetComponent<Transform> ().localPosition.z;
-				headControllerYaw = 180 + viveTracker.GetComponent<Transform> ().localRotation.eulerAngles.y;
+				headP1 = -viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.x;
+				headControllerX1 = viveRightController.GetComponent<Transform> ().localPosition.x;
+				headControllerY1 = viveRightController.GetComponent<Transform> ().localPosition.y;
+				headControllerZ1 = viveRightController.GetComponent<Transform> ().localPosition.z;
+				headControllerYaw = 180 + viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.y;
 				if (headControllerYaw > 360)
 					headControllerYaw -= 360;
 				float currentChairYaw = headControllerYaw * Mathf.PI / 180;
@@ -161,15 +164,15 @@ public class SwivelLocomotion : MonoBehaviour
 
 
 		//if (Input.GetKeyDown (KeyCode.RightAlt)) {
-		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger) && swivel360InitializeStep == 2)
+		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Grip) && swivel360InitializeStep == 2)
 		{
 			ViveControllerPitchZero = ViveControllerPitch;
 			InterfaceIsReady = true;
 			//Read the Vive Controller data
-			ChairPx2 = viveTracker.GetComponent<Transform> ().position.x;
-			ChairPy2 = viveTracker.GetComponent<Transform> ().position.y;
-			ChairPz2 = viveTracker.GetComponent<Transform> ().position.z;
-			ChairRx2 = viveTracker.GetComponent<Transform> ().rotation.eulerAngles.x;
+			ChairPx2 = viveRightController.GetComponent<Transform> ().position.x;
+			ChairPy2 = viveRightController.GetComponent<Transform> ().position.y;
+			ChairPz2 = viveRightController.GetComponent<Transform> ().position.z;
+			ChairRx2 = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.x;
 			// Calculate the ChairRotationRadious to measure the chair displacement
 			double Distance = Mathf.Sqrt (Mathf.Pow ((float)(ChairPx1 - ChairPx2), 2) + Mathf.Pow ((float)(ChairPy1 - ChairPy2), 2) + Mathf.Pow ((float)(ChairPz1 - ChairPz2), 2));
 			double dRx = Mathf.Abs ((float)(ChairRx1 - ChairRx2));
@@ -177,11 +180,11 @@ public class SwivelLocomotion : MonoBehaviour
 			ChairRotationRadious = Distance / (2 * Mathf.Sin ((float)(dRx / 2 * Mathf.PI / 180)));
 			//print ("Vive Controller Zero Pitch = " + ViveControllerPitchZero + " - Chair Rotation Radious = " + ChairRotationRadious);
 			if (headJoystick) {
-				headP2 = -viveTracker.GetComponent<Transform> ().localRotation.eulerAngles.x;
-				headControllerX2 = viveTracker.GetComponent<Transform> ().localPosition.x;
-				headControllerY2 = viveTracker.GetComponent<Transform> ().localPosition.y;
-				headControllerZ2 = viveTracker.GetComponent<Transform> ().localPosition.z;
-				headControllerYaw = 180 + viveTracker.GetComponent<Transform> ().localRotation.eulerAngles.y;
+				headP2 = -viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.x;
+				headControllerX2 = viveRightController.GetComponent<Transform> ().localPosition.x;
+				headControllerY2 = viveRightController.GetComponent<Transform> ().localPosition.y;
+				headControllerZ2 = viveRightController.GetComponent<Transform> ().localPosition.z;
+				headControllerYaw = 180 + viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.y;
 				if (headControllerYaw > 360)
 					headControllerYaw -= 360;
 				headX1 = headControllerZ1 * Mathf.Cos (headControllerYaw * Mathf.PI / 180) + headControllerX1 * Mathf.Sin (headControllerYaw * Mathf.PI / 180);
@@ -215,17 +218,17 @@ public class SwivelLocomotion : MonoBehaviour
 		float InputRate, SidewayInputRate = 0f;
 
 		if (headJoystick) {
-			float ChairDirectionYaw = 180 + viveTracker.GetComponent<Transform> ().localRotation.eulerAngles.y;
+			float ChairDirectionYaw = 180 + viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.y;
 			if (ChairDirectionYaw > 360)
 				ChairDirectionYaw -= 360;
 			float headXnow = viveCameraEye.GetComponent<Transform> ().localPosition.z * Mathf.Cos (ChairDirectionYaw * Mathf.PI / 180) + viveCameraEye.GetComponent<Transform> ().localPosition.x * Mathf.Sin (ChairDirectionYaw * Mathf.PI / 180);
 			//print ("Head Position X = " + headXnow + "- Yaw = " + ChairDirectionYaw + " - Local Z = " + viveCameraEye.GetComponent<Transform> ().localPosition.z + " - Local X = " + viveCameraEye.GetComponent<Transform> ().localPosition.x);
 
 
-			float headP3 = -viveTracker.GetComponent<Transform> ().localRotation.eulerAngles.x;
-			float headControllerX3 = viveTracker.GetComponent<Transform> ().localPosition.x;
-			float headControllerY3 = viveTracker.GetComponent<Transform> ().localPosition.y;
-			float headControllerZ3 = viveTracker.GetComponent<Transform> ().localPosition.z;
+			float headP3 = -viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.x;
+			float headControllerX3 = viveRightController.GetComponent<Transform> ().localPosition.x;
+			float headControllerY3 = viveRightController.GetComponent<Transform> ().localPosition.y;
+			float headControllerZ3 = viveRightController.GetComponent<Transform> ().localPosition.z;
 
 
 			float headX3 = headControllerZ3 * Mathf.Cos (ChairDirectionYaw * Mathf.PI / 180) + headControllerX3 * Mathf.Sin (ChairDirectionYaw * Mathf.PI / 180);
@@ -247,12 +250,12 @@ public class SwivelLocomotion : MonoBehaviour
 		//InputRate = Mathf.Max (0f, InputRate); //No backward Locomotion
 
 		if (maximumSidewayVelocity != 0) { //Calculating sideway leaning for Full Swivel Chair
-			float ChairYaw = 360 - viveTracker.transform.rotation.eulerAngles.y;
+			float ChairYaw = 360 - viveRightController.transform.rotation.eulerAngles.y;
 			float HeadYaw = 360 - viveCameraEye.transform.rotation.eulerAngles.y;
 			float HeadX = -viveCameraEye.transform.position.z + HeadWidth * Mathf.Cos (HeadYaw * Mathf.PI / 180); //Calculate the Neck x Position
 			float HeadY = viveCameraEye.transform.position.x + HeadWidth * Mathf.Sin (HeadYaw * Mathf.PI / 180); //Calculate the Neck y Position
-			float ChairX = -viveTracker.transform.position.z;
-			float ChairY = viveTracker.transform.position.x;
+			float ChairX = -viveRightController.transform.position.z;
+			float ChairY = viveRightController.transform.position.x;
 			float LeaningDistanceSideway = Mathf.Sin (ChairYaw * Mathf.PI / 180) * (HeadX - ChairX) - Mathf.Cos (ChairYaw * Mathf.PI / 180) * (HeadY - ChairY) - .005f;
 
 			SidewayInputRate = (float)(LeaningDistanceSideway / MaximumSidewayLeaningDistance);
@@ -355,7 +358,6 @@ public class SwivelLocomotion : MonoBehaviour
 		//  ****************************** Calculate the Rotatoion locomotion *****************************************
 		ChairLocomotionDirection = (float)(ViveControllerYaw + ViveControllerYawOffset);
 
-		// Reversal of direction to compensate for tracker orientation
 		float TranslateX = (float)(LocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
 		float TranslateZ = (float)(LocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
 		if (maximumSidewayVelocity != 0) {
