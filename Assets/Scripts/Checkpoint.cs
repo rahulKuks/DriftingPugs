@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour {
 
+    private CheckpointController checkpointController;
+
+    void Awake()
+    {
+        checkpointController = transform.parent.GetComponent<CheckpointController>();
+        if (checkpointController == null)
+        {
+            Debug.LogError("Unable to get checkpoint controller.", this.gameObject);
+        }
+    }
+
     void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.tag == "Player")
         {
-            CheckpointController.Instance.CheckpointReached(this);
+            checkpointController.CheckpointReached(this);
         }
     }
 

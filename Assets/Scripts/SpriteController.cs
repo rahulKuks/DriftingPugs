@@ -11,13 +11,17 @@ public class SpriteController : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    private void Start()
+	public void MoveAnimation(int index)
     {
-        CheckpointController.Instance.CheckpointEvent.AddListener(MoveAnimation);
-    }
-
-    private void MoveAnimation()
-    {
-        anim.SetInteger("Checkpoint", CheckpointController.Instance.CurrentCheckpointIndex);
+        anim.SetInteger("Checkpoint", index);
+		switch (index)
+		{
+			case 5:
+				anim.enabled = false;
+				break;
+			case 7:
+				anim.enabled = true;
+				break;
+		}
     }
 }
