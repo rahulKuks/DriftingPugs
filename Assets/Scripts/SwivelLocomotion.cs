@@ -1,27 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class SwivelLocomotion : MonoBehaviour
 {
-
-
-	// Use this for initialization
-	void Start ()
-	{
-
-	}
-
-	void FixedUpdate ()
-	{
-		ReadControllerData (); //Read Vive Controller data and store them inside internal variables
-	}
-
-	// Update is called once per frame
-	void Update ()
-	{
-		//SwivelChairLocomotion (3, 3, true); //Apply the Vive Controller data to the user position in Virtual Environment
-		SwivelChairLocomotion(3,0,false);
-	}
+	[SerializeField] float maxForwardSpeed=3;
+	SteamVR_TrackedObject rightControllerTrackedObj;
+	SteamVR_TrackedObject leftControllerTrackedObj;
+	SteamVR_Controller.Device rightControllerDevice;
+	SteamVR_Controller.Device leftControllerDevice;
 
 	//*** public Swivel-360 External Variables
 	public GameObject viveCameraEye;
@@ -29,6 +16,45 @@ public class SwivelLocomotion : MonoBehaviour
 	public GameObject viveLeftController;
 	public float handBrakeAcceleration = 1f;
 	public bool instantHandBrake = true;
+
+	// Use this for initialization
+	void Start ()
+	{
+		
+	}
+
+	void FixedUpdate ()
+	{
+		
+		ReadControllerData (); //Read Vive Controller data and store them inside internal variables
+	}
+
+	// Update is called once per frame
+	void Update ()
+	{
+		/** The try catch block below is to handle the exceptions thrown while initialising the tracked objects **
+		 *  and devices in the first few iterations. The cause of improper initialisation is unknown.		 	**/
+		if (rightControllerDevice == null && leftControllerDevice == null)
+		{
+			try
+			{
+				rightControllerTrackedObj = viveRightController.GetComponent<SteamVR_TrackedObject> ();
+				leftControllerTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject> ();
+				rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
+				leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
+			}
+			catch(Exception e)
+			{
+				Debug.Log("Controller device initalisation exception");
+				return;
+			}
+		}
+
+		//SwivelChairLocomotion (3, 3, true); //Apply the Vive Controller data to the user position in Virtual Environment
+		SwivelChairLocomotion(maxForwardSpeed,0,false);
+	}
+		
+
 
 	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
 	bool handBrake = false, touchPadPressingStatus = false;
@@ -49,6 +75,10 @@ public class SwivelLocomotion : MonoBehaviour
 	float exponentialTransferFuntionPower = 1.53f;
 	int swivel360InitializeStep = 0; //0 = before printing PressSpace message, 1 = after PressSpace message waiting for space, 2 = after space press waiting for Right Alt Press
 
+	public void SetMaxForwardSpeed(float forwardSpeed)
+	{
+		maxForwardSpeed = forwardSpeed;
+	}
 
 
 	// *** Call this method in FixedUpdate() *** (updates the position of Vivev HMD and Controller at each frame inside internal variables)
@@ -99,8 +129,9 @@ public class SwivelLocomotion : MonoBehaviour
 			swivel360InitializeStep = 1;
 		}
 
-		if (Input.GetKeyDown ("space")) {
-
+		//first step in calibration occurs when the user is sitting straight. The left controller trigger needs to be pressed
+		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
+		{
 			float yawZero = viveCameraEye.transform.rotation.eulerAngles.y;
 
 			ViveControllerPitchForward = ViveControllerPitch;
@@ -137,8 +168,9 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 
-		if (Input.GetKeyDown (KeyCode.RightAlt)) {
-
+		//Next step in calibration is done when the user leans back and by pressing down on the left controller grip button
+		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Grip) && swivel360InitializeStep == 2)
+		{
 			ViveControllerPitchZero = ViveControllerPitch;
 			InterfaceIsReady = true;
 			//Read the Vive Controller data
@@ -344,7 +376,7 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 		Vector3 pos = new Vector3 (TranslateX, 0.0f, TranslateZ);
-		Debug.Log("Pos: " + pos.ToString());
+		//Debug.Log("Pos: " + pos.ToString());
 		if (InterfaceIsReady)
 			transform.Translate (pos); 
 
