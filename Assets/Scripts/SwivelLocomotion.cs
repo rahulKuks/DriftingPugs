@@ -5,8 +5,8 @@ using System;
 public class SwivelLocomotion : MonoBehaviour
 {
 	[SerializeField] float maxForwardSpeed=3;
-	[SerializeField] SteamVR_TrackedObject rightControllerTrackedObj;
-	[SerializeField] SteamVR_TrackedObject leftControllerTrackedObj;
+	SteamVR_TrackedObject rightControllerTrackedObj;
+	SteamVR_TrackedObject leftControllerTrackedObj;
 	SteamVR_Controller.Device rightControllerDevice;
 	SteamVR_Controller.Device leftControllerDevice;
 
@@ -20,10 +20,7 @@ public class SwivelLocomotion : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		//rightControllerTrackedObj = viveRightController.GetComponent<SteamVR_TrackedObject> ();
-		//leftControllerTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject> ();
-		//rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
-		//leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
+		
 	}
 
 	void FixedUpdate ()
@@ -35,16 +32,24 @@ public class SwivelLocomotion : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		try
+		/** The try catch block below is to handle the exceptions thrown while initialising the tracked objects **
+		 *  and devices in the first few iterations. The cause of improper initialisation is unknown.		 	**/
+		if (rightControllerDevice == null && leftControllerDevice == null)
 		{
-			rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
-			leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
+			try
+			{
+				rightControllerTrackedObj = viveRightController.GetComponent<SteamVR_TrackedObject> ();
+				leftControllerTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject> ();
+				rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
+				leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
+			}
+			catch(Exception e)
+			{
+				Debug.Log("Controller device initalisation exception");
+				return;
+			}
 		}
-		catch(Exception e)
-		{
-			Debug.Log("Controller device initalisation exception");
-			return;
-		}
+
 		//SwivelChairLocomotion (3, 3, true); //Apply the Vive Controller data to the user position in Virtual Environment
 		SwivelChairLocomotion(maxForwardSpeed,0,false);
 	}
@@ -124,10 +129,9 @@ public class SwivelLocomotion : MonoBehaviour
 			swivel360InitializeStep = 1;
 		}
 
-		//if (Input.GetKeyDown ("space")) {
+		//first step in calibration occurs when the user is sitting straight. The left controller trigger needs to be pressed
 		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
 		{
-			//Debug.Log("STEP 1 COMPLETE");
 			float yawZero = viveCameraEye.transform.rotation.eulerAngles.y;
 
 			ViveControllerPitchForward = ViveControllerPitch;
@@ -164,10 +168,9 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 
-		//if (Input.GetKeyDown (KeyCode.RightAlt)) {
+		//Next step in calibration is done when the user leans back and by pressing down on the left controller grip button
 		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Grip) && swivel360InitializeStep == 2)
 		{
-			//Debug.Log("STEP 2 COMPLETE");
 			ViveControllerPitchZero = ViveControllerPitch;
 			InterfaceIsReady = true;
 			//Read the Vive Controller data
