@@ -25,8 +25,11 @@ public class SwivelLocomotion : MonoBehaviour
 
 	void FixedUpdate ()
 	{
-		
-		ReadControllerData (); //Read Vive Controller data and store them inside internal variables
+		//Read controller data once controllers are initialised.
+		if (rightControllerDevice != null && leftControllerDevice != null) 
+		{
+			ReadControllerData (); //Read Vive Controller data and store them inside internal variables
+		}
 	}
 
 	// Update is called once per frame
