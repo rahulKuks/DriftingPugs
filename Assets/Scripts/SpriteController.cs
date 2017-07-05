@@ -14,7 +14,7 @@ public class SpriteController : MonoBehaviour
 	public void MoveAnimation(int index)
     {
         anim.SetInteger("Checkpoint", index);
-		switch (index)
+		/*switch (index)
 		{
 			case 5:
 				anim.enabled = false;
@@ -22,6 +22,6 @@ public class SpriteController : MonoBehaviour
 			case 7:
 				anim.enabled = true;
 				break;
-		}
+		}*/
     }
 }

@@ -13,7 +13,7 @@ Prefab:
   m_IsPrefabParent: 1
 --- !u!1 &1000010506240020
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -95,12 +95,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000010506240020}
-  m_LocalRotation: {x: 0.12743223, y: 0.21458799, z: -0.028251044, w: 0.96794367}
+  m_LocalRotation: {x: -1, y: -0.00000004371139, z: 0.00000004371139, w: 1.9106855e-15}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000042, y: 1.0000323, z: 1.0000331}
+  m_LocalScale: {x: 1.0000119, y: 1.0000459, z: 1.0000464}
   m_Children: []
-  m_Father: {fileID: 4000013452891230}
-  m_RootOrder: 2
+  m_Father: {fileID: 4000012258007966}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4000011007129118
 Transform:
@@ -134,11 +134,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012904765898}
-  m_LocalRotation: {x: 0.12743221, y: 0.21458796, z: -0.02825104, w: 0.96794367}
+  m_LocalRotation: {x: 0.7535674, y: 0.23479411, z: 0.35139427, w: -0.50351757}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4000011007129118}
+  - {fileID: 4000010073850154}
   m_Father: {fileID: 4000013452891230}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -148,13 +149,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000010809942156}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 0.43177468, z: -0, w: 0.90198153}
+  m_LocalPosition: {x: 23.7, y: 0, z: 189.7}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4000012258007966}
   - {fileID: 4000011588461458}
-  - {fileID: 4000010073850154}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -167,13 +167,13 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 1, g: 0.8117647, b: 0.6627451, a: 1}
-  m_Intensity: 0.9259257
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Intensity: 0.2
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -209,7 +209,7 @@ MonoBehaviour:
   m_SunTransform: {fileID: 4000012258007966}
   m_MoonTransform: {fileID: 4000011007129118}
   playTime: 0
-  m_WorldLongitude: 25
+  m_WorldLongitude: -50
   useWorldLongitudeCurve: 0
   worldLongitudeCurve:
     serializedVersion: 2
@@ -230,8 +230,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   dayInSeconds: 900
-  timeline: 7
-  m_SunColor: {r: 1, g: 0.8117647, b: 0.6627451, a: 1}
+  timeline: 22.5
+  m_SunColor: {r: 1, g: 0.7647059, b: 0.6627451, a: 1}
   useSunColorGradient: 1
   sunColorGradient:
     serializedVersion: 2
@@ -262,7 +262,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
-  m_SunLightIntensity: 0.9259257
+  m_SunLightIntensity: 0
   useSunLightIntensityCurve: 1
   sunLightIntensityCurve:
     serializedVersion: 2
@@ -348,7 +348,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_MoonLightColor: {r: 0.345, g: 0.459, b: 0.533, a: 1}
+  m_MoonLightColor: {r: 0, g: 0, b: 0, a: 1}
   useMoonLightColorGradient: 0
   moonLightColorGradient:
     serializedVersion: 2
@@ -380,7 +380,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   useMoonLightIntensityCurve: 1
-  m_MoonLightIntensity: 0
+  m_MoonLightIntensity: 0.2
   moonLightIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -425,10 +425,10 @@ MonoBehaviour:
     m_RotationOrder: 0
   m_AmbientMode: 1
   useAmbientSkyColorGradient: 1
-  m_AmbientSkyColor: {r: 0.49019608, g: 0.5882353, b: 0.72156864, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0.18823528, b: 0.3254902, a: 1}
   ambientSkyColorGradient:
     serializedVersion: 2
-    key0: {r: 0, g: 0.1882353, b: 0.3254902, a: 1}
+    key0: {r: 0, g: 0, b: 0, a: 1}
     key1: {r: 0.6156863, g: 0.64705884, b: 0.5058824, a: 1}
     key2: {r: 0.4627451, g: 0.5764706, b: 0.76862746, a: 0}
     key3: {r: 0.4627451, g: 0.5764706, b: 0.76862746, a: 0}
@@ -456,10 +456,10 @@ MonoBehaviour:
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   useAmbientEquatorColorGradient: 1
-  m_AmbientEquatorColor: {r: 0.7372549, g: 0.81960785, b: 0.89411765, a: 1}
+  m_AmbientEquatorColor: {r: 0, g: 0.19607842, b: 0.34117648, a: 1}
   ambientEquatorColorGradient:
     serializedVersion: 2
-    key0: {r: 0, g: 0.19607843, b: 0.34117648, a: 1}
+    key0: {r: 0, g: 0, b: 0, a: 1}
     key1: {r: 0.92156863, g: 0.69803923, b: 0.37254903, a: 1}
     key2: {r: 0.69803923, g: 0.84313726, b: 1, a: 0}
     key3: {r: 0.69803923, g: 0.84313726, b: 1, a: 0}
@@ -487,7 +487,7 @@ MonoBehaviour:
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   useAmbientGroundColorGradient: 1
-  m_AmbientGroundColor: {r: 0.42745098, g: 0.3882353, b: 0.36078432, a: 1}
+  m_AmbientGroundColor: {r: 0, g: 0, b: 0, a: 1}
   ambientGroundColorGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0, b: 0, a: 1}
@@ -541,7 +541,7 @@ MonoBehaviour:
   fogMode: 3
   useRenderSettingsFog: 0
   useFogDensityCurve: 0
-  m_FogDensity: 0.001
+  m_FogDensity: 0.012
   fogDensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -601,7 +601,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useFogColorGradient: 1
-  m_FogColor: {r: 0.6313726, g: 0.70980394, b: 0.7921569, a: 1}
+  m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   fogColorGradient:
     serializedVersion: 2
     key0: {r: 0.003921569, g: 0.09803922, b: 0.23921569, a: 1}
@@ -609,7 +609,7 @@ MonoBehaviour:
     key2: {r: 0.5764706, g: 0.7058824, b: 0.8784314, a: 0}
     key3: {r: 0.5764706, g: 0.7058824, b: 0.8784314, a: 0}
     key4: {r: 0.90588236, g: 0.72156864, b: 0.3764706, a: 0}
-    key5: {r: 0.003921569, g: 0.09803922, b: 0.23921569, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 14418
@@ -632,12 +632,12 @@ MonoBehaviour:
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   m_AutoAssignSky: 1
-  skyMaterial: {fileID: 2100000, guid: aeda7ac675715a848bb1d07b7fbaa714, type: 2}
+  skyMaterial: {fileID: 2100000, guid: 1e924825c5e54463b88b47679b653bd5, type: 2}
   moonTexture: {fileID: 2800000, guid: a59d1a69073bc564a9fcdf880ff03b70, type: 3}
   starsCubemap: {fileID: 8900000, guid: 59b06dd7421b9c8458253df6b1b2e478, type: 3}
   starsNoiseCubemap: {fileID: 8900000, guid: 260572b784e3def428aa40ce3bc252ab, type: 3}
   useSkyTintGradient: 0
-  m_SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_SkyTint: {r: 0.7411765, g: 0.7411765, b: 0.7411765, a: 1}
   skyTintGradient:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 1}
@@ -668,7 +668,7 @@ MonoBehaviour:
     m_NumColorKeys: 4
     m_NumAlphaKeys: 2
   useAtmosphereThicknessCurve: 0
-  m_AtmosphereThickness: 1
+  m_AtmosphereThickness: 5
   atmosphereThicknessCurve:
     serializedVersion: 2
     m_Curve:
@@ -722,7 +722,7 @@ MonoBehaviour:
     m_NumColorKeys: 4
     m_NumAlphaKeys: 2
   useHorizonFade: 1
-  m_HorizonFade: 0.109
+  m_HorizonFade: 0.118
   sunType: 0
   m_SunSize: 0.045
   useSunSizeCurve: 0
@@ -776,7 +776,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   useMoonIntensityCurve: 1
-  m_MoonIntensity: 0.008916259
+  m_MoonIntensity: 1
   moonIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -820,7 +820,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 0
   useMoonSizeCurve: 0
-  m_MoonSize: 0.25
+  m_MoonSize: 0.48
   moonSizeCurve:
     serializedVersion: 2
     m_Curve:
@@ -872,7 +872,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   useMoonHaloSizeCurve: 0
-  m_MoonHaloSize: 0.3
+  m_MoonHaloSize: 0.24
   moonHaloSizeCurve:
     serializedVersion: 2
     m_Curve:
@@ -892,7 +892,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useMoonHaloIntensityCurve: 1
-  m_MoonHaloIntensity: 0
+  m_MoonHaloIntensity: 1
   moonHaloIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -937,7 +937,7 @@ MonoBehaviour:
     m_RotationOrder: 0
   useStars: 1
   starsRotationMode: 0
-  starsOffsets: {x: 0, y: 0, z: 0}
+  starsOffsets: {x: -0.48, y: 2.35, z: 0}
   useStarsColorGradient: 0
   m_StarsColor: {r: 1, g: 1, b: 1, a: 1}
   starsColorGradient:
@@ -970,7 +970,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   useStarsIntensityCurve: 1
-  m_StarsIntensity: 0
+  m_StarsIntensity: 1
   starsIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -1015,7 +1015,7 @@ MonoBehaviour:
     m_RotationOrder: 0
   useStarsTwinkle: 1
   useStarsTwinkleCurve: 0
-  m_StarsTwinkle: 0.4
+  m_StarsTwinkle: 0.59
   starsTwinkleCurve:
     serializedVersion: 2
     m_Curve:
@@ -1035,7 +1035,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useStarsTwinkleSpeedCurve: 0
-  m_StarsTwinkleSpeed: 7
+  m_StarsTwinkleSpeed: 8.4
   starsTwinkleSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -1054,7 +1054,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_Exposure: 1.3
+  m_Exposure: 0.3
   useExposureCurve: 0
   exposureCurve:
     serializedVersion: 2
