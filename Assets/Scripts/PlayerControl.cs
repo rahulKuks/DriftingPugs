@@ -45,6 +45,17 @@ public class PlayerControl : MonoBehaviour
     [Tooltip("The list of GameObjects to collide with to transition into the next state.")]
     [SerializeField] private List<GameObject> transitionColliders;
 
+    [SerializeField] private GameObject earth;
+    [SerializeField] private GameObject sun;
+    [SerializeField] private GameObject space;
+
+    [Tooltip("The duration the user wanders around before the light appears.")]
+    [SerializeField]
+    private float wanderingDuration = 40f;
+    [Tooltip("The duration before the light starts orbiting.")]
+    [SerializeField]
+    private float pauseDuration = 10f;
+
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space };
 
     // private variables
@@ -136,6 +147,7 @@ public class PlayerControl : MonoBehaviour
                     StartCoroutine("Rotate");
                 break;
             case (PlayerState.Space):
+                StartCoroutine("EarthGaze");
                 sprite.transform.SetParent(spriteParent, true);
 
 				rb.useGravity = false;
@@ -181,5 +193,26 @@ public class PlayerControl : MonoBehaviour
             seaRenderer.material.color = color;
             yield return new WaitForFixedUpdate();
         }
+    }
+
+    private IEnumerator EarthGaze()
+    {
+        Debug.Log("EarthGaze");
+        float progress = 0f;
+        while (progress < wanderingDuration)
+        {
+            progress += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Debug.Log("here");
+        earth.SetActive(true);
+        sun.SetActive(true);
+
+        earth.transform.SetParent(space.transform, true);
+        sun.transform.SetParent(space.transform, true);
+
+        Debug.Log(Vector3.Distance(this.transform.position, sun.transform.position));
+
     }
 }

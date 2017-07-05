@@ -6,6 +6,7 @@ public class EarthGaze : MonoBehaviour {
 
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject sun;
+    [SerializeField] private GameObject space;
 
     [Tooltip("The duration the user wanders around before the light appears.")]
     [SerializeField] private float wanderingDuration = 40f;
@@ -22,6 +23,7 @@ public class EarthGaze : MonoBehaviour {
 
     private IEnumerator Trigger()
     {
+        Debug.Log("EarthGaze");
         float progress = 0f;
         while (progress < wanderingDuration)
         {
@@ -29,10 +31,13 @@ public class EarthGaze : MonoBehaviour {
             yield return new WaitForEndOfFrame();
         }
 
+        Debug.Log("here");
         earth.SetActive(true);
         sun.SetActive(true);
 
-        earth.transform.SetParent(this.transform.parent);
-        sun.transform.SetParent(this.transform.parent);
+        earth.transform.SetParent(this.transform.parent, true);
+        sun.transform.SetParent(this.transform.parent, true);
+
+        Debug.Log(Vector3.Distance(this.transform.position, sun.transform.position));
     }
 }
