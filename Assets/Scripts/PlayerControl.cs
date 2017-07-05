@@ -49,7 +49,7 @@ public class PlayerControl : MonoBehaviour
 
     // private variables
     private Rigidbody rb;
-    private PlayerState currentState = PlayerState.Grounded;
+	[SerializeField]private PlayerState currentState = PlayerState.Grounded;
     private Transform spriteParent;     // original parent of sprite
     // used to get the material to change the opacity
     private Renderer seaRenderer;
