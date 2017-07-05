@@ -46956,6 +46956,31 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 108822096124122514, guid: b9772ae2ceae6420eb134cbaf9d8054b,
+        type: 2}
+      propertyPath: m_Color.r
+      value: 0.5215182
+      objectReference: {fileID: 0}
+    - target: {fileID: 108822096124122514, guid: b9772ae2ceae6420eb134cbaf9d8054b,
+        type: 2}
+      propertyPath: m_Color.g
+      value: 0.69404006
+      objectReference: {fileID: 0}
+    - target: {fileID: 108822096124122514, guid: b9772ae2ceae6420eb134cbaf9d8054b,
+        type: 2}
+      propertyPath: m_Color.b
+      value: 0.7794118
+      objectReference: {fileID: 0}
+    - target: {fileID: 108822096124122514, guid: b9772ae2ceae6420eb134cbaf9d8054b,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 108822096124122514, guid: b9772ae2ceae6420eb134cbaf9d8054b,
+        type: 2}
+      propertyPath: m_Range
+      value: 2.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b9772ae2ceae6420eb134cbaf9d8054b, type: 2}
   m_IsPrefabParent: 0
@@ -63565,6 +63590,14 @@ Prefab:
       propertyPath: checkpointEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 3062787}
+    - target: {fileID: 4018342579136532, guid: f943e52bebe5d48f3b1efb7dce84e41f, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 13.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 4018342579136532, guid: f943e52bebe5d48f3b1efb7dce84e41f, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 108.65
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f943e52bebe5d48f3b1efb7dce84e41f, type: 2}
   m_IsPrefabParent: 0
