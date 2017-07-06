@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class SpriteController : MonoBehaviour
 {
-    private Animator anim;
+	private Animator parentAnim;
+	[SerializeField] Animator childAnim;
 
     private void Awake()
     {
-        anim = GetComponent<Animator>();
+        parentAnim = GetComponent<Animator>();
     }
 
 	public void MoveAnimation(int index)
     {
-        anim.SetInteger("Checkpoint", index);
-		switch (index)
+        parentAnim.SetInteger("Checkpoint", index);
+		childAnim.SetBool ("isIdling", true);
+		/*switch (index)
 		{
 			case 5:
 				anim.enabled = false;
@@ -22,6 +24,6 @@ public class SpriteController : MonoBehaviour
 			case 7:
 				anim.enabled = true;
 				break;
-		}
+		}*/
     }
 }
