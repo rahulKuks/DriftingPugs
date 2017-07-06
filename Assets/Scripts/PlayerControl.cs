@@ -93,10 +93,12 @@ public class PlayerControl : MonoBehaviour
                 rb.AddForce(1f * Physics.gravity);
                 rb.drag = -dragPercentageWater * vel.y;
                 break;
-            case (PlayerState.Space):
+		case (PlayerState.Space):
+				rb.velocity = Vector3.zero;
                 sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
                 break;
         }
+
     }
 
     void OnTriggerEnter(Collider other)
@@ -198,6 +200,7 @@ public class PlayerControl : MonoBehaviour
     private IEnumerator EarthGaze()
     {
         Debug.Log("EarthGaze");
+		sea.transform.parent.gameObject.SetActive(false);
         float progress = 0f;
         while (progress < wanderingDuration)
         {
@@ -209,10 +212,10 @@ public class PlayerControl : MonoBehaviour
         earth.SetActive(true);
         sun.SetActive(true);
 
+
         earth.transform.SetParent(space.transform, true);
         sun.transform.SetParent(space.transform, true);
 
-        Debug.Log(Vector3.Distance(this.transform.position, sun.transform.position));
 
     }
 }
