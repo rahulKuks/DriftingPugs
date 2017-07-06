@@ -199,7 +199,6 @@ public class PlayerControl : MonoBehaviour
 
     private IEnumerator EarthGaze()
     {
-        Debug.Log("EarthGaze");
 		sea.transform.parent.gameObject.SetActive(false);
         float progress = 0f;
         while (progress < wanderingDuration)
@@ -208,7 +207,6 @@ public class PlayerControl : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        Debug.Log("here");
         earth.SetActive(true);
         sun.SetActive(true);
 
