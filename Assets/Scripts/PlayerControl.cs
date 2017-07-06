@@ -56,6 +56,10 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private float pauseDuration = 10f;
 
+	[SerializeField] AudioSource seaBGM;
+	[SerializeField] AudioSource spaceBGM;
+
+
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space };
 
     // private variables
@@ -112,14 +116,17 @@ public class PlayerControl : MonoBehaviour
                 // TODO: generalize/don't hardcode
                 switch (index)
                 {
-                    case 0:
-                        currentState = PlayerState.InWater_Falling;
+					case 0:
+						currentState = PlayerState.InWater_Falling;
+						seaBGM.Play ();
                         break;
                     case 1:
                         currentState = PlayerState.InWater_Float;
                         break;
-                    case 2:
-                        currentState = PlayerState.Space;
+				case 2:
+						currentState = PlayerState.Space;
+						seaBGM.Stop ();
+						spaceBGM.Play ();
                         break;
                 }
 				UpdateState();
