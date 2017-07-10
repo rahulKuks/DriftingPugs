@@ -65,6 +65,7 @@ public class PlayerControl : MonoBehaviour
     // used to get the material to change the opacity
     private Renderer seaRenderer;
     private Color seaColor;
+	private SwivelLocomotion swivel;
 
     void Start()
     {
@@ -76,6 +77,9 @@ public class PlayerControl : MonoBehaviour
         spriteParent = sprite.transform.parent;
         seaRenderer = sea.GetComponent<Renderer>();
         seaColor = seaRenderer.material.color;
+
+		//Acquire the swivel locomotion component from the parent player gameObject
+		swivel = this.transform.parent.gameObject.GetComponent<SwivelLocomotion> ();
     }
 
     void FixedUpdate()
@@ -143,6 +147,8 @@ public class PlayerControl : MonoBehaviour
                 sprite.transform.SetParent(this.transform, true);
 				StartCoroutine("MoveSpriteLake");
                 SoundController.Instance.EnterLake();
+				//disable movement
+				swivel.enabled = false;
                 break;
             case (PlayerState.InWater_Float):
                 if (doTwist)
@@ -154,6 +160,8 @@ public class PlayerControl : MonoBehaviour
 
 				rb.useGravity = false;
 				rb.drag = 0;
+				//enable locomotion
+				swivel.enabled = true;
                 break;
         }
     }
