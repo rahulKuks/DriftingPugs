@@ -24,14 +24,14 @@ public class SoundController : MonoBehaviour
 
     public void EnterLake()
     {
-        forest.mute = true;
-        splash.mute = false;
-        sea.mute = false;
+		forest.Stop();
+		splash.Play();
+		sea.PlayDelayed(1.0f);
     }
 
     public void EnterSpace()
     {
-        sea.mute = true;
-        space.mute = false;
+		sea.Stop();
+		space.Play();
     }
 }
