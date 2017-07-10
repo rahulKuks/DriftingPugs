@@ -148,7 +148,8 @@ public class PlayerControl : MonoBehaviour
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
-            case (PlayerState.Space):
+			case (PlayerState.Space):
+				SoundController.Instance.EnterSpace();
                 StartCoroutine("EarthGaze");
                 sprite.transform.SetParent(spriteParent, true);
 
