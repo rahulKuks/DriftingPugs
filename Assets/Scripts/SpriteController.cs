@@ -14,8 +14,12 @@ public class SpriteController : MonoBehaviour
 
 	public void MoveAnimation(int index)
     {
-        parentAnim.SetInteger("Checkpoint", index);
-		childAnim.SetBool ("isIdling", true);
+		if (parentAnim.enabled == true) 
+		{
+			parentAnim.SetInteger("Checkpoint", index);
+			childAnim.SetBool ("isIdling", true);
+		}
+        
 		/*switch (index)
 		{
 			case 5:
@@ -26,4 +30,14 @@ public class SpriteController : MonoBehaviour
 				break;
 		}*/
     }
+
+	public void DisableParentAnimator()
+	{
+		parentAnim.enabled = false;
+	}
+
+	public void EnableParentAnimator()
+	{
+		parentAnim.enabled = true;
+	}
 }

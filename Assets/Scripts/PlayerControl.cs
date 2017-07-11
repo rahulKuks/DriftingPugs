@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine;
 using VRTK;
+using System;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -66,6 +67,7 @@ public class PlayerControl : MonoBehaviour
     private Renderer seaRenderer;
     private Color seaColor;
 	private SwivelLocomotion swivel;
+	private SpriteController spriteController;
 
     void Start()
     {
@@ -75,11 +77,20 @@ public class PlayerControl : MonoBehaviour
             Debug.LogError("Unable to get rigidbody.", this.gameObject);
         }
         spriteParent = sprite.transform.parent;
+		spriteController = sprite.GetComponent<SpriteController> ();
         seaRenderer = sea.GetComponent<Renderer>();
         seaColor = seaRenderer.material.color;
 
-		//Acquire the swivel locomotion component from the parent player gameObject
-		swivel = this.transform.parent.gameObject.GetComponent<SwivelLocomotion> ();
+		/* Acquire the swivel locomotion component from the parent player gameObject, 	*
+		 * catch exception if running the FPS controller, or if swivel is not available.*/
+		try
+		{
+			swivel = this.transform.parent.gameObject.GetComponent<SwivelLocomotion> ();
+		}
+		catch (Exception e) 
+		{
+			Debug.LogWarning ("Swivel not enabled or found");
+		}
     }
 
     void FixedUpdate()
@@ -143,26 +154,34 @@ public class PlayerControl : MonoBehaviour
         {
             case (PlayerState.Grounded):
                 break;
-            case (PlayerState.InWater_Falling):
-                sprite.transform.SetParent(this.transform, true);
-				StartCoroutine("MoveSpriteLake");
-                SoundController.Instance.EnterLake();
+		case (PlayerState.InWater_Falling):
+				spriteController.DisableParentAnimator ();
+				sprite.transform.SetParent (this.transform, true);
+				StartCoroutine ("MoveSpriteLake");
+				SoundController.Instance.EnterLake ();
 				//disable movement
-				swivel.enabled = false;
-                break;
+				if (swivel != null) 
+				{
+					swivel.enabled = false;
+				}
+				break;
+				
             case (PlayerState.InWater_Float):
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
 			case (PlayerState.Space):
-				SoundController.Instance.EnterSpace();
-                StartCoroutine("EarthGaze");
-                sprite.transform.SetParent(spriteParent, true);
+				SoundController.Instance.EnterSpace ();
+				StartCoroutine ("EarthGaze");
+				sprite.transform.SetParent (spriteParent, true);
 
 				rb.useGravity = false;
 				rb.drag = 0;
 				//enable locomotion
-				swivel.enabled = true;
+				if (swivel != null) 
+				{
+					swivel.enabled = true;
+				}
                 break;
         }
     }
@@ -172,7 +191,8 @@ public class PlayerControl : MonoBehaviour
         // TODO: don't hardcode
         Vector3 dst = new Vector3(-3.6f, 1.2f, -5.5f);
 		while (Vector3.Distance(sprite.transform.localPosition, dst) > 1e-6)
-            {
+        {
+			Debug.Log ("Sprite moving towards player");
 			sprite.transform.localPosition = Vector3.MoveTowards(sprite.transform.localPosition, dst, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
