@@ -19,16 +19,6 @@ public class SpriteController : MonoBehaviour
 			parentAnim.SetInteger("Checkpoint", index);
 			childAnim.SetBool ("isIdling", true);
 		}
-        
-		/*switch (index)
-		{
-			case 5:
-				anim.enabled = false;
-				break;
-			case 7:
-				anim.enabled = true;
-				break;
-		}*/
     }
 
 	public void DisableParentAnimator()
