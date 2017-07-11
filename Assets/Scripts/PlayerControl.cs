@@ -190,8 +190,6 @@ public class PlayerControl : MonoBehaviour
 
     private IEnumerator MoveSpriteLake()
     {
-        // TODO: don't hardcode
-        //Vector3 dst = new Vector3(-3.6f, 1.2f, -5.5f);
 		while (Vector3.Distance(sprite.transform.localPosition, spriteSeaLocation) > 1e-6)
         {
 			Debug.Log ("Sprite moving towards player");
