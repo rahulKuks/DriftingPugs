@@ -39,6 +39,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private bool doFade = false;
     [Tooltip("The time it takes for the sea to fade completely away.")]
     [SerializeField] private float fadeDuration = 20.0f;
+	[Tooltip("The location of the sprite relative to the player in the sea.")]
+	[SerializeField] private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f); 
 	[SerializeField] private GameObject sea;
 	[SerializeField] private GameObject jellyfishes;
 	[SerializeField] private GameObject fishes;
@@ -189,11 +191,11 @@ public class PlayerControl : MonoBehaviour
     private IEnumerator MoveSpriteLake()
     {
         // TODO: don't hardcode
-        Vector3 dst = new Vector3(-3.6f, 1.2f, -5.5f);
-		while (Vector3.Distance(sprite.transform.localPosition, dst) > 1e-6)
+        //Vector3 dst = new Vector3(-3.6f, 1.2f, -5.5f);
+		while (Vector3.Distance(sprite.transform.localPosition, spriteSeaLocation) > 1e-6)
         {
 			Debug.Log ("Sprite moving towards player");
-			sprite.transform.localPosition = Vector3.MoveTowards(sprite.transform.localPosition, dst, 10 * Time.deltaTime);
+			sprite.transform.localPosition = Vector3.MoveTowards(sprite.transform.localPosition, spriteSeaLocation, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
     }
