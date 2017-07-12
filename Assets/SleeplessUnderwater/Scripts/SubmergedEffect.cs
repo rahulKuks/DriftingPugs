@@ -8,7 +8,7 @@ public class SubmergedEffect : MonoBehaviour
 	public bool aboveWaterFogMode;
 	public Color aboveWaterColor;
 	public float aboveWaterVisiblity;
-	public GameObject WaterParticles;
+	//public GameObject WaterParticles;
 	private GameObject Player;
 	public Projector Caustics;
 	public bool checkedIfAboveWater;
@@ -20,7 +20,7 @@ public class SubmergedEffect : MonoBehaviour
 	void Start () 
 	{
 	    ParticleSystem.EmissionModule waterParticles_emission; // Locate and cache the underwater particles effect and enable it
-        waterParticles_emission = WaterParticles.GetComponent<ParticleSystem>().emission;
+        //waterParticles_emission = WaterParticles.GetComponent<ParticleSystem>().emission;
         waterParticles_emission.enabled = true;
 
 		underWaterColor = new Color(32.0f/255.0F,116.0f/255.0F,166.0f/255.0F,255.0f/255.0F); // Set the color for underwater fog
@@ -70,11 +70,11 @@ public class SubmergedEffect : MonoBehaviour
         //StopUnderWaterSound ();
 		//PlayExitSplashSound();
 		//Player.SendMessage("aboveWater");
-		if(WaterParticles.GetComponent<ParticleSystem>().isPlaying)
-		{
-			WaterParticles.GetComponent<ParticleSystem>().Stop ();
-			WaterParticles.GetComponent<ParticleSystem>().Clear ();
-		}
+		//if(WaterParticles.GetComponent<ParticleSystem>().isPlaying)
+		//{
+			//WaterParticles.GetComponent<ParticleSystem>().Stop ();
+			//WaterParticles.GetComponent<ParticleSystem>().Clear ();
+		//}
 		RenderSettings.fog = aboveWaterFogMode;
 		RenderSettings.fogColor = aboveWaterColor;
 		RenderSettings.fogDensity = aboveWaterVisiblity;
@@ -94,10 +94,10 @@ public class SubmergedEffect : MonoBehaviour
 		RenderSettings.fogDensity = underWaterVisiblity;
         Caustics.enabled = true;
 		//Player.SendMessage("underWater");
-		if(!WaterParticles.GetComponent<ParticleSystem>().isPlaying)
-		{
-			WaterParticles.GetComponent<ParticleSystem>().Play ();
-		}
+		//if(!WaterParticles.GetComponent<ParticleSystem>().isPlaying)
+		//{
+			//WaterParticles.GetComponent<ParticleSystem>().Play ();
+		//}
 	}
     // Toggle flares on or off depending on whether we are underwater or not
 	void ToggleFlares (bool state) 
