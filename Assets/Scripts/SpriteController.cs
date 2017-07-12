@@ -11,7 +11,7 @@ public class SpriteController : MonoBehaviour
 	[SerializeField] float RotationDuration = 180.0f;
 
 	public bool isRevolving = false;
-	public Transform obj;
+	public Transform earth;
 	public float speed = 5.0f;
 	public bool test = true;
 	public bool flag = false;
@@ -20,18 +20,6 @@ public class SpriteController : MonoBehaviour
     {
         parentAnim = GetComponent<Animator>();
     }
-
-	void Update()
-	{
-		if (isRevolving)
-		{
-			/*if (start == Vector3.zero)
-				start = transform.position;
-			int sign = (test) ? 1 : -1;
-			transform.RotateAround(obj.position, sign * Vector3.up, speed * Time.deltaTime);*/
-			Debug.DrawRay(transform.position, transform.forward, Color.green);
-		}
-	}
 
 	public void MoveAnimation(int index)
     {
@@ -52,33 +40,48 @@ public class SpriteController : MonoBehaviour
 		parentAnim.enabled = true;
 	}
 
-	public void Revolving(Transform earth, Transform player)
+    private  Vector3 playerDelta = Vector3.zero;
+    private float playerY = 0f;
+    private Transform point;
+
+    public void Revolving(Transform earth, Transform player, Transform point)
 	{
 		// move towards desired position
 		isRevolving = true;
-		obj = earth;
-		StartCoroutine("Rotate");
+		this.earth = earth;
+        playerDelta = player.position - transform.position;
+        this.point = point;
+        StartCoroutine("Rotate");
 	}
 
 	public float progress = 0f;
 	public Vector3 start = Vector3.zero;
+    private Vector3 dst = new Vector3(73.0085f, 0f, 43.78458f);
 	private IEnumerator Rotate()
 	{
-		EditorApplication.isPaused = true;
-		yield return new WaitForSeconds(2.0f);
+        Debug.Log("Move towards: " + dst);
+        EditorApplication.isPaused = true;
+        // Move towards to position where the rotation will begin
+        while (Vector3.Distance(transform.position, point.position) > 1e-6)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, point.position, speed * Time.fixedDeltaTime);
+            yield return new WaitForFixedUpdate();
+        }
+        Debug.Log(transform.position - earth.position);
+        EditorApplication.isPaused = true;
+
+        Debug.Log("Do rotation");
+        // Calculate speed to rotate around to match RotationDuration
+        float rotationSpeed = Vector3.Distance(transform.position, earth.position) / RotationDuration;
 
 		start = transform.position;
-		transform.RotateAround(obj.position, Vector3.up, speed * Time.deltaTime);
 		while(progress <= RotationDuration)
 		{
 			progress += Time.deltaTime;
-			transform.RotateAround(obj.position, Vector3.up, speed * Time.deltaTime);
-			if (Vector3.Distance(transform.position, start) < 1e-6)
-			{
-				Debug.Log("progress " + progress);
-				Debug.Log("full rotation");
-			}
-			yield return new WaitForEndOfFrame();
+			transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
+			yield return new WaitForFixedUpdate();
 		}
+        Debug.Log("Start position: " + start);
+        Debug.Log("End position: " + transform.position);
 	}
 }

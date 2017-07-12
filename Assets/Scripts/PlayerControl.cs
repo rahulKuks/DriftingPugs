@@ -59,7 +59,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private float pauseDuration = 10f;
 
-    public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space };
+    public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
     // private variables
     private Rigidbody rb;
@@ -107,7 +107,7 @@ public class PlayerControl : MonoBehaviour
             case (PlayerState.InWater_Float):
                 vel = rb.velocity;
                 rb.useGravity = false;
-                rb.AddForce(1f * Physics.gravity);
+                rb.AddForce(10f * Physics.gravity);
                 rb.drag = -dragPercentageWater * vel.y;
                 break;
 		case (PlayerState.Space):
@@ -179,10 +179,12 @@ public class PlayerControl : MonoBehaviour
 
 				rb.useGravity = false;
 				rb.drag = 0;
-				//enable locomotion
-				if (swivel != null) 
+                rb.velocity = Vector3.zero;
+
+                //enable locomotion
+                if (swivel != null) 
 				{
-					swivel.enabled = true;
+					//swivel.enabled = true;
 				}
                 break;
         }
@@ -226,24 +228,33 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
+
+    public Transform point;
+
     private IEnumerator EarthGaze()
     {
+        currentState = PlayerState.Earth_Gaze;
+        // Disable the sea world
 		sea.transform.parent.gameObject.SetActive(false);
 
+        // Enable the earth & sun and parent to space world
         earth.SetActive(true);
         sun.SetActive(true);
-
         earth.transform.SetParent(space.transform, true);
         sun.transform.SetParent(space.transform, true);
+        point.transform.SetParent(space.transform, true);
 
+        // Set angle to so it faces the direction it will be rotating in
 		sprite.transform.eulerAngles = new Vector3(0, 90, 0);
 
-		// needs this dumb loop since it doesn't set the first time
+        // Parent to sprite to follow it
+		// Needs this dumb loop since it doesn't set the first time
 		while (this.transform.parent.parent == null) {
 			this.transform.parent.SetParent(sprite.transform, true);
 			yield return new WaitForSeconds(1.0f);
 		}
 
-		spriteController.Revolving(earth.transform, this.transform.parent);
+        // Trigger the next part
+		spriteController.Revolving(earth.transform, this.transform, point);
     }
 }
