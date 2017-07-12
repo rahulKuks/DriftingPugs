@@ -112,7 +112,7 @@ public class PlayerControl : MonoBehaviour
                 break;
 		case (PlayerState.Space):
 				rb.velocity = Vector3.zero;
-                sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
+                //sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
                 break;
         }
 
@@ -229,20 +229,21 @@ public class PlayerControl : MonoBehaviour
     private IEnumerator EarthGaze()
     {
 		sea.transform.parent.gameObject.SetActive(false);
-        float progress = 0f;
-        while (progress < wanderingDuration)
-        {
-            progress += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
 
         earth.SetActive(true);
         sun.SetActive(true);
 
-
         earth.transform.SetParent(space.transform, true);
         sun.transform.SetParent(space.transform, true);
 
+		sprite.transform.eulerAngles = new Vector3(0, 90, 0);
 
+		// needs this dumb loop since it doesn't set the first time
+		while (this.transform.parent.parent == null) {
+			this.transform.parent.SetParent(sprite.transform, true);
+			yield return new WaitForSeconds(1.0f);
+		}
+
+		spriteController.Revolving(earth.transform, this.transform.parent);
     }
 }
