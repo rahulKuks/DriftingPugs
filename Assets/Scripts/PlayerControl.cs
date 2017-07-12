@@ -164,7 +164,6 @@ public class PlayerControl : MonoBehaviour
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
 				waterParticles.SetActive (true);
-				waterFog.enabled = true;
 				//disable movement
 				if (swivel != null) 
 				{
@@ -177,7 +176,6 @@ public class PlayerControl : MonoBehaviour
                     StartCoroutine("Rotate");
                 break;
 			case (PlayerState.Space):
-				waterFog.enabled = false;
 				waterParticles.SetActive (false);
 				SoundController.Instance.EnterSpace ();
 				StartCoroutine ("EarthGaze");
