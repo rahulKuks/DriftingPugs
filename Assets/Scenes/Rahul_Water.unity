@@ -11452,7 +11452,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &249710619
 Transform:
   m_ObjectHideFlags: 0
@@ -12826,7 +12826,7 @@ MeshRenderer:
   m_ReceiveShadows: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 2
   m_Materials:
   - {fileID: 2100000, guid: 3f2148ad470657a408affd3906cf03af, type: 2}
   m_StaticBatchInfo:
@@ -25770,6 +25770,7 @@ MonoBehaviour:
   fadeDuration: 20
   spriteSeaLocation: {x: -1.1, y: 1.2, z: -1.15}
   waterParticles: {fileID: 0}
+  waterFog: {fileID: 0}
   sea: {fileID: 1081979085}
   jellyfishes: {fileID: 995592666}
   fishes: {fileID: 1265798283}
@@ -60616,6 +60617,7 @@ MonoBehaviour:
   fadeDuration: 20
   spriteSeaLocation: {x: -1.1, y: 1.2, z: -1.15}
   waterParticles: {fileID: 880069246}
+  waterFog: {fileID: 1362035661}
   sea: {fileID: 1081979085}
   jellyfishes: {fileID: 995592666}
   fishes: {fileID: 1265798283}
@@ -67194,7 +67196,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
       propertyPath: m_IsActive
@@ -67227,13 +67229,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceFog: 1
-  excludeFarPixels: 1
+  excludeFarPixels: 0
   useRadialDistance: 0
   heightFog: 1
   height: 1
   heightDensity: 2
   startDistance: 0
-  fogShader: {fileID: 0}
+  fogShader: {fileID: 4800000, guid: 3db676c4be9dddc46a9b5e9f02a16bb4, type: 3}
 --- !u!1 &1362476535
 GameObject:
   m_ObjectHideFlags: 0
@@ -93667,6 +93669,10 @@ Prefab:
       propertyPath: randomSeed
       value: 1789584681
       objectReference: {fileID: 0}
+    - target: {fileID: 1757494777487668, guid: 97d485e7468afce42afb141d693cc03b, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 97d485e7468afce42afb141d693cc03b, type: 2}
   m_IsPrefabParent: 0
@@ -97315,6 +97321,7 @@ MonoBehaviour:
   fadeDuration: 20
   spriteSeaLocation: {x: -3.6, y: 1.2, z: -5.5}
   waterParticles: {fileID: 0}
+  waterFog: {fileID: 0}
   sea: {fileID: 0}
   jellyfishes: {fileID: 0}
   fishes: {fileID: 0}
@@ -99370,7 +99377,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4336836176955228, guid: 128aa3cb012e34cf4b49b9b3a624ec55, type: 2}
       propertyPath: m_RootOrder
-      value: 11
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4336836176955228, guid: 128aa3cb012e34cf4b49b9b3a624ec55, type: 2}
       propertyPath: m_LocalPosition.x
@@ -99378,16 +99385,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4336836176955228, guid: 128aa3cb012e34cf4b49b9b3a624ec55, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 185.3
+      value: 200.4
       objectReference: {fileID: 0}
     - target: {fileID: 4336836176955228, guid: 128aa3cb012e34cf4b49b9b3a624ec55, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -2.9
+      value: -12.9
       objectReference: {fileID: 0}
     - target: {fileID: 119859992148187962, guid: 128aa3cb012e34cf4b49b9b3a624ec55,
         type: 2}
       propertyPath: m_OrthographicSize
-      value: 80
+      value: 30.1
       objectReference: {fileID: 0}
     - target: {fileID: 4336836176955228, guid: 128aa3cb012e34cf4b49b9b3a624ec55, type: 2}
       propertyPath: m_LocalRotation.x
@@ -99413,6 +99420,20 @@ Prefab:
         type: 2}
       propertyPath: m_FarClipPlane
       value: 225
+      objectReference: {fileID: 0}
+    - target: {fileID: 114473791912660838, guid: 128aa3cb012e34cf4b49b9b3a624ec55,
+        type: 2}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1191009201}
+    - target: {fileID: 1577727021011198, guid: 128aa3cb012e34cf4b49b9b3a624ec55, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114473791912660838, guid: 128aa3cb012e34cf4b49b9b3a624ec55,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 128aa3cb012e34cf4b49b9b3a624ec55, type: 2}
@@ -104520,7 +104541,7 @@ Transform:
   - {fileID: 1438517482}
   - {fileID: 637636079}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2123303927
 MonoBehaviour:

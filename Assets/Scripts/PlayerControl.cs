@@ -42,6 +42,7 @@ public class PlayerControl : MonoBehaviour
 	[Tooltip("The location of the sprite relative to the player in the sea.")]
 	[SerializeField] private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f); 
 	[SerializeField] private GameObject waterParticles;
+	[SerializeField] private WaterFog waterFog;
 	[SerializeField] private GameObject sea;
 	[SerializeField] private GameObject jellyfishes;
 	[SerializeField] private GameObject fishes;
@@ -163,6 +164,7 @@ public class PlayerControl : MonoBehaviour
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
 				waterParticles.SetActive (true);
+				waterFog.enabled = true;
 				//disable movement
 				if (swivel != null) 
 				{
@@ -175,6 +177,7 @@ public class PlayerControl : MonoBehaviour
                     StartCoroutine("Rotate");
                 break;
 			case (PlayerState.Space):
+				waterFog.enabled = false;
 				waterParticles.SetActive (false);
 				SoundController.Instance.EnterSpace ();
 				StartCoroutine ("EarthGaze");
