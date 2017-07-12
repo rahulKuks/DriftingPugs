@@ -41,6 +41,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private float fadeDuration = 20.0f;
 	[Tooltip("The location of the sprite relative to the player in the sea.")]
 	[SerializeField] private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f); 
+	[SerializeField] private GameObject waterParticles;
 	[SerializeField] private GameObject sea;
 	[SerializeField] private GameObject jellyfishes;
 	[SerializeField] private GameObject fishes;
@@ -156,11 +157,12 @@ public class PlayerControl : MonoBehaviour
         {
             case (PlayerState.Grounded):
                 break;
-		case (PlayerState.InWater_Falling):
+			case (PlayerState.InWater_Falling):
 				spriteController.DisableParentAnimator ();
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
+				waterParticles.SetActive (true);
 				//disable movement
 				if (swivel != null) 
 				{
@@ -173,6 +175,7 @@ public class PlayerControl : MonoBehaviour
                     StartCoroutine("Rotate");
                 break;
 			case (PlayerState.Space):
+				waterParticles.SetActive (false);
 				SoundController.Instance.EnterSpace ();
 				StartCoroutine ("EarthGaze");
 				sprite.transform.SetParent (spriteParent, true);
