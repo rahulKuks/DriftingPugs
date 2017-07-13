@@ -120,6 +120,7 @@ public class SpriteController : MonoBehaviour
 		// Set variables
 		this.earth = earth;
 		this.rotationPoint = rotationPoint;
+		spriteAudioSource.volume = Mathf.Lerp (spriteAudioSource.volume, 0, 1.5f);
         StartCoroutine("Rotate");
 	}
 
