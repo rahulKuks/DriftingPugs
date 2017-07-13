@@ -8,19 +8,19 @@ public class SubmergedEffect : MonoBehaviour
 	public bool aboveWaterFogMode;
 	public Color aboveWaterColor;
 	public float aboveWaterVisiblity;
-	public GameObject WaterParticles;
+	//public GameObject WaterParticles;
 	private GameObject Player;
 	public Projector Caustics;
 	public bool checkedIfAboveWater;
 	private float waterHeight;
-    private AudioSource m_AudioSource;
-    private AudioSource m_JumpInWaterAudioSource;
-    private AudioSource m_JumpOutOfWaterAudioSource; 
+    //private AudioSource m_AudioSource;
+    //private AudioSource m_JumpInWaterAudioSource;
+    //private AudioSource m_JumpOutOfWaterAudioSource; 
 
 	void Start () 
 	{
 	    ParticleSystem.EmissionModule waterParticles_emission; // Locate and cache the underwater particles effect and enable it
-        waterParticles_emission = WaterParticles.GetComponent<ParticleSystem>().emission;
+        //waterParticles_emission = WaterParticles.GetComponent<ParticleSystem>().emission;
         waterParticles_emission.enabled = true;
 
 		underWaterColor = new Color(32.0f/255.0F,116.0f/255.0F,166.0f/255.0F,255.0f/255.0F); // Set the color for underwater fog
@@ -29,9 +29,9 @@ public class SubmergedEffect : MonoBehaviour
 		checkedIfAboveWater = false;
 		underWaterVisiblity = 0.04f; // Set the Underwater Visibility - can be adjusted publicly
         // Cache the audiosources for underwater, splash in and splash out of water
-		m_AudioSource = waterBodyUnder.GetComponent<AudioSource>();
-		m_JumpInWaterAudioSource = GameObject.FindGameObjectWithTag("JumpInWater").GetComponent<AudioSource> ();
-		m_JumpOutOfWaterAudioSource = GameObject.FindGameObjectWithTag("JumpOutOfWater").GetComponent<AudioSource> ();
+		//m_AudioSource = waterBodyUnder.GetComponent<AudioSource>();
+		//m_JumpInWaterAudioSource = GameObject.FindGameObjectWithTag("JumpInWater").GetComponent<AudioSource> ();
+		//m_JumpOutOfWaterAudioSource = GameObject.FindGameObjectWithTag("JumpOutOfWater").GetComponent<AudioSource> ();
 		Camera.main.nearClipPlane = 0.1f;
 		waterHeight = waterBody.transform.position.y; // This is critical! It is the height of the water plane to determine we are underwater or not
 		AssignAboveWaterSettings (); // Initially set above water settings
@@ -67,14 +67,14 @@ public class SubmergedEffect : MonoBehaviour
 	{
         waterBody.SetActive(true);
         waterBodyUnder.SetActive(false);
-        StopUnderWaterSound ();
-		PlayExitSplashSound();
-		Player.SendMessage("aboveWater");
-		if(WaterParticles.GetComponent<ParticleSystem>().isPlaying)
-		{
-			WaterParticles.GetComponent<ParticleSystem>().Stop ();
-			WaterParticles.GetComponent<ParticleSystem>().Clear ();
-		}
+        //StopUnderWaterSound ();
+		//PlayExitSplashSound();
+		//Player.SendMessage("aboveWater");
+		//if(WaterParticles.GetComponent<ParticleSystem>().isPlaying)
+		//{
+			//WaterParticles.GetComponent<ParticleSystem>().Stop ();
+			//WaterParticles.GetComponent<ParticleSystem>().Clear ();
+		//}
 		RenderSettings.fog = aboveWaterFogMode;
 		RenderSettings.fogColor = aboveWaterColor;
 		RenderSettings.fogDensity = aboveWaterVisiblity;
@@ -87,17 +87,17 @@ public class SubmergedEffect : MonoBehaviour
         
         waterBody.SetActive(false);
         waterBodyUnder.SetActive(true);
-        PlayEnterSplashSound();
-		PlayUnderWaterSound ();
+        //PlayEnterSplashSound();
+		//PlayUnderWaterSound ();
 		RenderSettings.fog = aboveWaterFogMode;
 		RenderSettings.fogColor = underWaterColor;
 		RenderSettings.fogDensity = underWaterVisiblity;
         Caustics.enabled = true;
-		Player.SendMessage("underWater");
-		if(!WaterParticles.GetComponent<ParticleSystem>().isPlaying)
-		{
-			WaterParticles.GetComponent<ParticleSystem>().Play ();
-		}
+		//Player.SendMessage("underWater");
+		//if(!WaterParticles.GetComponent<ParticleSystem>().isPlaying)
+		//{
+			//WaterParticles.GetComponent<ParticleSystem>().Play ();
+		//}
 	}
     // Toggle flares on or off depending on whether we are underwater or not
 	void ToggleFlares (bool state) 
@@ -108,7 +108,7 @@ public class SubmergedEffect : MonoBehaviour
 			currentFlare.enabled = state;
 		}
 	}
-	private void PlayUnderWaterSound()
+	/*private void PlayUnderWaterSound()
 	{
 		m_AudioSource.Play ();
 	}
@@ -123,5 +123,5 @@ public class SubmergedEffect : MonoBehaviour
 	private void PlayExitSplashSound()
 	{
 		m_JumpOutOfWaterAudioSource.Play ();
-	}
+	}*/
 }
