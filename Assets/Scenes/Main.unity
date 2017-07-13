@@ -11957,7 +11957,7 @@ MonoBehaviour:
   - {fileID: 2063456718}
   - {fileID: 1799955463}
   - {fileID: 1313084239}
-  starCluster: {fileID: 0}
+  starCluster: {fileID: 660971756}
   earth: {fileID: 511143926}
   sun: {fileID: 2114851035}
   space: {fileID: 1902973094}
