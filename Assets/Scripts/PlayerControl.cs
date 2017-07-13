@@ -240,6 +240,10 @@ public class PlayerControl : MonoBehaviour
         // Enable the earth & sun and parent to space world
         earth.SetActive(true);
         sun.SetActive(true);
+		earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
+		sun.transform.rotation = Quaternion.identity;
+		point.transform.rotation = Quaternion.identity;
+
         earth.transform.SetParent(space.transform, true);
         sun.transform.SetParent(space.transform, true);
         point.transform.SetParent(space.transform, true);
