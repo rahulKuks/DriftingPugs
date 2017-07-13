@@ -7,14 +7,16 @@ using UnityEditor.SceneManagement;
 public class SpriteController : MonoBehaviour
 {
 	private Animator parentAnim;
-	[SerializeField] Animator childAnim;
-	[SerializeField] float RotationDuration = 180.0f;
+	[SerializeField] private Animator childAnim;
+	[SerializeField] private float RotationDuration = 180.0f;
+	[Tooltip("The speed at which the sprite will move towards the rotation point during earth gaze.")]
+	[SerializeField] private float moveSpeed = 5.0f;
 
-	public bool isRevolving = false;
-	public Transform earth;
-	public float speed = 5.0f;
-	public bool test = true;
-	public bool flag = false;
+	private Transform earth;
+	private Transform rotationPoint;
+
+	// magic ratio...
+	private static readonly float SPEED_DURATION_RATIO = 20/11f;
 
     private void Awake()
     {
@@ -40,48 +42,38 @@ public class SpriteController : MonoBehaviour
 		parentAnim.enabled = true;
 	}
 
-    private  Vector3 playerDelta = Vector3.zero;
-    private float playerY = 0f;
-    private Transform point;
-
-    public void Revolving(Transform earth, Transform player, Transform point)
+    public void TriggerEarthGaze(Transform earth, Transform rotationPoint)
 	{
-		// move towards desired position
-		isRevolving = true;
+		// Set variables
 		this.earth = earth;
-        playerDelta = player.position - transform.position;
-        this.point = point;
+		this.rotationPoint = rotationPoint;
         StartCoroutine("Rotate");
 	}
 
-	public float progress = 0f;
-	public Vector3 start = Vector3.zero;
-    private Vector3 dst = new Vector3(-91.13859f, -224.0101f, 293.9832f);
 	private IEnumerator Rotate()
 	{
+		Debug.Log("Moving towards rotation point.");
         // Move towards to position where the rotation will begin
-        while (Vector3.Distance(transform.position, point.position) > 1e-6)
+		while (Vector3.Distance(transform.position, rotationPoint.position) > 1e-6)
         {
-            transform.position = Vector3.MoveTowards(transform.position, point.position, speed * Time.fixedDeltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, rotationPoint.position, moveSpeed * Time.fixedDeltaTime);
             yield return new WaitForFixedUpdate();
         }
-		Debug.Log(Vector3.Distance(transform.position, earth.position));
 
         Debug.Log("Do rotation");
-        // Calculate speed to rotate around to match RotationDuration
+        /* Calculate speed using rotation duration
+         * Distant travelled is the circumference thus 2*pi*r
+         * This doesn't calculate exactly so doing workaround */
 		float radius = Vector3.Distance(transform.position, earth.position);
-		float rotationSpeed = 2 * radius * Mathf.PI / 240;
+		float rotationSpeed = 2 * Mathf.PI * radius / (RotationDuration * SPEED_DURATION_RATIO);
 
-		start = transform.position;
+		// Rotate around earth for the rotation duration
+		float progress = 0f;
 		while(progress <= RotationDuration)
-		//while(Vector3.Distance(transform.localPosition, dst) > 1e-6)
 		{
-			progress += Time.deltaTime;
+			progress += Time.fixedDeltaTime;
 			transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
 			yield return new WaitForFixedUpdate();
 		}
-        Debug.Log("Start position: " + start);
-        Debug.Log("End position: " + transform.position);
-		Debug.Log("Delta: " + (transform.position - start));
 	}
 }

@@ -52,19 +52,14 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject sun;
     [SerializeField] private GameObject space;
-
-    [Tooltip("The duration the user wanders around before the light appears.")]
-    [SerializeField]
-    private float wanderingDuration = 40f;
-    [Tooltip("The duration before the light starts orbiting.")]
-    [SerializeField]
-    private float pauseDuration = 10f;
+	[Tooltip("The point where the rotation around earth will begin.")]
+	[SerializeField] private Transform rotationPoint;
 
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
     // private variables
     private Rigidbody rb;
-	[SerializeField]private PlayerState currentState = PlayerState.Grounded;
+	private PlayerState currentState = PlayerState.Grounded;
     private Transform spriteParent;     // original parent of sprite
     // used to get the material to change the opacity
     private Renderer seaRenderer;
@@ -108,12 +103,11 @@ public class PlayerControl : MonoBehaviour
             case (PlayerState.InWater_Float):
                 vel = rb.velocity;
                 rb.useGravity = false;
-                rb.AddForce(10f * Physics.gravity);
+                rb.AddForce(1f * Physics.gravity);
                 rb.drag = -dragPercentageWater * vel.y;
                 break;
 		case (PlayerState.Space):
 				rb.velocity = Vector3.zero;
-                //sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
                 break;
         }
 
@@ -185,7 +179,7 @@ public class PlayerControl : MonoBehaviour
                 //enable locomotion
                 if (swivel != null) 
 				{
-					//swivel.enabled = true;
+					swivel.enabled = true;
 				}
                 break;
         }
@@ -198,17 +192,6 @@ public class PlayerControl : MonoBehaviour
 			Debug.Log ("Sprite moving towards player");
 			sprite.transform.localPosition = Vector3.MoveTowards(sprite.transform.localPosition, spriteSeaLocation, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
-        }
-    }
-
-    private IEnumerator Rotate()
-    {
-		float rotateProgress = 0f;
-        while (rotateProgress < 1f)
-        {
-            rotateProgress += Time.fixedDeltaTime / twistDuration;
-            transform.root.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.AngleAxis(twistAngle, Vector3.right), rotateProgress);
-            yield return new WaitForFixedUpdate();
         }
     }
 
@@ -228,38 +211,34 @@ public class PlayerControl : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
     }
-
-
-    public Transform point;
-
+		
     private IEnumerator EarthGaze()
     {
+		// Update state so it can't trigger again
         currentState = PlayerState.Earth_Gaze;
         // Disable the sea world
 		sea.transform.parent.gameObject.SetActive(false);
 
-        // Enable the earth & sun and parent to space world
+		/* Enable the earth & sun,
+		 * set earth at 23.5 tilt and reset sun's rotation,
+		 * and parent to space world*/
         earth.SetActive(true);
         sun.SetActive(true);
 		earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
 		sun.transform.rotation = Quaternion.identity;
-		point.transform.rotation = Quaternion.identity;
 
         earth.transform.SetParent(space.transform, true);
         sun.transform.SetParent(space.transform, true);
-        point.transform.SetParent(space.transform, true);
-
-        // Set angle to so it faces the direction it will be rotating in
-		sprite.transform.eulerAngles = new Vector3(0, 90, 0);
+		rotationPoint.transform.SetParent(space.transform, true);
 
         // Parent to sprite to follow it
-		// Needs this dumb loop since it doesn't set the first time
+		// Do dumb loop since it doesn't set the first time
 		while (this.transform.parent.parent == null) {
 			this.transform.parent.SetParent(sprite.transform, true);
 			yield return new WaitForSeconds(1.0f);
 		}
 
         // Trigger the next part
-		spriteController.Revolving(earth.transform, this.transform, point);
+		spriteController.TriggerEarthGaze(earth.transform, rotationPoint);
     }
 }
