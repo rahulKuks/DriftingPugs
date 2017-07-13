@@ -48,6 +48,7 @@ public class PlayerControl : MonoBehaviour
 
     [Tooltip("The list of GameObjects to collide with to transition into the next state.")]
     [SerializeField] private List<GameObject> transitionColliders;
+    [SerializeField] private GameObject starCluster;
 
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject sun;
@@ -139,9 +140,12 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
-		// if it is the fadeTrigger
-		if (other.gameObject == fadeTrigger)
-			StartCoroutine("FadeOut");
+        // if it is the fadeTrigger
+        if (other.gameObject == fadeTrigger)
+        {
+            StartCoroutine("FadeOut");
+            StartCoroutine("FadeIn");
+        }
     }
 
     private void UpdateState()
@@ -193,6 +197,35 @@ public class PlayerControl : MonoBehaviour
 			sprite.transform.localPosition = Vector3.MoveTowards(sprite.transform.localPosition, spriteSeaLocation, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    private IEnumerator FadeIn()
+    {
+        // Set all renderers to not render anything to fade in
+        Renderer[] renderers = starCluster.GetComponentsInChildren<Renderer>();
+        Debug.Log(renderers.Length);
+        foreach (Renderer r in renderers)
+        {
+            r.material.SetColor("_Color_Tint", new Color(0, 0, 0, 0));
+        }
+
+        float distance = transform.position.y - transitionColliders[transitionColliders.Count - 1].transform.position.y;
+        Vector3 prevPosition = transform.position;
+        yield return new WaitForFixedUpdate();
+        // Do fade in;
+        float progress = 0f;
+        Debug.Log("Start");
+        while (progress <= distance)
+        {
+            progress += Vector3.Distance(prevPosition, transform.position) / distance;
+            foreach (Renderer r in renderers)
+            {
+                r.material.SetColor("_Color_Tint", new Color(progress, progress, progress, progress));
+            }
+            prevPosition = transform.position;
+            yield return new WaitForFixedUpdate();
+        }
+        Debug.Log("End");
     }
 
     // TODO: probably move this somewhere else
