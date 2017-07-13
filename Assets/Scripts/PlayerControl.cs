@@ -231,6 +231,9 @@ public class PlayerControl : MonoBehaviour
         sun.transform.SetParent(space.transform, true);
 		rotationPoint.transform.SetParent(space.transform, true);
 
+        // Trigger earth gaze sound
+        SoundController.Instance.PlayEarthGaze();
+
         // Parent to sprite to follow it
 		// Do dumb loop since it doesn't set the first time
 		while (this.transform.parent.parent == null) {

@@ -8,6 +8,7 @@ public class SoundController : MonoBehaviour
     public AudioSource sea;
     public AudioSource space;
     public AudioSource splash;
+    public AudioSource earthGaze;
 
     private static SoundController _instance;
     public static SoundController Instance
@@ -33,5 +34,10 @@ public class SoundController : MonoBehaviour
     {
 		sea.Stop();
 		space.Play();
+    }
+
+    public void PlayEarthGaze()
+    {
+        earthGaze.Play();
     }
 }
