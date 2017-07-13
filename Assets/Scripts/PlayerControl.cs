@@ -52,19 +52,14 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject sun;
     [SerializeField] private GameObject space;
+	[Tooltip("The point where the rotation around earth will begin.")]
+	[SerializeField] private Transform rotationPoint;
 
-    [Tooltip("The duration the user wanders around before the light appears.")]
-    [SerializeField]
-    private float wanderingDuration = 40f;
-    [Tooltip("The duration before the light starts orbiting.")]
-    [SerializeField]
-    private float pauseDuration = 10f;
-
-    public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space };
+    public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
     // private variables
     private Rigidbody rb;
-	[SerializeField]private PlayerState currentState = PlayerState.Grounded;
+	private PlayerState currentState = PlayerState.Grounded;
     private Transform spriteParent;     // original parent of sprite
     // used to get the material to change the opacity
     private Renderer seaRenderer;
@@ -113,7 +108,6 @@ public class PlayerControl : MonoBehaviour
                 break;
 		case (PlayerState.Space):
 				rb.velocity = Vector3.zero;
-                sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, new Vector3(-7.1f, -283, 162), speed * Time.deltaTime);
                 break;
         }
 
@@ -180,11 +174,13 @@ public class PlayerControl : MonoBehaviour
 
 				rb.useGravity = false;
 				rb.drag = 0;
-				//enable locomotion
-				if (swivel != null) 
+                rb.velocity = Vector3.zero;
+
+                //enable locomotion
+                /*if (swivel != null) 
 				{
 					swivel.enabled = true;
-				}
+				}*/
                 break;
         }
     }
@@ -196,17 +192,6 @@ public class PlayerControl : MonoBehaviour
 			Debug.Log ("Sprite moving towards player");
 			sprite.transform.localPosition = Vector3.MoveTowards(sprite.transform.localPosition, spriteSeaLocation, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
-        }
-    }
-
-    private IEnumerator Rotate()
-    {
-		float rotateProgress = 0f;
-        while (rotateProgress < 1f)
-        {
-            rotateProgress += Time.fixedDeltaTime / twistDuration;
-            transform.root.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.AngleAxis(twistAngle, Vector3.right), rotateProgress);
-            yield return new WaitForFixedUpdate();
         }
     }
 
@@ -226,24 +211,37 @@ public class PlayerControl : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
     }
-
+		
     private IEnumerator EarthGaze()
     {
+		// Update state so it can't trigger again
+        currentState = PlayerState.Earth_Gaze;
+        // Disable the sea world
 		sea.transform.parent.gameObject.SetActive(false);
-        float progress = 0f;
-        while (progress < wanderingDuration)
-        {
-            progress += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
 
+		/* Enable the earth & sun,
+		 * set earth at 23.5 tilt and reset sun's rotation,
+		 * and parent to space world*/
         earth.SetActive(true);
         sun.SetActive(true);
-
+		earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
+		sun.transform.rotation = Quaternion.identity;
 
         earth.transform.SetParent(space.transform, true);
         sun.transform.SetParent(space.transform, true);
+		rotationPoint.transform.SetParent(space.transform, true);
 
+        // Trigger earth gaze sound
+        SoundController.Instance.PlayEarthGaze();
 
+        // Parent to sprite to follow it
+		// Do dumb loop since it doesn't set the first time
+		while (this.transform.parent.parent == null) {
+			this.transform.parent.SetParent(sprite.transform, true);
+			yield return new WaitForSeconds(1.0f);
+		}
+
+        // Trigger the next part
+		spriteController.TriggerEarthGaze(earth.transform, rotationPoint);
     }
 }
