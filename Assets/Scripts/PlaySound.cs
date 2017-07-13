@@ -2,12 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StepEnd : StateMachineBehaviour {
-
+public class PlaySound : StateMachineBehaviour 
+{
+	[Tooltip("The audio clip that will be played on state enter.")]
+	[SerializeField] AudioClip spriteSound;
+	[Tooltip("Set the sound to loop")]
+	[SerializeField] bool loop;
 	 // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
-	//override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
+	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) 
+	{
+		AudioSource spriteAudioSource = GameObject.Find ("Sprite").GetComponent<AudioSource> ();
+		if (loop) 
+		{
+			spriteAudioSource.loop = true;
+		} 
+		else 
+		{
+			spriteAudioSource.loop = false;
+		}
+			
+		spriteAudioSource.clip = spriteSound;
+		spriteAudioSource.Play ();
+	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	//override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -15,10 +31,9 @@ public class StepEnd : StateMachineBehaviour {
 	//}
 
 	// OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) 
-	{
-		Debug.Log ("Step 0 ended");
-	}
+	//override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+	//
+	//}
 
 	// OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here
 	//override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

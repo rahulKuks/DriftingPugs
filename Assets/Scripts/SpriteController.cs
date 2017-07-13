@@ -15,6 +15,7 @@ public class SpriteController : MonoBehaviour
 	[SerializeField] private float RotationDuration = 180.0f;
 	[Tooltip("The speed at which the sprite will move towards the rotation point during earth gaze.")]
 	[SerializeField] private float moveSpeed = 5.0f;
+	[SerializeField] AudioClip spriteSeaSound;
 
 	private Transform earth;
 	private Transform rotationPoint;
@@ -23,6 +24,7 @@ public class SpriteController : MonoBehaviour
 	private bool invitationTrigger;
 	private Vector3 previousPosition;
 	private float idleTime;
+	private AudioSource spriteAudioSource;
 
 
 	// magic ratio...
@@ -33,6 +35,8 @@ public class SpriteController : MonoBehaviour
         parentAnim = GetComponent<Animator>();
 		idleTime = 0;
 		previousPosition = transform.position;
+
+		spriteAudioSource = this.transform.Find ("Sprite").GetComponent<AudioSource> ();
     }
 
 	void Update()
@@ -89,7 +93,7 @@ public class SpriteController : MonoBehaviour
 
 		if (index == 9) 
 		{
-			childAnim.SetBool ("inForest", false);
+			EnableSpriteSeaBehaviour ();
 		}
     }
 
@@ -101,6 +105,14 @@ public class SpriteController : MonoBehaviour
 	public void EnableParentAnimator()
 	{
 		parentAnim.enabled = true;
+	}
+
+	void EnableSpriteSeaBehaviour ()
+	{
+		childAnim.SetBool ("inForest", false);
+		//spriteAudioSource.clip = spriteSeaSound;
+		//spriteAudioSource.loop = true;
+		//spriteAudioSource.Play ();
 	}
 
     public void TriggerEarthGaze(Transform earth, Transform rotationPoint)
