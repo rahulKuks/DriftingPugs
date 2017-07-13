@@ -6,6 +6,10 @@ using UnityEditor.SceneManagement;
 
 public class SpriteController : MonoBehaviour
 {
+
+	[Tooltip("The duration that the sprite needs to wait before it invites the user.")]
+	[SerializeField] float thresholdInvitationTime;
+
 	private Animator parentAnim;
 	[SerializeField] private Animator childAnim;
 	[SerializeField] private float RotationDuration = 180.0f;
@@ -15,13 +19,65 @@ public class SpriteController : MonoBehaviour
 	private Transform earth;
 	private Transform rotationPoint;
 
+	//Parameters to trigger sprite invitation
+	private bool invitationTrigger;
+	private Vector3 previousPosition;
+	private float idleTime;
+
+
 	// magic ratio...
 	private static readonly float SPEED_DURATION_RATIO = 20/11f;
 
     private void Awake()
     {
         parentAnim = GetComponent<Animator>();
+		idleTime = 0;
+		previousPosition = transform.position;
     }
+
+	void Update()
+	{
+		// If the idle animation is active, then check the time passed and trigger the invitation animation if needed.
+		if(childAnim.GetBool("isIdling"))
+		{
+			invitationTrigger = CheckIdleTime ();
+
+			if (invitationTrigger) 
+			{
+				childAnim.SetTrigger ("isInviting");
+				invitationTrigger = false;
+				idleTime = 0;
+			}
+		}
+
+	}
+
+	/// <summary>
+	/// Keeps track of the time spent idling and not moving. 
+	/// </summary>
+	/// <returns><c>true</c>, if time spent idling was greater than invitation threshold time, <c>false</c> otherwise.</returns>
+	bool CheckIdleTime ()
+	{
+		bool triggerAnimation = false;
+
+		if (transform.position == previousPosition) 
+		{
+			idleTime += Time.deltaTime;
+			if (idleTime >= thresholdInvitationTime) 
+			{
+				Debug.Log ("Triggering invitation");
+				idleTime = 0;
+				triggerAnimation = true;
+			}
+		}
+		else 
+		{
+			idleTime = 0;
+		}
+
+		previousPosition = transform.position;
+		return triggerAnimation;
+	}
 
 	public void MoveAnimation(int index)
     {
@@ -29,6 +85,11 @@ public class SpriteController : MonoBehaviour
 		{
 			parentAnim.SetInteger("Checkpoint", index);
 			childAnim.SetBool ("isIdling", true);
+		}
+
+		if (index == 9) 
+		{
+			childAnim.SetBool ("inForest", false);
 		}
     }
 
