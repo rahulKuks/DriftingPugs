@@ -177,10 +177,10 @@ public class PlayerControl : MonoBehaviour
                 rb.velocity = Vector3.zero;
 
                 //enable locomotion
-                if (swivel != null) 
+                /*if (swivel != null) 
 				{
 					swivel.enabled = true;
-				}
+				}*/
                 break;
         }
     }
