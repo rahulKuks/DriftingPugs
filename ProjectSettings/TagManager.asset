@@ -6,6 +6,11 @@ TagManager:
   tags:
   - FxTemporaire
   - projectile
+  - JumpInWater
+  - JumpOutOfWater
+  - Terrain
+  - Water
+  - SpriteSoundController
   layers:
   - Default
   - TransparentFX
