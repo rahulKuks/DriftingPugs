@@ -144,7 +144,7 @@ public class PlayerControl : MonoBehaviour
         if (other.gameObject == fadeTrigger)
         {
             StartCoroutine("FadeOut");
-            //StartCoroutine("FadeIn");
+            StartCoroutine("FadeIn");
         }
     }
 
@@ -203,18 +203,18 @@ public class PlayerControl : MonoBehaviour
     {
         // Set all renderers to not render anything to fade in
         Renderer[] renderers = starCluster.GetComponentsInChildren<Renderer>();
-        Debug.Log(renderers.Length);
         foreach (Renderer r in renderers)
         {
             r.material.SetColor("_Color_Tint", new Color(0, 0, 0, 0));
         }
 
+        starCluster.SetActive(true);
         float distance = transform.position.y - transitionColliders[transitionColliders.Count - 1].transform.position.y;
         Vector3 prevPosition = transform.position;
         yield return new WaitForFixedUpdate();
+
         // Do fade in;
         float progress = 0f;
-        Debug.Log("Start");
         while (progress <= distance)
         {
             progress += Vector3.Distance(prevPosition, transform.position) / distance;
@@ -225,7 +225,6 @@ public class PlayerControl : MonoBehaviour
             prevPosition = transform.position;
             yield return new WaitForFixedUpdate();
         }
-        Debug.Log("End");
     }
 
     // TODO: probably move this somewhere else
