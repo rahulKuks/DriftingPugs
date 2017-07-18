@@ -1,100 +1,131 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
 using System;
+
+//public enum PlayerHeight
+//{
+//	Short,
+//	Medium,
+//	Tall}
+//;
 
 public class SwivelLocomotion : MonoBehaviour
 {
-	[SerializeField] float maxForwardSpeed=3;
-	SteamVR_TrackedObject rightControllerTrackedObj;
-	SteamVR_TrackedObject leftControllerTrackedObj;
-	SteamVR_Controller.Device rightControllerDevice;
-	SteamVR_Controller.Device leftControllerDevice;
 
 	//*** public Swivel-360 External Variables
 	public GameObject viveCameraEye;
 	public GameObject viveRightController;
 	public GameObject viveLeftController;
-	public float handBrakeAcceleration = 1f;
-	public bool instantHandBrake = true;
+	public float forwardSensitivity = 5f;
+	public float sidewaySensitivity = 10f;
+	public float upwardSensitivity = 13f;
+	//public PlayerHeight playerHeight;
+
+	//*** Serialised max forward, sideways and upwards speed ***
+	[Tooltip("Maximum forwards/backwards speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxForwardSpeed = 3f;
+	[Tooltip("Maximum sideways/strafing speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxSidewaysSpeed = 1.5f;
+	[Tooltip("Maximum upward/downward speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxUpwardSpeed = 3f;
+
+	// *** SteamVR controller devices and tracked objects ***
+	SteamVR_TrackedObject leftTrackedObj;
+	SteamVR_Controller.Device leftControllerDevice;
+
+	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
+	StreamReader sr;
+	bool instantHandBrake = true;
+	float handBrakeAcceleration = 1f;
+	bool handBrake = false, touchPadPressingStatus = false;
+	float handBrakeForwardSpeed = 1f, handBrakeSidewaySpeed = 1f, handBrakeUpwardSpeed = 1f;
+	float ChairLocomotionDirection = 0f;
+	double ViveControllerX = 0, ViveControllerY = 0, ViveControllerZ = 0, ViveControllerYaw = 0, ViveControllerPitch = 0, ViveControllerRoll = 0;
+	bool ViveControllerIsAvailable = false, InterfaceIsReady = false;
+	double ViveControllerPitchZero = 0, ViveControllerPitchForward = 0, ViveControllerYawOffset = 0;
+	float SidewayLeaning = 0f, HeadWidth = .09f, headHeight = 0.07f;
+
+	//Maximum SidewayLeaningDistance = 10 cm (only used for Full Swivel Chair)
+	bool headJoystick = true;
+	float headP1 = 0, headP2 = 0, headX1 = 0, headX2 = 0, headDeltaP = 0, headChairRadious = 0, headBeta = 0, headXo = 0, headYo = 0, headControllerYaw = 0, headControllerZ1 = 0, headControllerZ2 = 0, headControllerX1 = 0, headControllerX2 = 0, headControllerY1 = 0, headControllerY2 = 0;
+	float headXf = 0, headXz = 0, forwardZero = 0, forwardMax = 0, angularDifference = 0, forwardDistanceMax = 0, forwardDistanceZero = 0;
+	double ChairPx1 = 0, ChairPx2 = 0, ChairPy1 = 0, ChairPy2 = 0, ChairPz1 = 0, ChairPz2 = 0, ChairRx1 = 0, ChairRx2 = 0, ChairRotationRadious = 0;
+	float ChairDeltaX = 0.0f, ChairDeltaY = 0.0f, ChairDeltaZ = 0.0f, LastChairDeltaX = 0.0f, LastChairDeltaY = 0.0f, LastChairDeltaZ = 0.0f, ChairMaxDeltaXZ = 0.0f;
+	float exponentialTransferFuntionPower = 1.53f;
+	int swivel360InitializeStep = 0;
+	//0 = before printing PressSpace message, 1 = after PressSpace message waiting for space, 2 = after space press waiting for Right Alt Press
+	float viveCameraZeroY = 0;
+
 
 	// Use this for initialization
 	void Start ()
 	{
-		
+		loadChairProfile (); //Load Chair Profile saved into a file by the chair calibration program
 	}
 
 	void FixedUpdate ()
 	{
-		//Read controller data once controllers are initialised.
-		if (rightControllerDevice != null && leftControllerDevice != null) 
+		if(leftControllerDevice != null) 	// ensure device initialisation before reading data
 		{
-			ReadControllerData (); //Read Vive Controller data and store them inside internal variables
+			readControllerData (); //Read Vive Controller data and store them inside internal variables
 		}
 	}
 
 	// Update is called once per frame
 	void Update ()
 	{
-		/** The try catch block below is to handle the exceptions thrown while initialising the tracked objects **
-		 *  and devices in the first few iterations. The cause of improper initialisation is unknown.		 	**/
-		if (rightControllerDevice == null && leftControllerDevice == null)
+		// If controller hasn't been initialised yet, try to initialise it
+		if (leftControllerDevice == null) 
 		{
 			try
 			{
-				rightControllerTrackedObj = viveRightController.GetComponent<SteamVR_TrackedObject> ();
-				leftControllerTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject> ();
-				rightControllerDevice = SteamVR_Controller.Input((int)rightControllerTrackedObj.index);
-				leftControllerDevice = SteamVR_Controller.Input((int)leftControllerTrackedObj.index);
+				leftTrackedObj = viveLeftController.GetComponent<SteamVR_TrackedObject>();
+				leftControllerDevice = SteamVR_Controller.Input((int) leftTrackedObj.index);
+
 			}
-			catch(Exception e)
+			catch (Exception e) 
 			{
-				Debug.Log("Controller device initalisation exception");
-				return;
+				Debug.LogWarning ("Exception - Controllers not yet initialised for swivel locomotion");
 			}
 		}
 
-		//SwivelChairLocomotion (3, 3, true); //Apply the Vive Controller data to the user position in Virtual Environment
-		SwivelChairLocomotion(maxForwardSpeed,0,false);
+		//This method applies the Vive Controller data to the user position in Virtual Environment
+		//Each argument define one velocity limit either forward, sideway, or upward velocity limit
+		//For each argument:
+		//			- positive number limits the speed. For example if you put the first argument equals to 1, maximum forward speed will be 1 meter/second
+		//			- negative value disables the speed limit. For example -1 means no speed limit
+		//			- 0 disable that movement. For example, if the third argument will be 0, flying will be disabled, and user can't go up/down
+		swivelChairLocomotion (maxForwardSpeed, maxSidewaysSpeed, maxUpwardSpeed); 
 	}
-		
 
-
-	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
-	bool handBrake = false, touchPadPressingStatus = false;
-	float handBrakeForwardSpeed = 1f, handBrakeSidewaySpeed = 1f;
-	float ChairLocomotionDirection = 0f;
-	double ViveControllerX = 0, ViveControllerY = 0, ViveControllerZ = 0, ViveControllerYaw = 0, ViveControllerPitch = 0, ViveControllerRoll = 0;
-	bool ViveControllerIsAvailable = false, InterfaceIsReady = false;
-	double ViveControllerPitchZero = 0, ViveControllerPitchForward = 0, ViveControllerYawOffset = 0;
-	float SidewayLeaning = 0f, HeadWidth = .09f;
-	//Needed for calculation of Sideway leaning for Full Swivel Chair
-	float MaximumSidewayLeaningDistance = .12f, MaximumForwardLeaningDistance = .30f;
-	//Maximum SidewayLeaningDistance = 10 cm (only used for Full Swivel Chair)
-	public bool headJoystick = true;
-	float headP1 = 0, headP2 = 0, headX1 = 0, headX2 = 0, headDeltaP = 0, headChairRadious = 0, headBeta = 0, headXo = 0, headYo = 0, headControllerYaw = 0, headControllerZ1 = 0, headControllerZ2 = 0, headControllerX1 = 0, headControllerX2 = 0, headControllerY1 = 0, headControllerY2 = 0;
-	float headXf = 0, headXz = 0, forwardZero = 0, forwardMax = 0, angularDifference = 0, forwardDistanceMax = 0, forwardDistanceZero = 0;
-	double ChairPx1 = 0, ChairPx2 = 0, ChairPy1 = 0, ChairPy2 = 0, ChairPz1 = 0, ChairPz2 = 0, ChairRx1 = 0, ChairRx2 = 0, ChairRotationRadious = 0;
-	float ChairDeltaX = 0.0f, ChairDeltaY = 0.0f, ChairDeltaZ = 0.0f, LastChairDeltaX = 0.0f, LastChairDeltaY = 0.0f, LastChairDeltaZ = 0.0f, ChairMaxDeltaXZ = 0.0f;
-	float exponentialTransferFuntionPower = 1.53f;
-	int swivel360InitializeStep = 0; //0 = before printing PressSpace message, 1 = after PressSpace message waiting for space, 2 = after space press waiting for Right Alt Press
-
-	public void SetMaxForwardSpeed(float forwardSpeed)
+	// *** Call this method in start() *** (loads the chair profile stored in a file by chair calibration project)
+	void loadChairProfile ()
 	{
-		maxForwardSpeed = forwardSpeed;
+		sr = new StreamReader ("ChairCalibrationData.txt");
+		while (!sr.EndOfStream) {
+			string FileDescription = sr.ReadLine ();			
+			string ChairRadiousDescription = sr.ReadLine ();
+			string ChairRadious = sr.ReadLine ();
+			headChairRadious = float.Parse (ChairRadious);
+			string AngularDifferenceDescription = sr.ReadLine ();
+			string AngularDifference = sr.ReadLine ();
+			angularDifference = float.Parse (AngularDifference);
+		}
+		Debug.Log ("Chair profile loaded: Rotation Radious = " + headChairRadious + " - Angular Difference = " + angularDifference);
 	}
-
 
 	// *** Call this method in FixedUpdate() *** (updates the position of Vivev HMD and Controller at each frame inside internal variables)
-	void ReadControllerData ()
+	void readControllerData ()
 	{
 
 		//Read all the Vive Controller data in each frame: GameObject.Find ("Controller (right)")
-		ViveControllerX = viveRightController.GetComponent<Transform> ().position.x;
-		ViveControllerY = viveRightController.GetComponent<Transform> ().position.y;
-		ViveControllerZ = viveRightController.GetComponent<Transform> ().position.z;
-		ViveControllerPitch = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.x;
-		ViveControllerYaw = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.y;
-		ViveControllerRoll = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.z;
+		ViveControllerX = viveRightController.transform.position.x;
+		ViveControllerY = viveRightController.transform.position.y;
+		ViveControllerZ = viveRightController.transform.position.z;
+		ViveControllerPitch = viveRightController.transform.rotation.eulerAngles.x;
+		ViveControllerYaw = viveRightController.transform.rotation.eulerAngles.y;
+		ViveControllerRoll = viveRightController.transform.rotation.eulerAngles.z;
 		//Check If the user pressed touchpad, change handBrake status
 		if (viveLeftController.GetComponent<SteamVR_TrackedController> ().padPressed && !touchPadPressingStatus) {
 			Debug.Log ("Left Controller pad is pressed!");
@@ -102,17 +133,12 @@ public class SwivelLocomotion : MonoBehaviour
 			if (!handBrake) {
 				if (!instantHandBrake || (handBrakeForwardSpeed == 1 && handBrakeSidewaySpeed == 1)) {
 					handBrake = true;
-					//handBrakeForwardSpeed = 1f;
-					//handBrakeSidewaySpeed = 1f;
 				}
-			} else if(!instantHandBrake || (handBrakeForwardSpeed == 0 && handBrakeSidewaySpeed == 0)) {
+			} else if (!instantHandBrake || (handBrakeForwardSpeed == 0 && handBrakeSidewaySpeed == 0)) {
 				handBrake = false;
-				//handBrakeForwardSpeed = 0f;
-				//handBrakeSidewaySpeed = 0f;
 			}
 		}
 		if (touchPadPressingStatus && !viveLeftController.GetComponent<SteamVR_TrackedController> ().padPressed) {
-			//Debug.Log ("Left Controller pad is released!");
 			touchPadPressingStatus = false;
 		}
 		//Calculate the chair displacement (ChairDeltaX,ChairDeltaY,ChairDeltaZ) to not change the user's position in VR if the stationary chair is active
@@ -128,88 +154,46 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 		if (swivel360InitializeStep == 0) {
-			Debug.Log ("Ask the user to sit straight and look forward and then press SPACEBAR (prefably twice)");
-			swivel360InitializeStep = 1;
-		}
-
-		//first step in calibration occurs when the user is sitting straight. The left controller trigger needs to be pressed
-		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
-		{
-			float yawZero = viveCameraEye.transform.rotation.eulerAngles.y;
-
-			ViveControllerPitchForward = ViveControllerPitch;
-			ViveControllerYawOffset = yawZero - ViveControllerYaw;
-			//print ("Vive Controller Pitch = " + ViveControllerPitchForward + " - Vive Controller Yaw Offset = " + ViveControllerYawOffset);
-			while (ViveControllerYawOffset > 180)
-				ViveControllerYawOffset -= 360;
-			while (ViveControllerYawOffset < -180)
-				ViveControllerYawOffset += 360;
-			//Read the Vive Controller data to calculate the ChairRotationRadious to measure the chair displacement
-			ChairPx1 = viveRightController.GetComponent<Transform> ().position.x;
-			ChairPy1 = viveRightController.GetComponent<Transform> ().position.y;
-			ChairPz1 = viveRightController.GetComponent<Transform> ().position.z;
-			ChairRx1 = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.x;
-
-			if (headJoystick) {
-				headP1 = -viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.x;
-				headControllerX1 = viveRightController.GetComponent<Transform> ().localPosition.x;
-				headControllerY1 = viveRightController.GetComponent<Transform> ().localPosition.y;
-				headControllerZ1 = viveRightController.GetComponent<Transform> ().localPosition.z;
-				headControllerYaw = 180 + viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.y;
-				if (headControllerYaw > 360)
-					headControllerYaw -= 360;
-				float currentChairYaw = headControllerYaw * Mathf.PI / 180;
-				float currentHeadZ = viveCameraEye.GetComponent<Transform> ().localPosition.z;
-				float currentHeadX = viveCameraEye.GetComponent<Transform> ().localPosition.x;
-				headXf = currentHeadZ * Mathf.Cos (currentChairYaw) + currentHeadX * Mathf.Sin (currentChairYaw);
-				//print ("Chair Yaw = " + currentChairYaw * 180 / Mathf.PI + " - Head Z = " + currentHeadZ + " - Head X = " + currentHeadX + " - Head Pitch = " + headP1 + " - Head Forward Position = " + headXf);
-			}
-
-			Debug.Log ("Now ask the user to lean back and then press Right-ALT on keyboard (prefably twice)");
+			Debug.Log ("Ask the user to sit comfortable and look forward and then press Right ALT (prefably twice)");
 			swivel360InitializeStep = 2;
-
 		}
 
-
-		//Next step in calibration is done when the user leans back and by pressing down on the left controller grip button
-		if(leftControllerDevice.GetPressDown(SteamVR_Controller.ButtonMask.Grip) && swivel360InitializeStep == 2)
+		//if (Input.GetKeyDown ("space")) {
+		if(leftControllerDevice.GetPress(SteamVR_Controller.ButtonMask.Trigger))
 		{
 			ViveControllerPitchZero = ViveControllerPitch;
 			InterfaceIsReady = true;
 			//Read the Vive Controller data
-			ChairPx2 = viveRightController.GetComponent<Transform> ().position.x;
-			ChairPy2 = viveRightController.GetComponent<Transform> ().position.y;
-			ChairPz2 = viveRightController.GetComponent<Transform> ().position.z;
-			ChairRx2 = viveRightController.GetComponent<Transform> ().rotation.eulerAngles.x;
+			ChairPx2 = viveRightController.transform.position.x;
+			ChairPy2 = viveRightController.transform.position.y;
+			ChairPz2 = viveRightController.transform.position.z;
+			ChairRx2 = viveRightController.transform.rotation.eulerAngles.x;
+			viveCameraZeroY = viveCameraEye.transform.localPosition.y;
+			viveCameraZeroY += headHeight * Mathf.Sin (viveCameraEye.transform.rotation.eulerAngles.x * Mathf.PI / 180); //Calculate the Neck y Position
 			// Calculate the ChairRotationRadious to measure the chair displacement
-			double Distance = Mathf.Sqrt (Mathf.Pow ((float)(ChairPx1 - ChairPx2), 2) + Mathf.Pow ((float)(ChairPy1 - ChairPy2), 2) + Mathf.Pow ((float)(ChairPz1 - ChairPz2), 2));
-			double dRx = Mathf.Abs ((float)(ChairRx1 - ChairRx2));
-			ChairMaxDeltaXZ = Mathf.Sqrt (Mathf.Pow ((float)(ChairPx1 - ChairPx2), 2) + Mathf.Pow ((float)(ChairPz1 - ChairPz2), 2));
-			ChairRotationRadious = Distance / (2 * Mathf.Sin ((float)(dRx / 2 * Mathf.PI / 180)));
+			//double Distance = Mathf.Sqrt (Mathf.Pow ((float)(ChairPx1 - ChairPx2), 2) + Mathf.Pow ((float)(ChairPy1 - ChairPy2), 2) + Mathf.Pow ((float)(ChairPz1 - ChairPz2), 2));
+			//double dRx = Mathf.Abs ((float)(ChairRx1 - ChairRx2));
+			//ChairMaxDeltaXZ = Mathf.Sqrt (Mathf.Pow ((float)(ChairPx1 - ChairPx2), 2) + Mathf.Pow ((float)(ChairPz1 - ChairPz2), 2));
+			//ChairRotationRadious = Distance / (2 * Mathf.Sin ((float)(dRx / 2 * Mathf.PI / 180)));
 			//print ("Vive Controller Zero Pitch = " + ViveControllerPitchZero + " - Chair Rotation Radious = " + ChairRotationRadious);
 			if (headJoystick) {
-				headP2 = -viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.x;
-				headControllerX2 = viveRightController.GetComponent<Transform> ().localPosition.x;
-				headControllerY2 = viveRightController.GetComponent<Transform> ().localPosition.y;
-				headControllerZ2 = viveRightController.GetComponent<Transform> ().localPosition.z;
-				headControllerYaw = 180 + viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.y;
+				headP2 = -viveRightController.transform.localRotation.eulerAngles.x;
+				headControllerX2 = viveRightController.transform.localPosition.x;
+				headControllerY2 = viveRightController.transform.localPosition.y;
+				headControllerZ2 = viveRightController.transform.localPosition.z;
+				headControllerYaw = 180 + viveRightController.transform.localRotation.eulerAngles.y;
 				if (headControllerYaw > 360)
 					headControllerYaw -= 360;
-				headX1 = headControllerZ1 * Mathf.Cos (headControllerYaw * Mathf.PI / 180) + headControllerX1 * Mathf.Sin (headControllerYaw * Mathf.PI / 180);
+
 				headX2 = headControllerZ2 * Mathf.Cos (headControllerYaw * Mathf.PI / 180) + headControllerX2 * Mathf.Sin (headControllerYaw * Mathf.PI / 180);
-				headDeltaP = (headP1 - headP2) * Mathf.PI / 180; // (radians)
-				float headD = Mathf.Sqrt (Mathf.Pow (headControllerY2 - headControllerY1, 2) + Mathf.Pow (headX2 - headX1, 2));
-				headChairRadious = headD / (2.0f * Mathf.Sin (headDeltaP / 2.0f));
-				headBeta = Mathf.Atan2 (headControllerY1 - headControllerY2, headX1 - headX2); // (radians)
-				float headAlpha = Mathf.PI / 2.0f - (headDeltaP / 2.0f) - headBeta; // (radians)
+
+				float headAlpha = (headP2 - angularDifference) * Mathf.PI / 180;// = Mathf.PI / 2.0f - (headDeltaP / 2.0f) - headBeta; // (radians)
 				headXo = headX2 + headChairRadious * Mathf.Cos (headAlpha);
 				headYo = headControllerY2 - headChairRadious * Mathf.Sin (headAlpha);
-				headXz = viveCameraEye.GetComponent<Transform> ().localPosition.z * Mathf.Cos (headControllerYaw * Mathf.PI / 180) + viveCameraEye.GetComponent<Transform> ().localPosition.x * Mathf.Sin (headControllerYaw * Mathf.PI / 180);
-				angularDifference = headP2 - (headAlpha * 180 / Mathf.PI);
+				headXz = viveCameraEye.transform.localPosition.z * Mathf.Cos (headControllerYaw * Mathf.PI / 180) + viveCameraEye.transform.localPosition.x * Mathf.Sin (headControllerYaw * Mathf.PI / 180);
+				headXz += headHeight * (1 - Mathf.Abs (Mathf.Cos (viveCameraEye.transform.rotation.eulerAngles.x * Mathf.PI / 180))); //Calculate the Neck y Position
 				forwardDistanceMax = headXo - headXf;
 				forwardDistanceZero = headXo - headXz;
-				//print("Head Pitch = " + headP2 + " - alpha = " + headAlpha1 * 180 / Mathf.PI + " - Angular Difference = " + angularDifference);
-				//print ("Center of the chair: X = " + headXo + " - Y = " + headYo + " - Head Distance = " + headD + " - Chair Rotation Radious = " + headChairRadious);
 			}
 
 			Debug.Log ("Great! Now Swivel-360 is working and the user can sit straight to move");
@@ -219,67 +203,69 @@ public class SwivelLocomotion : MonoBehaviour
 
 
 	// *** Call this method in update() *** (Uses the Vive HMD & Controller data stored in internal variables to move the player in Virtual Environment)
-	void SwivelChairLocomotion (float maximumForwardVelocity, float maximumSidewayVelocity, bool allowHigherThanMaximumSpeed, bool activateExponentialTransferFunction = true)
+	void swivelChairLocomotion (float forwardVelocityLimit, float sidewayVelocityLimit, float upwardVelocityLimit, bool activateExponentialTransferFunction = true)
 	{
 
-		// ***************************  Caqlculate the forward locomotion  *******************************************
-		float InputRate, SidewayInputRate = 0f;
+		//*************************************************************************************************************
+		//*************************************************************************************************************
+		//***																										***
+		//***						Calculating distance of the head from Zero Point								***
+		//***																										***
+		//*************************************************************************************************************
+		//*************************************************************************************************************
 
-		if (headJoystick) {
-			float ChairDirectionYaw = 180 + viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.y;
-			if (ChairDirectionYaw > 360)
-				ChairDirectionYaw -= 360;
-			float headXnow = viveCameraEye.GetComponent<Transform> ().localPosition.z * Mathf.Cos (ChairDirectionYaw * Mathf.PI / 180) + viveCameraEye.GetComponent<Transform> ().localPosition.x * Mathf.Sin (ChairDirectionYaw * Mathf.PI / 180);
-			//print ("Head Position X = " + headXnow + "- Yaw = " + ChairDirectionYaw + " - Local Z = " + viveCameraEye.GetComponent<Transform> ().localPosition.z + " - Local X = " + viveCameraEye.GetComponent<Transform> ().localPosition.x);
-
-
-			float headP3 = -viveRightController.GetComponent<Transform> ().localRotation.eulerAngles.x;
-			float headControllerX3 = viveRightController.GetComponent<Transform> ().localPosition.x;
-			float headControllerY3 = viveRightController.GetComponent<Transform> ().localPosition.y;
-			float headControllerZ3 = viveRightController.GetComponent<Transform> ().localPosition.z;
+		float forwardInputRate, SidewayInputRate = 0f, upwardInputRate = 0f;
 
 
-			float headX3 = headControllerZ3 * Mathf.Cos (ChairDirectionYaw * Mathf.PI / 180) + headControllerX3 * Mathf.Sin (ChairDirectionYaw * Mathf.PI / 180);
-			float chairAlpha = (headP3 - angularDifference) * Mathf.PI / 180;
-			headXo = headX3 + headChairRadious * Mathf.Cos (chairAlpha);
-			headYo = headControllerY3 - headChairRadious * Mathf.Sin (chairAlpha);
-
-			float forwardDistance = headXo - headXnow;
-			InputRate = (forwardDistance - forwardDistanceZero) / (forwardDistanceMax - forwardDistanceZero);
-
-		} else
-			InputRate = (float)((ViveControllerPitch - ViveControllerPitchZero) / (ViveControllerPitchForward - ViveControllerPitchZero));
-
-		if (!allowHigherThanMaximumSpeed)
-		if (InputRate > 1)
-			InputRate = 1;
-		else if (InputRate < -1)
-			InputRate = -1;
-		//InputRate = Mathf.Max (0f, InputRate); //No backward Locomotion
-
-		if (maximumSidewayVelocity != 0) { //Calculating sideway leaning for Full Swivel Chair
-			float ChairYaw = 360 - viveRightController.transform.rotation.eulerAngles.y;
-			float HeadYaw = 360 - viveCameraEye.transform.rotation.eulerAngles.y;
-			float HeadX = -viveCameraEye.transform.position.z + HeadWidth * Mathf.Cos (HeadYaw * Mathf.PI / 180); //Calculate the Neck x Position
-			float HeadY = viveCameraEye.transform.position.x + HeadWidth * Mathf.Sin (HeadYaw * Mathf.PI / 180); //Calculate the Neck y Position
-			float ChairX = -viveRightController.transform.position.z;
-			float ChairY = viveRightController.transform.position.x;
-			float LeaningDistanceSideway = Mathf.Sin (ChairYaw * Mathf.PI / 180) * (HeadX - ChairX) - Mathf.Cos (ChairYaw * Mathf.PI / 180) * (HeadY - ChairY) - .005f;
-
-			SidewayInputRate = (float)(LeaningDistanceSideway / MaximumSidewayLeaningDistance);
-
-			if (!allowHigherThanMaximumSpeed)
-			if (SidewayInputRate > 1)
-				SidewayInputRate = 1;
-			else if (SidewayInputRate < -1)
-				SidewayInputRate = -1;
-			//Debug.Log ("Sideway Leaning Rate = " + SidewayInputRate);
-
-		}
+		float ChairDirectionYaw = 180 + viveRightController.transform.localRotation.eulerAngles.y;
+		if (ChairDirectionYaw > 360)
+			ChairDirectionYaw -= 360;
+		float headXnow = viveCameraEye.transform.localPosition.z * Mathf.Cos (ChairDirectionYaw * Mathf.PI / 180) + viveCameraEye.transform.localPosition.x * Mathf.Sin (ChairDirectionYaw * Mathf.PI / 180);
+		headXnow += headHeight * (1 - Mathf.Abs (Mathf.Cos (viveCameraEye.transform.rotation.eulerAngles.x * Mathf.PI / 180))); //Calculate the Neck y Position
+		//print ("Head Position X = " + headXnow + "- Yaw = " + ChairDirectionYaw + " - Local Z = " + viveCameraEye.GetComponent<Transform> ().localPosition.z + " - Local X = " + viveCameraEye.GetComponent<Transform> ().localPosition.x);
 
 
-		float LocomotionSpeed = maximumForwardVelocity * InputRate;
-		float SidewayLocomotionSpeed = maximumSidewayVelocity * SidewayInputRate;
+		float headP3 = -viveRightController.transform.localRotation.eulerAngles.x;
+		float headControllerX3 = viveRightController.transform.localPosition.x;
+		float headControllerY3 = viveRightController.transform.localPosition.y;
+		float headControllerZ3 = viveRightController.transform.localPosition.z;
+
+
+		float headX3 = headControllerZ3 * Mathf.Cos (ChairDirectionYaw * Mathf.PI / 180) + headControllerX3 * Mathf.Sin (ChairDirectionYaw * Mathf.PI / 180);
+		float chairAlpha = (headP3 - angularDifference) * Mathf.PI / 180;
+		headXo = headX3 + headChairRadious * Mathf.Cos (chairAlpha);
+		headYo = headControllerY3 - headChairRadious * Mathf.Sin (chairAlpha);
+
+		float forwardDistance = headXo - headXnow;
+		forwardInputRate = (forwardDistance - forwardDistanceZero) * forwardSensitivity;
+		//Debug.Log ("Forward Distance= " + forwardDistance + " - ZeroDistance = " + forwardDistance + " - InputRate = " + forwardInputRate);
+
+
+		//forwardInputRate = Mathf.Max (0f, forwardInputRate); //No backward Locomotion
+
+		//Calculating sideway leaning for Full Swivel Chair
+		float ChairYaw = 360 - viveRightController.transform.rotation.eulerAngles.y;
+		float HeadYaw = 360 - viveCameraEye.transform.rotation.eulerAngles.y;
+		float HeadX = -viveCameraEye.transform.position.z + HeadWidth * Mathf.Cos (HeadYaw * Mathf.PI / 180); //Calculate the Neck x Position
+		float HeadY = viveCameraEye.transform.position.x + HeadWidth * Mathf.Sin (HeadYaw * Mathf.PI / 180); //Calculate the Neck y Position
+		float ChairX = -viveRightController.transform.position.z;
+		float ChairY = viveRightController.transform.position.x;
+		float LeaningDistanceSideway = Mathf.Sin (ChairYaw * Mathf.PI / 180) * (HeadX - ChairX) - Mathf.Cos (ChairYaw * Mathf.PI / 180) * (HeadY - ChairY) - .005f;
+
+		SidewayInputRate = (float)(-LeaningDistanceSideway * sidewaySensitivity);
+
+		//Debug.Log ("Sideway Leaning Rate = " + SidewayInputRate);
+
+
+
+		float currentY = viveCameraEye.transform.localPosition.y;
+		currentY += headHeight * Mathf.Sin (viveCameraEye.transform.rotation.eulerAngles.x * Mathf.PI / 180); //Calculate the Neck y Position
+		float leaningUpwardDistance = currentY - viveCameraZeroY;
+		upwardInputRate = (float)(leaningUpwardDistance * upwardSensitivity);
+
+		float forwardLocomotionSpeed = forwardSensitivity * forwardInputRate;
+		float sidewayLocomotionSpeed = sidewaySensitivity * SidewayInputRate;
+		float upwardLocomotionSpeed = upwardSensitivity * upwardInputRate;
 
 		//*************************************************************************************************************
 		//*************************************************************************************************************
@@ -291,32 +277,73 @@ public class SwivelLocomotion : MonoBehaviour
 
 		if (activateExponentialTransferFunction) {	//Apply Exponential transfer function
 			//Apply Exponential transfer function on forward/backward locomotion
-			if (InputRate > 0)
-				LocomotionSpeed = maximumForwardVelocity * Mathf.Pow ((float)(InputRate), exponentialTransferFuntionPower);
+			if (forwardInputRate > 0)
+				forwardLocomotionSpeed = forwardSensitivity * Mathf.Pow ((float)(forwardInputRate), exponentialTransferFuntionPower);
 			else
-				LocomotionSpeed = maximumForwardVelocity * -Mathf.Pow ((float)(-InputRate), exponentialTransferFuntionPower);
+				forwardLocomotionSpeed = forwardSensitivity * -Mathf.Pow ((float)(-forwardInputRate), exponentialTransferFuntionPower);
 			//Apply Exponential transfer function on sideways locomotion
 			if (SidewayInputRate > 0)
-				SidewayLocomotionSpeed = maximumSidewayVelocity * Mathf.Pow ((float)(SidewayInputRate), exponentialTransferFuntionPower);
+				sidewayLocomotionSpeed = sidewaySensitivity * Mathf.Pow ((float)(SidewayInputRate), exponentialTransferFuntionPower);
 			else
-				SidewayLocomotionSpeed = maximumSidewayVelocity * -Mathf.Pow ((float)(-SidewayInputRate), exponentialTransferFuntionPower);
+				sidewayLocomotionSpeed = sidewaySensitivity * -Mathf.Pow ((float)(-SidewayInputRate), exponentialTransferFuntionPower);
+			//Apply Exponential transfer function on up/down locomotion
+			if (upwardInputRate > 0)
+				upwardLocomotionSpeed = upwardSensitivity * Mathf.Pow ((float)(upwardInputRate), exponentialTransferFuntionPower);
+			else
+				upwardLocomotionSpeed = upwardSensitivity * -Mathf.Pow ((float)(-upwardInputRate), exponentialTransferFuntionPower);
 		} else {	//Linear Transfer Function with 10% dead-zone
 			//Apply linear transfer function on forward/backward locomotion
-			if (Mathf.Abs (InputRate) < 0.1f)
-				LocomotionSpeed = 0;
-			else if (InputRate > 0)
-				LocomotionSpeed = maximumForwardVelocity * (InputRate - .1f);
+			if (Mathf.Abs (forwardInputRate) < 0.1f)
+				forwardLocomotionSpeed = 0;
+			else if (forwardInputRate > 0)
+				forwardLocomotionSpeed = forwardSensitivity * (forwardInputRate - .1f);
 			else
-				LocomotionSpeed = -maximumForwardVelocity * ((-InputRate) - .1f);
+				forwardLocomotionSpeed = -forwardSensitivity * ((-forwardInputRate) - .1f);
 			//Apply linear transfer function on sideways locomotion
 			if (Mathf.Abs (SidewayInputRate) < 0.1f)
-				SidewayLocomotionSpeed = 0;
+				sidewayLocomotionSpeed = 0;
 			else if (SidewayInputRate > 0)
-				SidewayLocomotionSpeed = maximumSidewayVelocity * (SidewayInputRate - .1f);
+				sidewayLocomotionSpeed = sidewaySensitivity * (SidewayInputRate - .1f);
 			else
-				SidewayLocomotionSpeed = -maximumSidewayVelocity * ((-SidewayInputRate) - .1f);
+				sidewayLocomotionSpeed = -sidewaySensitivity * ((-SidewayInputRate) - .1f);
+			//Apply linear transfer function on up/down locomotion
+			if (Mathf.Abs (upwardInputRate) < 0.1f)
+				upwardLocomotionSpeed = 0;
+			else if (upwardInputRate > 0)
+				upwardLocomotionSpeed = upwardSensitivity * (upwardInputRate - .1f);
+			else
+				upwardLocomotionSpeed = -upwardSensitivity * ((-upwardInputRate) - .1f);
 		}
 
+
+		//*************************************************************************************************************
+		//*************************************************************************************************************
+		//***																										***
+		//***								    	Applying Speed Limit											***
+		//***																										***
+		//*************************************************************************************************************
+		//*************************************************************************************************************
+
+		if (forwardVelocityLimit >= 0) {
+			if (forwardLocomotionSpeed > forwardVelocityLimit)
+				forwardLocomotionSpeed = forwardVelocityLimit;
+			else if (forwardLocomotionSpeed < -forwardVelocityLimit)
+				forwardLocomotionSpeed = -forwardVelocityLimit;
+		}
+
+		if (sidewayVelocityLimit >= 0) {
+			if (sidewayLocomotionSpeed > sidewayVelocityLimit)
+				sidewayLocomotionSpeed = sidewayVelocityLimit;
+			else if (sidewayLocomotionSpeed < -sidewayVelocityLimit)
+				sidewayLocomotionSpeed = -sidewayVelocityLimit;
+		}
+
+		if (upwardVelocityLimit >= 0) {
+			if (upwardLocomotionSpeed > upwardVelocityLimit)
+				upwardLocomotionSpeed = upwardVelocityLimit;
+			else if (upwardLocomotionSpeed < -upwardVelocityLimit)
+				upwardLocomotionSpeed = -upwardVelocityLimit;
+		}
 
 		//*************************************************************************************************************
 		//*************************************************************************************************************
@@ -327,59 +354,50 @@ public class SwivelLocomotion : MonoBehaviour
 		//*************************************************************************************************************
 
 		if (handBrake) {
-			if (instantHandBrake) {
-				if (handBrakeForwardSpeed > 0) {
-					handBrakeForwardSpeed -= handBrakeAcceleration * Time.deltaTime;
-					if (handBrakeForwardSpeed < 0)
-						handBrakeForwardSpeed = 0;					
-					handBrakeSidewaySpeed -= handBrakeAcceleration * Time.deltaTime;
-					if (handBrakeSidewaySpeed < 0)
-						handBrakeSidewaySpeed = 0;
-				}
-			} else {
-				if (Mathf.Abs (LocomotionSpeed / maximumForwardVelocity) < 0.1f)
-					handBrakeForwardSpeed = 0;
-				if (Mathf.Abs (SidewayLocomotionSpeed / maximumSidewayVelocity) < 0.1f)
+			if (handBrakeForwardSpeed > 0) {
+				handBrakeForwardSpeed -= handBrakeAcceleration * Time.deltaTime;
+				if (handBrakeForwardSpeed < 0)
+					handBrakeForwardSpeed = 0;					
+				handBrakeSidewaySpeed -= handBrakeAcceleration * Time.deltaTime;
+				if (handBrakeSidewaySpeed < 0)
 					handBrakeSidewaySpeed = 0;
 			}
 		} else {
-			if (instantHandBrake) {
-				if (handBrakeForwardSpeed < 1) {
-					handBrakeForwardSpeed += handBrakeAcceleration * Time.deltaTime;
-					if (handBrakeForwardSpeed > 1)
-						handBrakeForwardSpeed = 1;
-					handBrakeSidewaySpeed += handBrakeAcceleration * Time.deltaTime;
-					if (handBrakeSidewaySpeed > 1)
-						handBrakeSidewaySpeed = 1;
-				}
-			} else {
-				if (Mathf.Abs (LocomotionSpeed / maximumForwardVelocity) < 0.1f)
+			if (handBrakeForwardSpeed < 1) {
+				handBrakeForwardSpeed += handBrakeAcceleration * Time.deltaTime;
+				if (handBrakeForwardSpeed > 1)
 					handBrakeForwardSpeed = 1;
-				if (Mathf.Abs (SidewayLocomotionSpeed / maximumSidewayVelocity) < 0.1f)
+				handBrakeSidewaySpeed += handBrakeAcceleration * Time.deltaTime;
+				if (handBrakeSidewaySpeed > 1)
 					handBrakeSidewaySpeed = 1;
 			}
 		}
 
-		LocomotionSpeed *= handBrakeForwardSpeed;
-		SidewayLocomotionSpeed *= handBrakeSidewaySpeed;
+		forwardLocomotionSpeed *= handBrakeForwardSpeed;
+		sidewayLocomotionSpeed *= handBrakeSidewaySpeed;
+		upwardLocomotionSpeed *= handBrakeUpwardSpeed;
 
 		//  ****************************** Calculate the Rotatoion locomotion *****************************************
 		ChairLocomotionDirection = (float)(ViveControllerYaw + ViveControllerYawOffset);
 
-		float TranslateX = (float)(LocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
-		float TranslateZ = (float)(LocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
-		if (maximumSidewayVelocity != 0) {
-			TranslateX += (float)(SidewayLocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
-			TranslateZ -= (float)(SidewayLocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
+		float TranslateX = (float)(forwardLocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
+		float TranslateY = (float)(upwardLocomotionSpeed * Time.deltaTime);
+		if (transform.position.y + TranslateY < 0) {
+			TranslateY = 0;
+		}
+		float TranslateZ = (float)(forwardLocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
+		if (sidewayVelocityLimit >= 0) {
+			TranslateX += (float)(sidewayLocomotionSpeed * Mathf.Cos ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
+			TranslateZ -= (float)(sidewayLocomotionSpeed * Mathf.Sin ((float)(ChairLocomotionDirection * Mathf.PI / 180)) * Time.deltaTime);
 		}
 
-		if (maximumForwardVelocity == 0 && maximumSidewayVelocity == 0) {
+		if (forwardVelocityLimit == 0 && sidewayVelocityLimit == 0) {
 			TranslateX = 0;
 			TranslateZ = 0;
 		}
 
-		Vector3 pos = new Vector3 (TranslateX, 0.0f, TranslateZ);
-		//Debug.Log("Pos: " + pos.ToString());
+		Vector3 pos = new Vector3 (TranslateX, TranslateY, TranslateZ);
+
 		if (InterfaceIsReady)
 			transform.Translate (pos); 
 
