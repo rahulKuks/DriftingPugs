@@ -1,7 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/3D Assets EXTERNAL/Fish/Barracuda.meta
+guid: 91224c66453a64bd697d58a52c8e634d
+folderAsset: yes
+timeCreated: 1499788364
+=======
 guid: b5334641ca07f4a648503e0925c4b839
 folderAsset: yes
 timeCreated: 1499794159
+>>>>>>> 00c6c492e38a315657b9814c647f2c87847145d6:Assets/3D Assets EXTERNAL/Fish/Barracuda.meta
 licenseType: Free
 DefaultImporter:
   userData: 
