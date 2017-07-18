@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GlobalFlock : MonoBehaviour {
 	public GameObject fishPrefab;
-	public static int tankSize = 20; 
+	public static int tankSize = 40; 
 
 	static int numFish = 100;
 	public static GameObject[] allFish = new GameObject[numFish]; 

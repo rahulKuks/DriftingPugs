@@ -7,7 +7,7 @@ public class Flock : MonoBehaviour {
 	float rotationSpeed = 4.0f;
 	Vector3 averageHeading;
 	Vector3 averagePosition;
-	float neighbourDistance = 3.0f;
+	public float neighbourDistance = 3.0f;
 
 	bool turning = false;
 
