@@ -103,12 +103,14 @@ public class SwivelLocomotion : MonoBehaviour
 			{
 				switch (currentState) 
 				{
-					case SwivelState.inSea:
+						case SwivelState.inSea:
+						Debug.Log("Constraining in sea"); 
 						ConstrainXZ ();
 						break;
 
 					case SwivelState.inSpace:
-						//TODO: ConstrainAll ();
+						Debug.Log("Constraining in space"); 
+						ConstrainAll();
 						break;
 				}
 			}
@@ -462,12 +464,15 @@ public class SwivelLocomotion : MonoBehaviour
 	private void ConstrainAll()
 	{
 		
-		Vector3 vectorToOrigin = constraintOrigin - transform.position;
+		Vector3 vectorToOrigin = constraintOrigin - transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
 		float forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
 
 		rb.AddForce (forceDirection * forceMagnitude);
+		Debug.Log("Constraint Force (space): " + forceMagnitude);
+
+
 	}
 
 	/// <summary>
@@ -475,15 +480,17 @@ public class SwivelLocomotion : MonoBehaviour
 	/// </summary>
 	private void ConstrainXZ()
 	{
-		Vector2 originXZ = new Vector2 (constraintOrigin.x, constraintOrigin.z);
-		Vector2 playerXZ = new Vector2 (this.transform.position.x, this.transform.position.z);
+		Vector3 originXZ = new Vector3 (constraintOrigin.x, 0, constraintOrigin.z);
+		Vector3 playerXZ = new Vector3 (this.transform.localPosition.x, 0, this.transform.localPosition.z);
 
 		Vector3 vectorToOrigin = originXZ - playerXZ;
-		Vector3 forceDirection = vectorToOrigin.Normalize ();
+		Vector3 forceDirection = vectorToOrigin.normalized;
 
-		float forceMagnitude = constraintForce * originXZ.magnitude / constraintRange;
+		float forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
 
 		rb.AddForce (forceDirection * forceMagnitude);
+
+		Debug.Log("Constraint Force (sea): " + forceMagnitude);
 	}
 
 	public void SetMaxForwardSpeed(float forwardSpeed)
@@ -524,18 +531,15 @@ public class SwivelLocomotion : MonoBehaviour
 			case SwivelState.inSea:
 				constrainY = false;
 				constrainXZ = true;
-				xOrigin = transform.position.x;
-				zOrigin = transform.position.z;
-				constraintOrigin = transform.position;
+				constraintOrigin = transform.localPosition;
+				Debug.Log("Swivel Sea state, Origin: " + constraintOrigin);
 				break;
 
 			case SwivelState.inSpace:
 				constrainY = true;
 				constrainXZ = true;
-				xOrigin = transform.position.x;
-				yOrigin = transform.position.y;
-				zOrigin = transform.position.z;
-				constraintOrigin = transform.position;
+				constraintOrigin = transform.localPosition;
+				Debug.Log("Swivel space state, Origin: " + constraintOrigin);
 				break;
 		}
 	}
