@@ -12,6 +12,12 @@ using System;
 
 public class SwivelLocomotion : MonoBehaviour
 {
+	public enum SwivelState
+	{
+		inForest,
+		inSea,
+		inSpace
+	};
 
 	//*** public Swivel-360 External Variables
 	public GameObject viveCameraEye;
@@ -20,6 +26,7 @@ public class SwivelLocomotion : MonoBehaviour
 	public float forwardSensitivity = 5f;
 	public float sidewaySensitivity = 10f;
 	public float upwardSensitivity = 13f;
+
 	//public PlayerHeight playerHeight;
 
 	//*** Serialised max forward, sideways and upwards speed ***
@@ -31,12 +38,16 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float maxUpwardSpeed = 3f;
 	[Tooltip("the range of freedom if movement has been constrained in a particular axis")]
 	[SerializeField] private float constraintsRange = 2f;
+	[Tooltip("Forest floor bottom (should be just above the terrain)")]
+	[SerializeField] private float forestFloorBottom;
 
 	// *** SteamVR controller devices and tracked objects ***
 	SteamVR_TrackedObject leftTrackedObj;
 	SteamVR_Controller.Device leftControllerDevice;
 
 	//Constrain flags and variables;
+	SwivelState currentState = SwivelState.inForest;
+
 	bool constrainY = false;
 	bool constrainXZ = false;
 
@@ -404,8 +415,16 @@ public class SwivelLocomotion : MonoBehaviour
 
 		Vector3 pos = new Vector3 (TranslateX, TranslateY, TranslateZ);
 
-		if (InterfaceIsReady)
+		if (InterfaceIsReady) 
+		{
 			transform.Translate (pos); 
+			// if in forest, then clamp the Y position to always be above forestFloorBottom
+			if (transform.position.y < forestFloorBottom && currentState == SwivelState.inForest) 
+			{
+				transform.position = new Vector3 (transform.position.x, forestFloorBottom, transform.position.z);
+			}
+				
+		}
 
 	}
 
@@ -429,14 +448,34 @@ public class SwivelLocomotion : MonoBehaviour
 		return this.maxUpwardSpeed;
 	}
 
-	public void SetConstraintsY(bool flag)
+	/// <summary>
+	/// Sets the swivel state and accordingly flag constraints
+	/// </summary>
+	/// <param name="state">Swivel State.</param>
+	public void SetSwivelState(SwivelState state)
 	{
-		constrainY = flag;
+		this.currentState = state;;
+
+		switch (currentState) 
+		{
+			case SwivelState.inForest:
+				constrainY = false;
+				constrainXZ = false;
+				break;
+			case SwivelState.inSea:
+				constrainY = false;
+				constrainXZ = true;
+				break;
+			case SwivelState.inSpace:
+				constrainY = true;
+				constrainXZ = true;
+				break;
+		}
 	}
 
-	public void SetConstraintsXZ(bool flag)
+	public SwivelState GetSwivelState()
 	{
-		constrainXZ = flag;
+		return this.currentState;
 	}
 
 }

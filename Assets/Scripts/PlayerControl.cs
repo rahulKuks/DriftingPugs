@@ -169,7 +169,7 @@ public class PlayerControl : MonoBehaviour
 				if (swivel != null) 
 				{
 					swivel.SetMaxUpwardSpeed(0);
-					swivel.SetConstraintsXZ(true);
+					swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSea);
 				}
 				break;
 				
@@ -190,7 +190,7 @@ public class PlayerControl : MonoBehaviour
                 if (swivel != null) 
 				{
 					swivel.SetMaxUpwardSpeed(playerUpwardSpeed);
-					swivel.SetConstraintsY(true);
+					swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSpace);
 				}
                 break;
         }
