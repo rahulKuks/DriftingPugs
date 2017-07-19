@@ -67,6 +67,8 @@ public class PlayerControl : MonoBehaviour
     private Color seaColor;
 	private SwivelLocomotion swivel;
 	private SpriteController spriteController;
+	private float playerUpwardSpeed;
+	private float playerForwardSpeed;
 
     void Start()
     {
@@ -75,6 +77,7 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.LogError("Unable to get rigidbody.", this.gameObject);
         }
+
         spriteParent = sprite.transform.parent;
 		spriteController = sprite.GetComponent<SpriteController> ();
         seaRenderer = sea.GetComponent<Renderer>();
@@ -84,7 +87,9 @@ public class PlayerControl : MonoBehaviour
 		 * catch exception if running the FPS controller, or if swivel is not available.*/
 		try
 		{
-			swivel = this.transform.parent.gameObject.GetComponent<SwivelLocomotion> ();
+			swivel = GetComponent<SwivelLocomotion> ();
+			playerForwardSpeed = swivel.GetMaxForwardSpeed();
+			playerUpwardSpeed = swivel.GetMaxUpwardSpeed();
 		}
 		catch (Exception e) 
 		{
@@ -160,10 +165,11 @@ public class PlayerControl : MonoBehaviour
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
-				//disable movement
+				//disable upward movement and constrain XZ movement
 				if (swivel != null) 
 				{
-					swivel.enabled = false;
+					swivel.SetMaxUpwardSpeed(0);
+					swivel.SetConstraintsXZ(true);
 				}
 				break;
 				
@@ -180,11 +186,12 @@ public class PlayerControl : MonoBehaviour
 				rb.drag = 0;
                 rb.velocity = Vector3.zero;
 
-                //enable locomotion
-                /*if (swivel != null) 
+                //enable upwards locomotion and constrain it
+                if (swivel != null) 
 				{
-					swivel.enabled = true;
-				}*/
+					swivel.SetMaxUpwardSpeed(playerUpwardSpeed);
+					swivel.SetConstraintsY(true);
+				}
                 break;
         }
     }

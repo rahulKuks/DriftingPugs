@@ -29,10 +29,16 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float maxSidewaysSpeed = 1.5f;
 	[Tooltip("Maximum upward/downward speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
 	[SerializeField] private float maxUpwardSpeed = 3f;
+	[Tooltip("the range of freedom if movement has been constrained in a particular axis")]
+	[SerializeField] private float constraintsRange = 2f;
 
 	// *** SteamVR controller devices and tracked objects ***
 	SteamVR_TrackedObject leftTrackedObj;
 	SteamVR_Controller.Device leftControllerDevice;
+
+	//Constrain flags and variables;
+	bool constrainY = false;
+	bool constrainXZ = false;
 
 	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
 	StreamReader sr;
@@ -401,6 +407,36 @@ public class SwivelLocomotion : MonoBehaviour
 		if (InterfaceIsReady)
 			transform.Translate (pos); 
 
+	}
+
+	public void SetMaxForwardSpeed(float forwardSpeed)
+	{
+		this.maxForwardSpeed = forwardSpeed;
+	}
+
+	public float GetMaxForwardSpeed()
+	{
+		return this.maxForwardSpeed;
+	}
+
+	public void SetMaxUpwardSpeed(float upwardSpeed)
+	{
+		this.maxUpwardSpeed= upwardSpeed;
+	}
+
+	public float GetMaxUpwardSpeed()
+	{
+		return this.maxUpwardSpeed;
+	}
+
+	public void SetConstraintsY(bool flag)
+	{
+		constrainY = flag;
+	}
+
+	public void SetConstraintsXZ(bool flag)
+	{
+		constrainXZ = flag;
 	}
 
 }
