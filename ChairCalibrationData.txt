@@ -1,10 +1,5 @@
-*** Chair Calibration File ***
+\*** Chair Calibration File ***
 Disatance between controller and the center of the chair rotation:
--1.94011
+1.063886
 Angular Difference between the Vive Controller direction and the controller-center direction :
--365.4919
-*** Chair Calibration File ***
-Disatance between controller and the center of the chair rotation:
-2.269622
-Angular Difference between the Vive Controller direction and the controller-center direction :
--306.8662
+-392.0615

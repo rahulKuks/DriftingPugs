@@ -190,6 +190,7 @@ public class PlayerControl : MonoBehaviour
                 if (swivel != null) 
 				{
 					swivel.SetMaxUpwardSpeed(playerUpwardSpeed);
+					Debug.Log("Player up speed in space: " + swivel.GetMaxUpwardSpeed());
 					swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSpace);
 				}
                 break;
