@@ -37,19 +37,22 @@ public class SwivelLocomotion : MonoBehaviour
 	[Tooltip("Maximum upward/downward speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
 	[SerializeField] private float maxUpwardSpeed = 3f;
 	[Tooltip("the range of freedom if movement has been constrained in a particular axis")]
-	[SerializeField] private float constraintsRange = 2f;
+	[SerializeField] private float constraintRange = 2f;
 	[Tooltip("Forest floor bottom (should be just above the terrain)")]
 	[SerializeField] private float forestFloorBottom;
 
 	// *** SteamVR controller devices and tracked objects ***
-	SteamVR_TrackedObject leftTrackedObj;
-	SteamVR_Controller.Device leftControllerDevice;
+	private SteamVR_TrackedObject leftTrackedObj;
+	private SteamVR_Controller.Device leftControllerDevice;
 
 	//Constrain flags and variables;
 	SwivelState currentState = SwivelState.inForest;
 
 	bool constrainY = false;
 	bool constrainXZ = false;
+
+	private float xOrigin, yOrigin, zOrigin;
+	private Vector3 constraintOrigin;
 
 	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
 	StreamReader sr;
@@ -75,9 +78,18 @@ public class SwivelLocomotion : MonoBehaviour
 	float viveCameraZeroY = 0;
 
 
+	private float currentForwardSpeed;
+	private float currentSidewaySpeed;
+	private float currentUpwardSpeed;
+
+	[SerializeField] private float constraintForce = 3f;
+
+	Rigidbody rb;
+
 	// Use this for initialization
 	void Start ()
 	{
+		rb = GetComponent<Rigidbody> ();
 		loadChairProfile (); //Load Chair Profile saved into a file by the chair calibration program
 	}
 
@@ -86,6 +98,22 @@ public class SwivelLocomotion : MonoBehaviour
 		if(leftControllerDevice != null) 	// ensure device initialisation before reading data
 		{
 			readControllerData (); //Read Vive Controller data and store them inside internal variables
+
+			if (InterfaceIsReady) 
+			{
+				switch (currentState) 
+				{
+					case SwivelState.inSea:
+						ConstrainXZ ();
+						break;
+
+					case SwivelState.inSpace:
+						//TODO: ConstrainAll ();
+						break;
+				}
+			}
+
+
 		}
 	}
 
@@ -418,14 +446,44 @@ public class SwivelLocomotion : MonoBehaviour
 		if (InterfaceIsReady) 
 		{
 			transform.Translate (pos); 
-			// if in forest, then clamp the Y position to always be above forestFloorBottom
+
+			/* if in forest, then clamp the Y position to always be above forestFloorBottom
 			if (transform.position.y < forestFloorBottom && currentState == SwivelState.inForest) 
 			{
 				transform.position = new Vector3 (transform.position.x, forestFloorBottom, transform.position.z);
-			}
-				
+			}*/	
 		}
 
+	}
+
+	/// <summary>
+	/// Adds a force onto the user that pushes it back to its origin point. The force is smaller than the forward speed until the user hits max speed, when the force is greater. This is done on all three axes.
+	/// </summary>
+	private void ConstrainAll()
+	{
+		
+		Vector3 vectorToOrigin = constraintOrigin - transform.position;
+		Vector3 forceDirection = vectorToOrigin.normalized;
+
+		float forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
+
+		rb.AddForce (forceDirection * forceMagnitude);
+	}
+
+	/// <summary>
+	/// Adds a force onto the user that pushes it back to its origin point on the XZ plane. The force is smaller than the forward speed until the user hits max speed, when the force is greater.
+	/// </summary>
+	private void ConstrainXZ()
+	{
+		Vector2 originXZ = new Vector2 (constraintOrigin.x, constraintOrigin.z);
+		Vector2 playerXZ = new Vector2 (this.transform.position.x, this.transform.position.z);
+
+		Vector3 vectorToOrigin = originXZ - playerXZ;
+		Vector3 forceDirection = vectorToOrigin.Normalize ();
+
+		float forceMagnitude = constraintForce * originXZ.magnitude / constraintRange;
+
+		rb.AddForce (forceDirection * forceMagnitude);
 	}
 
 	public void SetMaxForwardSpeed(float forwardSpeed)
@@ -462,13 +520,22 @@ public class SwivelLocomotion : MonoBehaviour
 				constrainY = false;
 				constrainXZ = false;
 				break;
+
 			case SwivelState.inSea:
 				constrainY = false;
 				constrainXZ = true;
+				xOrigin = transform.position.x;
+				zOrigin = transform.position.z;
+				constraintOrigin = transform.position;
 				break;
+
 			case SwivelState.inSpace:
 				constrainY = true;
 				constrainXZ = true;
+				xOrigin = transform.position.x;
+				yOrigin = transform.position.y;
+				zOrigin = transform.position.z;
+				constraintOrigin = transform.position;
 				break;
 		}
 	}
