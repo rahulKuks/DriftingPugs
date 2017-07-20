@@ -38,9 +38,8 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float maxUpwardSpeed = 3f;
 	[Tooltip("the range of freedom if movement has been constrained in a particular axis")]
 	[SerializeField] private float constraintRange = 2f;
-	[Tooltip("Forest floor bottom (should be just above the terrain)")]
-	[SerializeField] private float forestFloorBottom;
-
+	//[Tooltip("Forest floor bottom (should be just above the terrain)")]
+	//[SerializeField] private float forestFloorBottom;
 	// *** SteamVR controller devices and tracked objects ***
 	private SteamVR_TrackedObject leftTrackedObj;
 	private SteamVR_Controller.Device leftControllerDevice;
@@ -84,6 +83,9 @@ public class SwivelLocomotion : MonoBehaviour
 
 	[SerializeField] private float constraintForce = 3f;
 
+	//debug variables
+	[SerializeField] private float forceMagnitude;
+	[SerializeField] private float vectorToOriginMagnitude;
 	Rigidbody rb;
 
 	// Use this for initialization
@@ -466,8 +468,9 @@ public class SwivelLocomotion : MonoBehaviour
 		
 		Vector3 vectorToOrigin = constraintOrigin - transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
+		vectorToOriginMagnitude = vectorToOrigin.magnitude;
 
-		float forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
+		forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
 
 		rb.AddForce (forceDirection * forceMagnitude);
 		Debug.Log("Constraint Force (space): " + forceMagnitude);
@@ -485,8 +488,9 @@ public class SwivelLocomotion : MonoBehaviour
 
 		Vector3 vectorToOrigin = originXZ - playerXZ;
 		Vector3 forceDirection = vectorToOrigin.normalized;
+		vectorToOriginMagnitude = vectorToOrigin.magnitude;
 
-		float forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
+		forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
 
 		rb.AddForce (forceDirection * forceMagnitude);
 
