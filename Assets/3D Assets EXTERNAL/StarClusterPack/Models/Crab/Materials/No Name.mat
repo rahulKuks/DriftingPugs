@@ -22,7 +22,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Color:
-        m_Texture: {fileID: 2800000, guid: 6a16c4dddfa85492497f9d17bff346e7, type: 3}
+        m_Texture: {fileID: 2800000, guid: d6ebcbb2c03174e439bb4a25026c849f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
