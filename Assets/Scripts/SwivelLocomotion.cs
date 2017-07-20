@@ -86,6 +86,7 @@ public class SwivelLocomotion : MonoBehaviour
 	//debug variables
 	[SerializeField] private float forceMagnitude;
 	[SerializeField] private float vectorToOriginMagnitude;
+	[SerializeField] private float constraintForceFactor;
 	Rigidbody rb;
 
 	// Use this for initialization
@@ -468,12 +469,14 @@ public class SwivelLocomotion : MonoBehaviour
 		
 		Vector3 vectorToOrigin = constraintOrigin - transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
+
+		//update debug serialiszed parameters
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
+		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
 
+		//calculate and apply force
 		forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
-
 		rb.AddForce (forceDirection * forceMagnitude);
-		Debug.Log("Constraint Force (space): " + forceMagnitude);
 
 
 	}
@@ -488,13 +491,15 @@ public class SwivelLocomotion : MonoBehaviour
 
 		Vector3 vectorToOrigin = originXZ - playerXZ;
 		Vector3 forceDirection = vectorToOrigin.normalized;
+
+		//update debug serialiszed parameters
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
+		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
 
+		//calculate force and apply
 		forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
-
 		rb.AddForce (forceDirection * forceMagnitude);
 
-		Debug.Log("Constraint Force (sea): " + forceMagnitude);
 	}
 
 	public void SetMaxForwardSpeed(float forwardSpeed)
