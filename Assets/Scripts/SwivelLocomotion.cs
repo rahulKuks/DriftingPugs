@@ -487,9 +487,8 @@ public class SwivelLocomotion : MonoBehaviour
 	private void ConstrainXZ()
 	{
 		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
-		Vector3 playerXZ = new Vector3 (this.transform.localPosition.x, this.transform.localPosition.y, this.transform.localPosition.z);
 
-		Vector3 vectorToOrigin = originXZ - playerXZ;
+		Vector3 vectorToOrigin = originXZ - this.transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
 		//update debug serialiszed parameters
