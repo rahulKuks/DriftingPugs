@@ -483,14 +483,14 @@ public class SwivelLocomotion : MonoBehaviour
 	/// </summary>
 	private void ConstrainXZ()
 	{
-		Vector3 originXZ = new Vector3 (constraintOrigin.x, 0, constraintOrigin.z);
-		Vector3 playerXZ = new Vector3 (this.transform.localPosition.x, 0, this.transform.localPosition.z);
+		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
+		Vector3 playerXZ = new Vector3 (this.transform.localPosition.x, this.transform.localPosition.y, this.transform.localPosition.z);
 
 		Vector3 vectorToOrigin = originXZ - playerXZ;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
 
-		forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
+		forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
 
 		rb.AddForce (forceDirection * forceMagnitude);
 

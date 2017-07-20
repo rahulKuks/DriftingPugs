@@ -276,8 +276,8 @@ public class PlayerControl : MonoBehaviour
 
         // Parent to sprite to follow it
 		// Do dumb loop since it doesn't set the first time
-		while (this.transform.parent.parent == null) {
-			this.transform.parent.SetParent(sprite.transform, true);
+		while (this.transform.parent == null) {
+			this.transform.SetParent(sprite.transform, true);
 			yield return new WaitForSeconds(1.0f);
 		}
 
