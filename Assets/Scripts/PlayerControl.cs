@@ -173,8 +173,9 @@ public class PlayerControl : MonoBehaviour
                 break;
 			case (PlayerState.Space):
 				SoundController.Instance.EnterSpace ();
-				StartCoroutine ("EarthGaze");
+                //StartCoroutine ("EarthGaze");
 				sprite.transform.SetParent (spriteParent, true);
+                StartCoroutine(SpaceEploration());
 
 				rb.useGravity = false;
 				rb.drag = 0;
@@ -243,7 +244,19 @@ public class PlayerControl : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
     }
-		
+	
+    public IEnumerator SpaceEploration()
+    {
+        while (this.transform.parent.parent == null)
+        {
+            this.transform.parent.SetParent(sprite.transform, true);
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        yield return StartCoroutine(spriteController.Explore());
+        StartCoroutine(EarthGaze());
+    }
+
     private IEnumerator EarthGaze()
     {
 		// Update state so it can't trigger again
@@ -268,12 +281,9 @@ public class PlayerControl : MonoBehaviour
 
         // Parent to sprite to follow it
 		// Do dumb loop since it doesn't set the first time
-		while (this.transform.parent.parent == null) {
-			this.transform.parent.SetParent(sprite.transform, true);
-			yield return new WaitForSeconds(1.0f);
-		}
 
         // Trigger the next part
 		spriteController.TriggerEarthGaze(earth.transform, rotationPoint);
+        yield return null;
     }
 }

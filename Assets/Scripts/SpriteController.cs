@@ -115,6 +115,21 @@ public class SpriteController : MonoBehaviour
 		//spriteAudioSource.Play ();
 	}
 
+    public Transform landingPad;
+    public IEnumerator Explore()
+    {
+        landingPad.position = this.transform.position;
+        for (int i=0; i<landingPad.childCount; i++)
+        {
+            Vector3 dest = landingPad.GetChild(i).transform.position;
+            while (Vector3.Distance(transform.position, dest) > 1e-6)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, dest, moveSpeed * Time.fixedDeltaTime);
+                yield return new WaitForFixedUpdate();
+            }
+        }
+    }
+
     public void TriggerEarthGaze(Transform earth, Transform rotationPoint)
 	{
 		// Set variables
