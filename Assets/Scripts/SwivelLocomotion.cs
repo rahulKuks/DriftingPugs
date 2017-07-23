@@ -87,6 +87,7 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float forceMagnitude;
 	[SerializeField] private float vectorToOriginMagnitude;
 	[SerializeField] private float constraintForceFactor;
+	[SerializeField] private GameObject originCube;
 	Rigidbody rb;
 
 	// Use this for initialization
@@ -469,6 +470,7 @@ public class SwivelLocomotion : MonoBehaviour
 		
 		Vector3 vectorToOrigin = constraintOrigin - transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
+		originCube.transform.position = constraintOrigin;
 
 		//update debug serialiszed parameters
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
@@ -487,7 +489,7 @@ public class SwivelLocomotion : MonoBehaviour
 	private void ConstrainXZ()
 	{
 		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
-
+		originCube.transform.position = originXZ;
 		Vector3 vectorToOrigin = originXZ - this.transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
@@ -537,6 +539,7 @@ public class SwivelLocomotion : MonoBehaviour
 				break;
 
 			case SwivelState.inSea:
+				originCube.SetActive(true);
 				constrainY = false;
 				constrainXZ = true;
 				constraintOrigin = transform.localPosition;
