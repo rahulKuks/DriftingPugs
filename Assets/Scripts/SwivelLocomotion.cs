@@ -38,6 +38,8 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float maxUpwardSpeed = 3f;
 	[Tooltip("the range of freedom if movement has been constrained in a particular axis")]
 	[SerializeField] private float constraintRange = 2f;
+	[SerializeField] private float maxForwardSpeedInSea = 1.5f;
+	[SerializeField] private float maxForwardSpeedInSpace = 2.25f;
 	//[Tooltip("Forest floor bottom (should be just above the terrain)")]
 	//[SerializeField] private float forestFloorBottom;
 	// *** SteamVR controller devices and tracked objects ***
@@ -80,6 +82,7 @@ public class SwivelLocomotion : MonoBehaviour
 	private float currentForwardSpeed;
 	private float currentSidewaySpeed;
 	private float currentUpwardSpeed;
+	private bool locomotionDisabled;
 
 	[SerializeField] private float constraintForce = 3f;
 
@@ -93,6 +96,7 @@ public class SwivelLocomotion : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		locomotionDisabled = false;
 		rb = GetComponent<Rigidbody> ();
 		loadChairProfile (); //Load Chair Profile saved into a file by the chair calibration program
 	}
@@ -113,8 +117,8 @@ public class SwivelLocomotion : MonoBehaviour
 						break;
 
 					case SwivelState.inSpace:
-						Debug.Log("Constraining in space"); 
-						ConstrainAll();
+						//Debug.Log("Constraining in space"); 
+						//ConstrainAll();
 						break;
 				}
 			}
@@ -147,7 +151,11 @@ public class SwivelLocomotion : MonoBehaviour
 		//			- positive number limits the speed. For example if you put the first argument equals to 1, maximum forward speed will be 1 meter/second
 		//			- negative value disables the speed limit. For example -1 means no speed limit
 		//			- 0 disable that movement. For example, if the third argument will be 0, flying will be disabled, and user can't go up/down
-		swivelChairLocomotion (maxForwardSpeed, maxSidewaysSpeed, maxUpwardSpeed); 
+		if(!locomotionDisabled)
+		{
+			swivelChairLocomotion (maxForwardSpeed, maxSidewaysSpeed, maxUpwardSpeed);
+		}
+		 
 	}
 
 	// *** Call this method in start() *** (loads the chair profile stored in a file by chair calibration project)
@@ -476,9 +484,20 @@ public class SwivelLocomotion : MonoBehaviour
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
 		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
 
-		//calculate and apply force
-		forceMagnitude = constraintForce * vectorToOrigin.magnitude / constraintRange;
+		//calculate force and apply
+		forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
 		rb.AddForce (forceDirection * forceMagnitude);
+
+		/*if(constraintForceFactor <= 0.3)
+		{
+			rb.velocity = new Vector3(0, 0, 0);
+		}
+		else
+		{
+			forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
+			rb.AddForce (forceDirection * forceMagnitude);
+		}*/
+
 
 
 	}
@@ -489,7 +508,7 @@ public class SwivelLocomotion : MonoBehaviour
 	private void ConstrainXZ()
 	{
 		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
-		originCube.transform.position = originXZ;
+		//originCube.transform.position = originXZ;
 		Vector3 vectorToOrigin = originXZ - this.transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
@@ -498,8 +517,22 @@ public class SwivelLocomotion : MonoBehaviour
 		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
 
 		//calculate force and apply
-		forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
-		rb.AddForce (forceDirection * forceMagnitude);
+		if(constraintForceFactor >=0.2)
+		{
+			// if gone too far, disable locomotion
+			if(constraintForceFactor >= 1)
+			{
+				locomotionDisabled = true;
+			}
+
+			forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
+			rb.AddForce (forceDirection * forceMagnitude);
+		}
+		else if(locomotionDisabled)	//enable locomotion if player has been reeled in enough
+		{
+			locomotionDisabled = false;
+		}
+
 
 	}
 
@@ -539,7 +572,8 @@ public class SwivelLocomotion : MonoBehaviour
 				break;
 
 			case SwivelState.inSea:
-				originCube.SetActive(true);
+				maxForwardSpeed = maxForwardSpeedInSea;
+				//originCube.SetActive(true);
 				constrainY = false;
 				constrainXZ = true;
 				constraintOrigin = transform.localPosition;
@@ -547,6 +581,7 @@ public class SwivelLocomotion : MonoBehaviour
 				break;
 
 			case SwivelState.inSpace:
+				maxForwardSpeed = maxForwardSpeedInSpace;
 				constrainY = true;
 				constrainXZ = true;
 				constraintOrigin = transform.localPosition;

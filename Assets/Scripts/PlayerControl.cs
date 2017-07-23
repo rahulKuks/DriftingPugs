@@ -149,7 +149,7 @@ public class PlayerControl : MonoBehaviour
         if (other.gameObject == fadeTrigger)
         {
             StartCoroutine("FadeOut");
-            StartCoroutine("FadeIn");
+            //StartCoroutine("FadeIn");
         }
     }
 
