@@ -45,6 +45,9 @@ public class PlayerControl : MonoBehaviour
 	[SerializeField] private GameObject sea;
 	[SerializeField] private GameObject jellyfishes;
 	[SerializeField] private GameObject fishes;
+    [SerializeField] private GameObject bubbles;
+    [Tooltip("How far down (y-axis) the bubbles will be offset when entering the lake.")]
+    [SerializeField] private float bubblesOffset = 5.0f;
 
     [Tooltip("The list of GameObjects to collide with to transition into the next state.")]
     [SerializeField] private List<GameObject> transitionColliders;
@@ -160,6 +163,10 @@ public class PlayerControl : MonoBehaviour
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
+
+                bubbles.SetActive(true);
+                bubbles.transform.position = this.transform.position - new Vector3(0, bubblesOffset, 0);
+
 				//disable movement
 				if (swivel != null) 
 				{
