@@ -512,7 +512,7 @@ public class SwivelLocomotion : MonoBehaviour
 	private void ConstrainXZ()
 	{
 		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
-		debugOriginSeaCube.transform.position = originXZ;
+		//debugOriginSeaCube.transform.position = originXZ;
 		Vector3 vectorToOrigin = originXZ - this.transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
@@ -577,7 +577,7 @@ public class SwivelLocomotion : MonoBehaviour
 
 			case SwivelState.inSea:
 				maxForwardSpeed = maxForwardSpeedInSea;
-				debugOriginSeaCube.SetActive(true);
+				//debugOriginSeaCube.SetActive(true);
 				constrainY = false;
 				constrainXZ = true;
 				constraintOrigin = transform.localPosition;
@@ -585,13 +585,12 @@ public class SwivelLocomotion : MonoBehaviour
 				break;
 
 			case SwivelState.inSpace:
+				//debugOriginSeaCube.SetActive(false);
 				maxForwardSpeed = maxForwardSpeedInSpace;
 				maxUpwardSpeed = maxForwardSpeedInSpace;
-				constrainY = true;
-				constrainXZ = true;
 				constraintOrigin = transform.localPosition;
-				debugOriginSpaceCube.SetActive(true);
-				debugOriginSpaceCube.transform.localPosition = constraintOrigin;
+				//debugOriginSpaceCube.SetActive(true);
+				//debugOriginSpaceCube.transform.localPosition = constraintOrigin;
 				Debug.Log("Swivel space state, Origin: " + constraintOrigin);
 				break;
 		}

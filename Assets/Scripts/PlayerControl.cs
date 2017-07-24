@@ -185,14 +185,6 @@ public class PlayerControl : MonoBehaviour
 				rb.useGravity = false;
 				rb.drag = 0;
                 rb.velocity = Vector3.zero;
-
-                //enable upwards locomotion and constrain it
-                if (swivel != null) 
-				{
-					swivel.SetMaxUpwardSpeed(playerUpwardSpeed);
-					Debug.Log("Player up speed in space: " + swivel.GetMaxUpwardSpeed());
-					swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSpace);
-				}
                 break;
         }
     }
@@ -279,6 +271,14 @@ public class PlayerControl : MonoBehaviour
 		while (this.transform.parent == null) {
 			this.transform.SetParent(sprite.transform, true);
 			yield return new WaitForSeconds(1.0f);
+		}
+
+		//enable upwards locomotion and constrain it
+		if (swivel != null) 
+		{
+			swivel.SetMaxUpwardSpeed(playerUpwardSpeed);
+			Debug.Log("Player up speed in space: " + swivel.GetMaxUpwardSpeed());
+			swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSpace);
 		}
 
         // Trigger the next part
