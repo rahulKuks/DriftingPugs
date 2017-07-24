@@ -40,6 +40,7 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float constraintRange = 2f;
 	[SerializeField] private float maxForwardSpeedInSea = 1.5f;
 	[SerializeField] private float maxForwardSpeedInSpace = 2.25f;
+	[SerializeField] private float constraintDeadZoneThreshold = 0.2f;
 	//[Tooltip("Forest floor bottom (should be just above the terrain)")]
 	//[SerializeField] private float forestFloorBottom;
 	// *** SteamVR controller devices and tracked objects ***
@@ -90,7 +91,8 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float forceMagnitude;
 	[SerializeField] private float vectorToOriginMagnitude;
 	[SerializeField] private float constraintForceFactor;
-	[SerializeField] private GameObject originCube;
+	[SerializeField] private GameObject debugOriginSeaCube;
+	[SerializeField] private GameObject debugOriginSpaceCube;
 	Rigidbody rb;
 
 	// Use this for initialization
@@ -478,25 +480,27 @@ public class SwivelLocomotion : MonoBehaviour
 		
 		Vector3 vectorToOrigin = constraintOrigin - transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
-		originCube.transform.position = constraintOrigin;
 
-		//update debug serialiszed parameters
+		//update debug serialized parameters
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
 		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
 
 		//calculate force and apply
-		forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
-		rb.AddForce (forceDirection * forceMagnitude);
+		if(constraintForceFactor >= constraintDeadZoneThreshold)
+		{
+			// if gone too far, disable locomotion
+			if(constraintForceFactor >= 1)
+			{
+				locomotionDisabled = true;
+			}
 
-		/*if(constraintForceFactor <= 0.3)
-		{
-			rb.velocity = new Vector3(0, 0, 0);
-		}
-		else
-		{
 			forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
 			rb.AddForce (forceDirection * forceMagnitude);
-		}*/
+		}
+		else if(locomotionDisabled)	//enable locomotion if player has been reeled in enough
+		{
+			locomotionDisabled = false;
+		}
 
 
 
@@ -517,7 +521,7 @@ public class SwivelLocomotion : MonoBehaviour
 		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
 
 		//calculate force and apply
-		if(constraintForceFactor >=0.2)
+		if(constraintForceFactor >= constraintDeadZoneThreshold)
 		{
 			// if gone too far, disable locomotion
 			if(constraintForceFactor >= 1)
@@ -582,9 +586,11 @@ public class SwivelLocomotion : MonoBehaviour
 
 			case SwivelState.inSpace:
 				maxForwardSpeed = maxForwardSpeedInSpace;
+				maxUpwardSpeed = maxForwardSpeedInSpace;
 				constrainY = true;
 				constrainXZ = true;
 				constraintOrigin = transform.localPosition;
+				debugOriginSpaceCube.transform.localPosition = constraintOrigin;
 				Debug.Log("Swivel space state, Origin: " + constraintOrigin);
 				break;
 		}
