@@ -67,8 +67,6 @@ public class PlayerControl : MonoBehaviour
     private Color seaColor;
 	private SwivelLocomotion swivel;
 	private SpriteController spriteController;
-	private float playerUpwardSpeed;
-	private float playerForwardSpeed;
 
     void Start()
     {
@@ -88,8 +86,6 @@ public class PlayerControl : MonoBehaviour
 		try
 		{
 			swivel = GetComponent<SwivelLocomotion> ();
-			playerForwardSpeed = swivel.GetMaxForwardSpeed();
-			playerUpwardSpeed = swivel.GetMaxUpwardSpeed();
 		}
 		catch (Exception e) 
 		{
@@ -168,7 +164,6 @@ public class PlayerControl : MonoBehaviour
 				//disable upward movement and constrain XZ movement
 				if (swivel != null) 
 				{
-					swivel.SetMaxUpwardSpeed(0);
 					swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSea);
 				}
 				break;
@@ -276,8 +271,6 @@ public class PlayerControl : MonoBehaviour
 		//enable upwards locomotion and constrain it
 		if (swivel != null) 
 		{
-			swivel.SetMaxUpwardSpeed(playerUpwardSpeed);
-			Debug.Log("Player up speed in space: " + swivel.GetMaxUpwardSpeed());
 			swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSpace);
 		}
 

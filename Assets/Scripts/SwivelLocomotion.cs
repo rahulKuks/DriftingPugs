@@ -30,31 +30,67 @@ public class SwivelLocomotion : MonoBehaviour
 	//public PlayerHeight playerHeight;
 
 	//*** Serialised max forward, sideways and upwards speed ***
+	[Header("Forest Parameters")]
+	[Space(5)]
 	[Tooltip("Maximum forwards/backwards speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
-	[SerializeField] private float maxForwardSpeed = 3f;
+	[SerializeField] private float maxForestForwardSpeed = 2.25f;
 	[Tooltip("Maximum sideways/strafing speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
-	[SerializeField] private float maxSidewaysSpeed = 1.5f;
+	[SerializeField] private float maxForestSidewaySpeed = 0f;
 	[Tooltip("Maximum upward/downward speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
-	[SerializeField] private float maxUpwardSpeed = 3f;
-	[Tooltip("the range of freedom if movement has been constrained in a particular axis")]
-	[SerializeField] private float constraintRange = 2f;
-	[SerializeField] private float maxForwardSpeedInSea = 1.5f;
-	[SerializeField] private float maxForwardSpeedInSpace = 2.25f;
-	[SerializeField] private float constraintDeadZoneThreshold = 0.2f;
+	[SerializeField] private float maxForestUpwardsSpeed = 0f;
+
+
+	[Header("Sea Parameters")]
+	[Space(5)]
+	[Tooltip("Maximum forwards/backwards speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxSeaForwardSpeed = 1.25f;
+	[Tooltip("Maximum sideways/strafing speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxSeaSidewaySpeed = 0f;
+	[Tooltip("Maximum upward/downward speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxSeaUpwardsSpeed = 0f;
+	[Tooltip("The force applied in the sea to enforce constraints")]
+	[SerializeField] private float seaConstraintForce = 3f;
+	[Tooltip("the range of freedom if movement has been constrained")]
+	[SerializeField] private float seaConstraintRange = 2f;
+	[Tooltip("The range from the distance where no force is applied")]
+	[SerializeField] private float seaConstraintDeadZoneThreshold = 0.2f;
+
+	[Header("Space Parameters")]
+	[Space(5)]
+	[Tooltip("Maximum forwards/backwards speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxSpaceForwardSpeed = 2.25f;
+	[Tooltip("Maximum sideways/strafing speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxSpaceSidewaySpeed = 0f;
+	[Tooltip("Maximum upward/downward speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
+	[SerializeField] private float maxSpaceUpwardsSpeed = 2.25f;
+	[Tooltip("The force applied in the sea to enforce constraints")]
+	[SerializeField] private float spaceConstraintForce = 3f;
+	[Tooltip("the range of freedom if movement has been constrained")]
+	[SerializeField] private float spaceConstraintRange = 2f;
+	[Tooltip("The range from the distance where no force is applied")]
+	[SerializeField] private float spaceConstraintDeadZoneThreshold = 0.2f;
+
+	[Header("Debug Parameters")]
+	[Space(5)]
+	[SerializeField] private float forceMagnitude;
+	[SerializeField] private float vectorToOriginMagnitude;
+	[SerializeField] private float constraintForceFactor;
+	[SerializeField] private GameObject debugOriginSeaCube;
+	[SerializeField] private GameObject debugOriginSpaceCube;
+
 	//[Tooltip("Forest floor bottom (should be just above the terrain)")]
 	//[SerializeField] private float forestFloorBottom;
 	// *** SteamVR controller devices and tracked objects ***
 	private SteamVR_TrackedObject leftTrackedObj;
 	private SteamVR_Controller.Device leftControllerDevice;
 
+
 	//Constrain flags and variables;
 	SwivelState currentState = SwivelState.inForest;
-
-	bool constrainY = false;
-	bool constrainXZ = false;
-
-	private float xOrigin, yOrigin, zOrigin;
+	private bool locomotionDisabled;
 	private Vector3 constraintOrigin;
+	Rigidbody rb;
+
 
 	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
 	StreamReader sr;
@@ -80,20 +116,6 @@ public class SwivelLocomotion : MonoBehaviour
 	float viveCameraZeroY = 0;
 
 
-	private float currentForwardSpeed;
-	private float currentSidewaySpeed;
-	private float currentUpwardSpeed;
-	private bool locomotionDisabled;
-
-	[SerializeField] private float constraintForce = 3f;
-
-	//debug variables
-	[SerializeField] private float forceMagnitude;
-	[SerializeField] private float vectorToOriginMagnitude;
-	[SerializeField] private float constraintForceFactor;
-	[SerializeField] private GameObject debugOriginSeaCube;
-	[SerializeField] private GameObject debugOriginSpaceCube;
-	Rigidbody rb;
 
 	// Use this for initialization
 	void Start ()
@@ -155,7 +177,22 @@ public class SwivelLocomotion : MonoBehaviour
 		//			- 0 disable that movement. For example, if the third argument will be 0, flying will be disabled, and user can't go up/down
 		if(!locomotionDisabled)
 		{
-			swivelChairLocomotion (maxForwardSpeed, maxSidewaysSpeed, maxUpwardSpeed);
+			switch (currentState) 
+			{
+				case SwivelState.inForest:
+					swivelChairLocomotion (maxForestForwardSpeed, maxForestSidewaySpeed, maxForestUpwardsSpeed);
+					break;
+
+				case SwivelState.inSea:
+					swivelChairLocomotion (maxSeaForwardSpeed, maxSeaSidewaySpeed, maxSeaUpwardsSpeed);
+					break;
+
+				case SwivelState.inSpace:
+					swivelChairLocomotion (maxSpaceForwardSpeed, maxSpaceSidewaySpeed, maxSpaceUpwardsSpeed);
+					break;
+					
+			}
+			
 		}
 		 
 	}
@@ -483,10 +520,10 @@ public class SwivelLocomotion : MonoBehaviour
 
 		//update debug serialized parameters
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
-		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
+		constraintForceFactor = vectorToOrigin.magnitude / spaceConstraintRange;
 
 		//calculate force and apply
-		if(constraintForceFactor >= constraintDeadZoneThreshold)
+		if(constraintForceFactor >= spaceConstraintDeadZoneThreshold)
 		{
 			// if gone too far, disable locomotion
 			if(constraintForceFactor >= 1)
@@ -494,7 +531,7 @@ public class SwivelLocomotion : MonoBehaviour
 				locomotionDisabled = true;
 			}
 
-			forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
+			forceMagnitude = spaceConstraintForce * (vectorToOrigin.magnitude / spaceConstraintRange);
 			rb.AddForce (forceDirection * forceMagnitude);
 		}
 		else if(locomotionDisabled)	//enable locomotion if player has been reeled in enough
@@ -518,10 +555,10 @@ public class SwivelLocomotion : MonoBehaviour
 
 		//update debug serialiszed parameters
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
-		constraintForceFactor = vectorToOrigin.magnitude / constraintRange;
+		constraintForceFactor = vectorToOrigin.magnitude / seaConstraintRange;
 
 		//calculate force and apply
-		if(constraintForceFactor >= constraintDeadZoneThreshold)
+		if(constraintForceFactor >= seaConstraintDeadZoneThreshold)
 		{
 			// if gone too far, disable locomotion
 			if(constraintForceFactor >= 1)
@@ -529,7 +566,7 @@ public class SwivelLocomotion : MonoBehaviour
 				locomotionDisabled = true;
 			}
 
-			forceMagnitude = constraintForce * (vectorToOrigin.magnitude / constraintRange);
+			forceMagnitude = seaConstraintForce * (vectorToOrigin.magnitude / seaConstraintRange);
 			rb.AddForce (forceDirection * forceMagnitude);
 		}
 		else if(locomotionDisabled)	//enable locomotion if player has been reeled in enough
@@ -540,25 +577,25 @@ public class SwivelLocomotion : MonoBehaviour
 
 	}
 
-	public void SetMaxForwardSpeed(float forwardSpeed)
+	/*public void SetMaxForwardSpeed(float forwardSpeed)
 	{
-		this.maxForwardSpeed = forwardSpeed;
+		this.maxForestForwardSpeed = forwardSpeed;
 	}
 
 	public float GetMaxForwardSpeed()
 	{
-		return this.maxForwardSpeed;
+		return this.maxForestForwardSpeed;
 	}
 
 	public void SetMaxUpwardSpeed(float upwardSpeed)
 	{
-		this.maxUpwardSpeed= upwardSpeed;
+		this.maxSpaceUpwardsSpeed= upwardSpeed;
 	}
 
 	public float GetMaxUpwardSpeed()
 	{
-		return this.maxUpwardSpeed;
-	}
+		return this.maxSpaceUpwardsSpeed;
+	}*/
 
 	/// <summary>
 	/// Sets the swivel state and accordingly flag constraints
@@ -571,23 +608,16 @@ public class SwivelLocomotion : MonoBehaviour
 		switch (currentState) 
 		{
 			case SwivelState.inForest:
-				constrainY = false;
-				constrainXZ = false;
 				break;
 
 			case SwivelState.inSea:
-				maxForwardSpeed = maxForwardSpeedInSea;
 				//debugOriginSeaCube.SetActive(true);
-				constrainY = false;
-				constrainXZ = true;
 				constraintOrigin = transform.localPosition;
 				Debug.Log("Swivel Sea state, Origin: " + constraintOrigin);
 				break;
 
 			case SwivelState.inSpace:
 				//debugOriginSeaCube.SetActive(false);
-				maxForwardSpeed = maxForwardSpeedInSpace;
-				maxUpwardSpeed = maxForwardSpeedInSpace;
 				constraintOrigin = transform.localPosition;
 				//debugOriginSpaceCube.SetActive(true);
 				//debugOriginSpaceCube.transform.localPosition = constraintOrigin;
