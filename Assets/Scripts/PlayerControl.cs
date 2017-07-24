@@ -131,8 +131,9 @@ public class PlayerControl : MonoBehaviour
                     case 1:
                         currentState = PlayerState.InWater_Float;
                         break;
-                    case 2:
-                        currentState = PlayerState.Space;
+					case 2:
+						currentState = PlayerState.Space;
+						other.gameObject.SetActive(false); //disable so it can't trigger again
                         break;
                 }
 				UpdateState();
