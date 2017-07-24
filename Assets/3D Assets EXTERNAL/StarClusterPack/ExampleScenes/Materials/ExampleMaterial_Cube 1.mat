@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: ExampleMaterial_Wire
+  m_Name: ExampleMaterial_Cube 1
   m_Shader: {fileID: 4800000, guid: 11ddb99c595e44545824258a586fe00d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
@@ -22,7 +22,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Color:
-        m_Texture: {fileID: 2800000, guid: dcea4b79353f60e468b622fce2a0cdab, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9b15791ae31bb3747a1cd0dc03d83337, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -70,7 +70,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Size:
-        m_Texture: {fileID: 2800000, guid: 0d8904a83411cd74eb510afe8090b70c, type: 3}
+        m_Texture: {fileID: 2800000, guid: c01c827190a55df4b8eadc153af41f07, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Skin:
@@ -85,7 +85,7 @@ Material:
     - _Attenuation_Exponent: 0.8
     - _Attenuation_Strength: 1
     - _BumpScale: 1
-    - _Color_Multiplier: 0.19
+    - _Color_Multiplier: 4.91
     - _Cutoff: 0.5
     - _Decay_Exponent: 0.8
     - _Decay_Strength: 1
@@ -98,7 +98,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Size_Multiplier: 2.08
+    - _Size_Multiplier: -0.3
     - _SrcBlend: 1
     - _UVSec: 0
     - _Use_Attenuation: 0
@@ -106,7 +106,7 @@ Material:
     - _Use_Decay: 0
     - _Use_LensEffect: 0
     - _VariationShift: 0
-    - _Variation_Shift: 0
+    - _Variation_Shift: 127.3
     - _ZWrite: 1
     m_Colors:
     - _Camera_Position: {r: 0, g: 0, b: 0, a: 0}
