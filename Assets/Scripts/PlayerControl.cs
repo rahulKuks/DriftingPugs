@@ -247,6 +247,8 @@ public class PlayerControl : MonoBehaviour
 	
     public IEnumerator SpaceEploration()
     {
+		sprite.transform.position = this.transform.position;
+		spriteController.DisableParentAnimator();
         while (this.transform.parent.parent == null)
         {
             this.transform.parent.SetParent(sprite.transform, true);
