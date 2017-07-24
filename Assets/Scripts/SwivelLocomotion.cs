@@ -141,8 +141,8 @@ public class SwivelLocomotion : MonoBehaviour
 						break;
 
 					case SwivelState.inSpace:
-						//Debug.Log("Constraining in space"); 
-						//ConstrainAll();
+						Debug.Log("Constraining in space"); 
+						ConstrainAll();
 						break;
 				}
 			}
