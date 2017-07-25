@@ -202,10 +202,13 @@ public class PlayerControl : MonoBehaviour
 	private IEnumerator VignetteFadeIn()
 	{
 		vignette.enabled = true;
-
+		float timePassed = 0f, timeFactor = 0f;
 		while (vignette.intensity != vignetteIntensity)
 		{
-			vignette.intensity = Mathf.Lerp (0, vignetteIntensity, vignetteFadeInTime);
+			vignette.intensity = Mathf.Lerp (0, vignetteIntensity, timeFactor);
+			timePassed += Time.deltaTime;
+			timeFactor = timePassed / vignetteFadeInTime;
+
 			yield return new WaitForEndOfFrame();
 		}
 	}
@@ -215,9 +218,13 @@ public class PlayerControl : MonoBehaviour
 	/// </summary>
 	private IEnumerator VignetteFadeOut()
 	{
+		float timePassed = 0f, timeFactor = 0f;
 		while (vignette.intensity != 0)
 		{
-			vignette.intensity = Mathf.Lerp (vignetteIntensity, 0, vignetteFadeOutTime);
+			vignette.intensity = Mathf.Lerp (vignetteIntensity, 0, timeFactor);
+			timePassed += Time.deltaTime;
+			timeFactor = timePassed / vignetteFadeOutTime;
+
 			yield return new WaitForEndOfFrame();
 		}
 
