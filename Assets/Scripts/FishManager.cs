@@ -12,14 +12,13 @@ public class FishManager : MonoBehaviour {
     }
 
     [SerializeField] private List<FishSpawn> typesOfFishes;
+    [SerializeField] private float fishYAxisRange;
 
     private List<Flock> fishes;
-    private Vector3 goalPos = Vector3.zero;
+    private Dictionary<string, Vector3> goalPositions;
 
     public List<Flock> Fishes
     { get { return fishes; } }
-    public Vector3 GoalPos
-    { get { return goalPos; } }
 
     // Singleton pattern
     private static FishManager _instance;
@@ -37,20 +36,31 @@ public class FishManager : MonoBehaviour {
 
     void Start () {
         StartCoroutine(InitializeFishes());
-        goalPos = RandomTankRange();
 	}
 
     private void Update()
     {
         if (Random.Range(0, 10000) < 50)
         {
-            goalPos = RandomTankRange();
+            foreach (FishSpawn fs in typesOfFishes)
+            {
+                goalPositions[fs.fishPrefab.name] = randomFishRange(fs.fishPrefab.name);
+            }
         }
+    }
+
+    public Vector3 FishGoalPosition(string fishId)
+    {
+        Vector3 goal = Vector3.zero;
+        if (!goalPositions.TryGetValue(fishId, out goal))
+            Debug.LogError("Failed to get goal position for fish id: " + fishId);
+        return goal;
     }
 
     private IEnumerator InitializeFishes()
     {
         fishes = new List<Flock>();
+        goalPositions = new Dictionary<string, Vector3>();
 
         int i;
         Flock f;
@@ -66,21 +76,39 @@ public class FishManager : MonoBehaviour {
                 }
                 fish.transform.SetParent(this.transform);
                 f = fish.GetComponent<Flock>();
+                f.SetId(fs.fishPrefab.name);
                 fishes.Add(f);
-                fish.transform.position = new Vector3(Random.Range(-20, 80),
-                    Random.Range(fs.fishPrefab.transform.position.y - 10, fs.fishPrefab.transform.position.y + 10),
-                    Random.Range(135, 230));
+                fish.transform.position = randomFishRange(fs.fishPrefab.name);
                 fish.SetActive(true);
             }
+
+            goalPositions.Add(fs.fishPrefab.name, randomFishRange(fs.fishPrefab.name));
+            goalPositions[fs.fishPrefab.name] = randomFishRange(fs.fishPrefab.name);
         }
 
         yield return null;
     }
 
-    private Vector3 RandomTankRange()
+    private Vector3 randomTankRange()
     {
         return new Vector3(Random.Range(-20, 80),
-            Random.Range(-25, -200),
-            Random.Range(135, 230));
+            Random.Range(-25, -200), Random.Range(135, 230));
+    }
+
+    private Vector3 randomFishRange(string fishName)
+    {
+        foreach (FishSpawn fs in typesOfFishes)
+        {
+            if (fs.fishPrefab.name == fishName)
+            {
+                return new Vector3(Random.Range(-20, 80),
+                    Random.Range(fs.fishPrefab.transform.position.y - fishYAxisRange,
+                        fs.fishPrefab.transform.position.y + fishYAxisRange),
+                    Random.Range(135, 230));
+            }
+        }
+
+        Debug.LogError("Failed to find a fish name: " + fishName);
+        return Vector3.zero;
     }
 }

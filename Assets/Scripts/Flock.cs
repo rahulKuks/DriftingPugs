@@ -18,11 +18,13 @@ public class Flock : MonoBehaviour
     private float dist;
     private int groupSize;
 
+    private string id;
+
     // Use this for initialization
     void Start()
     {
         moveSpeed = Random.Range(0.5f, 1);
-        goalPos = FishManager.Instance.GoalPos;
+        goalPos = FishManager.Instance.FishGoalPosition(id);
     }
 
     // Update is called once per frame
@@ -54,10 +56,10 @@ public class Flock : MonoBehaviour
 
     }
 
-    void ApplyRules()
+    private void ApplyRules()
     {
         // Reset vars
-        goalPos = FishManager.Instance.GoalPos;
+        goalPos = FishManager.Instance.FishGoalPosition(id);
         vCentre = Vector3.zero;
         vAvoid = Vector3.zero;
         direction = Vector3.zero;
@@ -95,4 +97,6 @@ public class Flock : MonoBehaviour
                     rotationSpeed * Time.deltaTime);
         }
     }
+
+    public void SetId(string name) { this.id = name; }
 }
