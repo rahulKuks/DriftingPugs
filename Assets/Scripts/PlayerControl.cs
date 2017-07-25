@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine;
 using VRTK;
 using System;
+using UnityStandardAssets.ImageEffects;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -23,6 +24,15 @@ public class PlayerControl : MonoBehaviour
     [Tooltip("The factor to calculate the drag force when in the water. The bigger this percentage, the more the drag force will be according to the current speed, and the faster the player is going to reach a stable speed.")]
     [Range(0, 1)]
 	[SerializeField] private float dragPercentageWater = 0.2f;
+	[Tooltip("Reference to vignette image effect")]
+	[SerializeField] private VignetteAndChromaticAberration vignette;
+	[Tooltip("Vignetter intensit (0-1)")] 
+	[Range(0, 1)]
+	[SerializeField] private float vignetteIntensity;
+	[Tooltip ("Vignette fade in time in seconds")]
+	[SerializeField] private float vignetteFadeInTime;
+	[Tooltip ("Vignette fade out time in seconds")]
+	[SerializeField] private float vignetteFadeOutTime;
 
 	[Header("Fade Out Parameters")]
 	[Space(5)]
@@ -156,6 +166,7 @@ public class PlayerControl : MonoBehaviour
             case (PlayerState.Grounded):
                 break;
 			case (PlayerState.InWater_Falling):
+				StartCoroutine ("VignetteFadeIn");
 				spriteController.DisableParentAnimator ();
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
@@ -171,7 +182,9 @@ public class PlayerControl : MonoBehaviour
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
+
 			case (PlayerState.Space):
+				StartCoroutine ("VignetteFadeOut");
 				SoundController.Instance.EnterSpace ();
 				StartCoroutine ("EarthGaze");
 				sprite.transform.SetParent (spriteParent, true);
@@ -179,15 +192,38 @@ public class PlayerControl : MonoBehaviour
 				rb.useGravity = false;
 				rb.drag = 0;
                 rb.velocity = Vector3.zero;
-
-                //enable locomotion
-                /*if (swivel != null) 
-				{
-					swivel.enabled = true;
-				}*/
                 break;
         }
     }
+
+	/// <summary>
+	/// Coroutine that interpolates the vignette instensity to simulate a fade in of the vignette image effect
+	/// </summary>
+	private IEnumerator VignetteFadeIn()
+	{
+		vignette.enabled = true;
+
+		while (vignette.intensity != vignetteIntensity)
+		{
+			vignette.intensity = Mathf.Lerp (0, vignetteIntensity, vignetteFadeInTime);
+			yield return new WaitForEndOfFrame();
+		}
+	}
+
+	/// <summary>
+	/// Coroutine that interpolates the vignette instensity to simulate a fade out of the vignette image effect
+	/// </summary>
+	private IEnumerator VignetteFadeOut()
+	{
+		while (vignette.intensity != 0)
+		{
+			vignette.intensity = Mathf.Lerp (vignetteIntensity, 0, vignetteFadeOutTime);
+			yield return new WaitForEndOfFrame();
+		}
+
+		vignette.enabled = false;
+	}
+
 
     private IEnumerator MoveSpriteLake()
     {
