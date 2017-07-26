@@ -108,6 +108,7 @@ public class SpriteController : MonoBehaviour
 	void EnableSpriteSeaBehaviour ()
 	{
 		childAnim.SetBool ("inForest", false);
+		childAnim.SetBool ("inLake", true);
 		//spriteAudioSource.clip = spriteSeaSound;
 		//spriteAudioSource.loop = true;
 		//spriteAudioSource.Play ();
