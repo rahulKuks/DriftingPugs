@@ -55,6 +55,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GameObject space;
 	[Tooltip("The point where the rotation around earth will begin.")]
 	[SerializeField] private Transform rotationPoint;
+    [Tooltip("Where the sprite will be when rotating around earth.")]
+    [SerializeField] private Transform spriteRotationPoint;
 
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
@@ -176,6 +178,8 @@ public class PlayerControl : MonoBehaviour
 				SoundController.Instance.EnterSpace ();
                 //StartCoroutine ("EarthGaze");
 				sprite.transform.SetParent (spriteParent, true);
+                Debug.Log(this.transform.position.y - spriteRotationPoint.position.y);
+                spriteRotationPoint.SetParent(Camera.main.transform, true);
                 StartCoroutine(SpaceEploration());
 
 				rb.useGravity = false;
@@ -248,8 +252,14 @@ public class PlayerControl : MonoBehaviour
 	
     public IEnumerator SpaceEploration()
     {
-		sprite.transform.position = this.transform.position;
+        // Update state so it can't trigger again
+        currentState = PlayerState.Earth_Gaze;
+        // Disable the sea world
+        sea.transform.parent.gameObject.SetActive(false); sprite.transform.position = this.transform.position;
+
 		spriteController.DisableParentAnimator();
+        // Parent to sprite to follow it
+        // Do dumb loop since it doesn't set the first time
         while (this.transform.parent.parent == null)
         {
             this.transform.parent.SetParent(sprite.transform, true);
@@ -262,11 +272,6 @@ public class PlayerControl : MonoBehaviour
 
     private IEnumerator EarthGaze()
     {
-		// Update state so it can't trigger again
-        currentState = PlayerState.Earth_Gaze;
-        // Disable the sea world
-		sea.transform.parent.gameObject.SetActive(false);
-
 		/* Enable the earth & sun,
 		 * set earth at 23.5 tilt and reset sun's rotation,
 		 * and parent to space world*/
@@ -281,9 +286,6 @@ public class PlayerControl : MonoBehaviour
 
         // Trigger earth gaze sound
         SoundController.Instance.PlayEarthGaze();
-
-        // Parent to sprite to follow it
-		// Do dumb loop since it doesn't set the first time
 
         // Trigger the next part
 		spriteController.TriggerEarthGaze(earth.transform, rotationPoint);

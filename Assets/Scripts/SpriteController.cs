@@ -23,8 +23,14 @@ public class SpriteController : MonoBehaviour
     [SerializeField] private Transform landingPoint;
     [SerializeField] private Transform speedUpCheckpoint;
     [SerializeField] private Transform space;
+    [Tooltip("Where the sprite will be when rotating around earth.")]
+    [SerializeField]
+    private Transform spriteRotationPoint;
+    [Tooltip("The speed of the sprite when it move to the sprite rotation point at the beginning of earth gaze.")]
+    [SerializeField] private float spriteRotationSetupSpeed = 5.0f;
+    [SerializeField] private Transform player;
 
-	private Transform earth;
+    private Transform earth;
 	private Transform rotationPoint;
     private float speed;
     private bool isSpeedUp = false;
@@ -162,7 +168,7 @@ public class SpriteController : MonoBehaviour
 
     public void TriggerEarthGaze(Transform earth, Transform rotationPoint)
 	{
-		// Set variables
+        // Set variables
 		this.earth = earth;
 		this.rotationPoint = rotationPoint;
 		spriteAudioSource.volume = Mathf.Lerp (spriteAudioSource.volume, 0, 1.5f);
@@ -178,6 +184,19 @@ public class SpriteController : MonoBehaviour
 			transform.position = Vector3.MoveTowards(transform.position, rotationPoint.position, speed * Time.fixedDeltaTime);
             yield return new WaitForFixedUpdate();
         }
+
+        /*  Move the sprite to where it should be position during rotation  */
+        // Un-parent from sprite for now
+        spriteRotationPoint.SetParent(null, true);
+        player.parent.SetParent(null, true);
+        // Move sprite
+        while (Vector3.Distance(transform.position, spriteRotationPoint.position) > 1e-6)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, spriteRotationPoint.position, spriteRotationSetupSpeed * Time.fixedDeltaTime);
+            yield return new WaitForFixedUpdate();
+        }
+        // Re-add player as a child
+        player.parent.SetParent(this.transform, true);
 
         Debug.Log("Do rotation");
         /* Calculate speed using rotation duration
