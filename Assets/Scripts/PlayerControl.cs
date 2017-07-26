@@ -87,7 +87,7 @@ public class PlayerControl : MonoBehaviour
 		 * catch exception if running the FPS controller, or if swivel is not available.*/
 		try
 		{
-			swivel = this.transform.parent.gameObject.GetComponent<SwivelLocomotion> ();
+			swivel = this.transform.GetComponent<SwivelLocomotion> ();
 		}
 		catch (Exception e) 
 		{
@@ -164,10 +164,10 @@ public class PlayerControl : MonoBehaviour
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
-				//disable movement
+
 				if (swivel != null) 
 				{
-					swivel.enabled = false;
+					swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSea);
 				}
 				break;
 				
@@ -262,6 +262,12 @@ public class PlayerControl : MonoBehaviour
             yield return new WaitForSeconds(1.0f);
         }
 
+		//Enable space constraints and parameters
+		if (swivel != null) 
+		{
+			swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSpace);
+		}
+
         yield return StartCoroutine(spriteController.Explore());
         StartCoroutine(EarthGaze());
     }
@@ -279,6 +285,13 @@ public class PlayerControl : MonoBehaviour
         earth.transform.SetParent(space.transform, true);
         sun.transform.SetParent(space.transform, true);
 		rotationPoint.transform.SetParent(space.transform, true);
+
+		//Disable leaning locomotion
+		if (swivel != null) 
+		{
+			swivel.enabled = false;
+			rb.velocity = Vector3.zero;
+		}
 
         // Trigger earth gaze sound
         SoundController.Instance.PlayEarthGaze();

@@ -19,6 +19,12 @@ public class SwivelLocomotion : MonoBehaviour
 		inSpace
 	};
 
+
+
+	//public PlayerHeight playerHeight;
+
+	[Header("Global Parameters")]
+	[Space(5)]
 	//*** public Swivel-360 External Variables
 	public GameObject viveCameraEye;
 	public GameObject viveRightController;
@@ -27,9 +33,7 @@ public class SwivelLocomotion : MonoBehaviour
 	public float sidewaySensitivity = 10f;
 	public float upwardSensitivity = 13f;
 
-	//public PlayerHeight playerHeight;
 
-	//*** Serialised max forward, sideways and upwards speed ***
 	[Header("Forest Parameters")]
 	[Space(5)]
 	[Tooltip("Maximum forwards/backwards speed. Enter 0 to disable movement in this axis or a negative number for no upper limit")]
@@ -92,6 +96,7 @@ public class SwivelLocomotion : MonoBehaviour
 	Rigidbody rb;
 
 
+
 	// *** Swivel-360 internal SerializePrivateVariables *** (Just copy them in your project with no change, because Swivel-360 methods communicating each other through these variables)
 	StreamReader sr;
 	bool instantHandBrake = true;
@@ -121,35 +126,20 @@ public class SwivelLocomotion : MonoBehaviour
 	void Start ()
 	{
 		locomotionDisabled = false;
-		rb = GetComponent<Rigidbody> ();
+
+		try
+		{
+			rb = GetComponent<Rigidbody>();
+		}
+		catch (Exception e)
+		{
+			Debug.LogError("Player Rigidbody not found!");
+		}
+
 		loadChairProfile (); //Load Chair Profile saved into a file by the chair calibration program
 	}
 
-	void FixedUpdate ()
-	{
-		if(leftControllerDevice != null) 	// ensure device initialisation before reading data
-		{
-			readControllerData (); //Read Vive Controller data and store them inside internal variables
 
-			if (InterfaceIsReady) 
-			{
-				switch (currentState) 
-				{
-						case SwivelState.inSea:
-						Debug.Log("Constraining in sea"); 
-						ConstrainXZ ();
-						break;
-
-					case SwivelState.inSpace:
-						Debug.Log("Constraining in space"); 
-						ConstrainAll();
-						break;
-				}
-			}
-
-
-		}
-	}
 
 	// Update is called once per frame
 	void Update ()
@@ -509,6 +499,32 @@ public class SwivelLocomotion : MonoBehaviour
 
 	}
 
+	void FixedUpdate ()
+	{
+		if(leftControllerDevice != null) 	// ensure device initialisation before reading data
+		{
+			readControllerData (); //Read Vive Controller data and store them inside internal variables
+
+			if (InterfaceIsReady) 
+			{
+				switch (currentState) 
+				{
+					case SwivelState.inSea:
+						Debug.Log("Constraining in sea"); 
+						ConstrainXZ ();
+						break;
+
+					case SwivelState.inSpace:
+						Debug.Log("Constraining in space"); 
+						ConstrainAll();
+						break;
+				}
+			}
+
+
+		}
+	}
+
 	/// <summary>
 	/// Adds a force onto the user that pushes it back to its origin point. The force is smaller than the forward speed until the user hits max speed, when the force is greater. This is done on all three axes.
 	/// </summary>
@@ -549,7 +565,7 @@ public class SwivelLocomotion : MonoBehaviour
 	private void ConstrainXZ()
 	{
 		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
-		//debugOriginSeaCube.transform.position = originXZ;
+		debugOriginSeaCube.transform.position = originXZ;
 		Vector3 vectorToOrigin = originXZ - this.transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
@@ -577,26 +593,6 @@ public class SwivelLocomotion : MonoBehaviour
 
 	}
 
-	/*public void SetMaxForwardSpeed(float forwardSpeed)
-	{
-		this.maxForestForwardSpeed = forwardSpeed;
-	}
-
-	public float GetMaxForwardSpeed()
-	{
-		return this.maxForestForwardSpeed;
-	}
-
-	public void SetMaxUpwardSpeed(float upwardSpeed)
-	{
-		this.maxSpaceUpwardsSpeed= upwardSpeed;
-	}
-
-	public float GetMaxUpwardSpeed()
-	{
-		return this.maxSpaceUpwardsSpeed;
-	}*/
-
 	/// <summary>
 	/// Sets the swivel state and accordingly flag constraints
 	/// </summary>
@@ -611,16 +607,14 @@ public class SwivelLocomotion : MonoBehaviour
 				break;
 
 			case SwivelState.inSea:
-				//debugOriginSeaCube.SetActive(true);
+				debugOriginSeaCube.SetActive(true);
 				constraintOrigin = transform.localPosition;
 				Debug.Log("Swivel Sea state, Origin: " + constraintOrigin);
 				break;
 
 			case SwivelState.inSpace:
-				//debugOriginSeaCube.SetActive(false);
 				constraintOrigin = transform.localPosition;
-				//debugOriginSpaceCube.SetActive(true);
-				//debugOriginSpaceCube.transform.localPosition = constraintOrigin;
+				debugOriginSeaCube.transform.localPosition = constraintOrigin;
 				Debug.Log("Swivel space state, Origin: " + constraintOrigin);
 				break;
 		}
