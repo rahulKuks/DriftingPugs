@@ -565,7 +565,7 @@ public class SwivelLocomotion : MonoBehaviour
 	private void ConstrainXZ()
 	{
 		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
-		debugOriginSeaCube.transform.position = originXZ;
+		//debugOriginSeaCube.transform.position = originXZ;
 		Vector3 vectorToOrigin = originXZ - this.transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
@@ -607,14 +607,14 @@ public class SwivelLocomotion : MonoBehaviour
 				break;
 
 			case SwivelState.inSea:
-				debugOriginSeaCube.SetActive(true);
+				//debugOriginSeaCube.SetActive(true);
 				constraintOrigin = transform.localPosition;
 				Debug.Log("Swivel Sea state, Origin: " + constraintOrigin);
 				break;
 
 			case SwivelState.inSpace:
 				constraintOrigin = transform.localPosition;
-				debugOriginSeaCube.transform.localPosition = constraintOrigin;
+				//debugOriginSeaCube.transform.localPosition = constraintOrigin;
 				Debug.Log("Swivel space state, Origin: " + constraintOrigin);
 				break;
 		}
