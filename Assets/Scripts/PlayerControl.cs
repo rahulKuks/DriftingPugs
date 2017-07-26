@@ -58,6 +58,8 @@ public class PlayerControl : MonoBehaviour
 	[SerializeField] private Transform rotationPoint;
     [Tooltip("Where the sprite will be when rotating around earth.")]
     [SerializeField] private Transform spriteRotationPoint;
+	[SerializeField] private Material spaceSkybox;
+	[SerializeField] private Material morningSkybox;
 
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
@@ -164,7 +166,7 @@ public class PlayerControl : MonoBehaviour
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
-
+				RenderSettings.skybox = spaceSkybox;
 				if (swivel != null) 
 				{
 					swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSea);
