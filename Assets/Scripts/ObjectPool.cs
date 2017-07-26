@@ -35,28 +35,25 @@ public class ObjectPool : MonoBehaviour
     {
         _instance = this;
         pooledObjects = new Dictionary<string, List<GameObject>>();
-    }
 
-    private void Start()
-    {
-        // Create variables
-        List<GameObject> objectList;
-        GameObject obj;
+		// Create variables
+		List<GameObject> objectList;
+		GameObject obj;
 
-        // Instantiate all pooled items
-        foreach (ObjectPoolItem i in itemsToPool)
-        {
-            objectList = new List<GameObject>(i.pooledCount);
-            for (int x = 0; x < i.pooledCount; x++)
-            {
-                obj = (GameObject)Instantiate(i.pooledItem);
-                obj.SetActive(false);
-                obj.transform.SetParent(this.transform);
-                objectList.Add(obj);
-            }
-            pooledObjects.Add(i.identifier, objectList);
-        }
-    }
+		// Instantiate all pooled items
+		foreach (ObjectPoolItem i in itemsToPool)
+		{
+			objectList = new List<GameObject>(i.pooledCount);
+			for (int x = 0; x < i.pooledCount; x++)
+			{
+				obj = (GameObject)Instantiate(i.pooledItem);
+				obj.SetActive(false);
+				obj.transform.SetParent(this.transform);
+				objectList.Add(obj);
+			}
+			pooledObjects.Add(i.identifier, objectList);
+		}
+	}       
 
     public GameObject GetPooledObject(string identifier)
     {
