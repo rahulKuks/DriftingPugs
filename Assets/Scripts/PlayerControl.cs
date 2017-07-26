@@ -178,7 +178,6 @@ public class PlayerControl : MonoBehaviour
 				SoundController.Instance.EnterSpace ();
                 //StartCoroutine ("EarthGaze");
 				sprite.transform.SetParent (spriteParent, true);
-                Debug.Log(this.transform.position.y - spriteRotationPoint.position.y);
                 spriteRotationPoint.SetParent(Camera.main.transform, true);
                 StartCoroutine(SpaceEploration());
 
