@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine;
 using VRTK;
 using System;
+using UnityStandardAssets.ImageEffects;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -174,6 +175,7 @@ public class PlayerControl : MonoBehaviour
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
+
 			case (PlayerState.Space):
 				SoundController.Instance.EnterSpace ();
                 //StartCoroutine ("EarthGaze");
@@ -184,15 +186,10 @@ public class PlayerControl : MonoBehaviour
 				rb.useGravity = false;
 				rb.drag = 0;
                 rb.velocity = Vector3.zero;
-
-                //enable locomotion
-                /*if (swivel != null) 
-				{
-					swivel.enabled = true;
-				}*/
                 break;
         }
     }
+
 
     private IEnumerator MoveSpriteLake()
     {
