@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine;
 using VRTK;
 using System;
+using UnityStandardAssets.ImageEffects;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -55,6 +56,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GameObject space;
 	[Tooltip("The point where the rotation around earth will begin.")]
 	[SerializeField] private Transform rotationPoint;
+    [Tooltip("Where the sprite will be when rotating around earth.")]
+    [SerializeField] private Transform spriteRotationPoint;
 
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
@@ -75,7 +78,6 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.LogError("Unable to get rigidbody.", this.gameObject);
         }
-
         spriteParent = sprite.transform.parent;
 		spriteController = sprite.GetComponent<SpriteController> ();
         seaRenderer = sea.GetComponent<Renderer>();
@@ -85,7 +87,7 @@ public class PlayerControl : MonoBehaviour
 		 * catch exception if running the FPS controller, or if swivel is not available.*/
 		try
 		{
-			swivel = GetComponent<SwivelLocomotion> ();
+			swivel = this.transform.parent.gameObject.GetComponent<SwivelLocomotion> ();
 		}
 		catch (Exception e) 
 		{
@@ -132,8 +134,9 @@ public class PlayerControl : MonoBehaviour
                     case 1:
                         currentState = PlayerState.InWater_Float;
                         break;
-                    case 2:
-                        currentState = PlayerState.Space;
+					case 2:
+						currentState = PlayerState.Space;
+						other.gameObject.SetActive(false); //disable so it can't trigger again
                         break;
                 }
 				UpdateState();
@@ -145,7 +148,7 @@ public class PlayerControl : MonoBehaviour
         if (other.gameObject == fadeTrigger)
         {
             StartCoroutine("FadeOut");
-            //StartCoroutine("FadeIn");
+            StartCoroutine("FadeIn");
         }
     }
 
@@ -161,10 +164,10 @@ public class PlayerControl : MonoBehaviour
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
-				//disable upward movement and constrain XZ movement
+				//disable movement
 				if (swivel != null) 
 				{
-					swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSea);
+					swivel.enabled = false;
 				}
 				break;
 				
@@ -172,10 +175,13 @@ public class PlayerControl : MonoBehaviour
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
+
 			case (PlayerState.Space):
 				SoundController.Instance.EnterSpace ();
-				StartCoroutine ("EarthGaze");
+                //StartCoroutine ("EarthGaze");
 				sprite.transform.SetParent (spriteParent, true);
+                spriteRotationPoint.SetParent(Camera.main.transform, true);
+                StartCoroutine(SpaceEploration());
 
 				rb.useGravity = false;
 				rb.drag = 0;
@@ -183,6 +189,7 @@ public class PlayerControl : MonoBehaviour
                 break;
         }
     }
+
 
     private IEnumerator MoveSpriteLake()
     {
@@ -238,14 +245,29 @@ public class PlayerControl : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
     }
-		
-    private IEnumerator EarthGaze()
+	
+    public IEnumerator SpaceEploration()
     {
-		// Update state so it can't trigger again
+        // Update state so it can't trigger again
         currentState = PlayerState.Earth_Gaze;
         // Disable the sea world
-		sea.transform.parent.gameObject.SetActive(false);
+        sea.transform.parent.gameObject.SetActive(false); sprite.transform.position = this.transform.position;
 
+		spriteController.DisableParentAnimator();
+        // Parent to sprite to follow it
+        // Do dumb loop since it doesn't set the first time
+        while (this.transform.parent.parent == null)
+        {
+            this.transform.parent.SetParent(sprite.transform, true);
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        yield return StartCoroutine(spriteController.Explore());
+        StartCoroutine(EarthGaze());
+    }
+
+    private IEnumerator EarthGaze()
+    {
 		/* Enable the earth & sun,
 		 * set earth at 23.5 tilt and reset sun's rotation,
 		 * and parent to space world*/
@@ -261,20 +283,8 @@ public class PlayerControl : MonoBehaviour
         // Trigger earth gaze sound
         SoundController.Instance.PlayEarthGaze();
 
-        // Parent to sprite to follow it
-		// Do dumb loop since it doesn't set the first time
-		while (this.transform.parent == null) {
-			this.transform.SetParent(sprite.transform, true);
-			yield return new WaitForSeconds(1.0f);
-		}
-
-		//enable upwards locomotion and constrain it
-		if (swivel != null) 
-		{
-			swivel.SetSwivelState (SwivelLocomotion.SwivelState.inSpace);
-		}
-
         // Trigger the next part
 		spriteController.TriggerEarthGaze(earth.transform, rotationPoint);
+        yield return null;
     }
 }

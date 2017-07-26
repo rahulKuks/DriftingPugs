@@ -32,3 +32,42 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+Assets/Colorful Fog.meta
+Assets/Plugin.meta
+Assets/Sounds.meta
+Assets/Colorful Fog/Documentation.meta
+Assets/Forest World/Forest Floor/Models/hill4.fbm.meta
+Assets/Forest World/Prefabs/Tent_V3.prefab
+Assets/Forest World/Prefabs/Tent_V3.prefab.meta
+Assets/Forest World/Tent/Models/Tent model_V3.fbm.meta
+Assets/Forest World/Tent/Models/Tent model_V3.fbx
+Assets/Forest World/Tent/Models/Tent model_V3.fbx.meta
+Assets/Forest World/Tent/Models/Tent modify model_Tent_double.fbm.meta
+Assets/Forest World/Tent/Models/Materials/Tent_doubleSurface_Color.mat
+Assets/Forest World/Tent/Models/Materials/Tent_doubleSurface_Color.mat.meta
+Assets/Forest World/Tent/Models/Tent model_V3.fbm/Tent_doubleNormal.png
+Assets/Forest World/Tent/Models/Tent model_V3.fbm/Tent_doubleNormal.png.meta
+Assets/Forest World/Tent/Models/Tent model_V3.fbm/Tent_doubleSurface_Color.png
+Assets/Forest World/Tent/Models/Tent model_V3.fbm/Tent_doubleSurface_Color.png.meta
+Assets/Forest World/Tent/Models/Tent modify model_Tent_double.fbm/Tent_doubleNormal.png
+Assets/Forest World/Tent/Models/Tent modify model_Tent_double.fbm/Tent_doubleNormal.png.meta
+Assets/Forest World/Tent/Models/Tent modify model_Tent_double.fbm/Tent_doubleSurface_Color.png
+Assets/Forest World/Tent/Models/Tent modify model_Tent_double.fbm/Tent_doubleSurface_Color.png.meta
+Assets/Plugin/UnityNativeAudioPluginSDK.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/Assets.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/NativeCode.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/Assets/Plugins.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI/AudioPluginDemoGUI.csproj.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI/AudioPluginDemoGUI.sln.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI/AudioPluginDemoGUI.userprefs.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI/bin.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI/obj.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI/bin/Debug.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/GUICode/AudioPluginDemoGUI/obj/Debug.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/NativeCode/VisualStudio.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/NativeCode/Xcode.meta
+Assets/Plugin/UnityNativeAudioPluginSDK/NativeCode/VisualStudio/AudioPluginDemo.sln.meta
+Assets/Sounds/Sea.meta
+Assets/Sounds/Space.meta
