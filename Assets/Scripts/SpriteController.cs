@@ -10,6 +10,8 @@ public class SpriteController : MonoBehaviour
 
 	private Animator parentAnim;
 	[SerializeField] private Animator childAnim;
+	[SerializeField] private float chimesForestSpaceVolume;
+	[SerializeField] private float chimesLakeVolume;
 	[SerializeField] private float RotationDuration = 180.0f;
     [Tooltip("The speed the sprite will begin moving at in space until the speed up checkpoint.")]
     [SerializeField] private float initialMoveSpeed = 2.5f;
@@ -39,6 +41,7 @@ public class SpriteController : MonoBehaviour
 	private AudioSource spriteAudioSource;
 	private GameObject dummyParent;
 	private PlayerControl playerControl;
+	private AudioSource chimesAudio;
 
 	// magic ratio...
 	private static readonly float SPEED_DURATION_RATIO = 20/11f;
@@ -57,6 +60,8 @@ public class SpriteController : MonoBehaviour
 		dummyParent.transform.SetParent(this.transform);
 
 		playerControl = player.gameObject.GetComponent<PlayerControl>();
+		chimesAudio = this.GetComponent<AudioSource>();
+		chimesAudio.volume = chimesForestSpaceVolume;
     }
 
 	void Update()
@@ -131,6 +136,7 @@ public class SpriteController : MonoBehaviour
 	{
 		childAnim.SetBool ("inForest", false);
 		childAnim.SetBool ("inLake", true);
+		chimesAudio.volume = chimesLakeVolume;
 		//spriteAudioSource.clip = spriteSeaSound;
 		//spriteAudioSource.loop = true;
 		//spriteAudioSource.Play ();
@@ -140,6 +146,7 @@ public class SpriteController : MonoBehaviour
     {
 		Debug.Log("Starting coroutine Explore");
 		childAnim.SetBool("inSpace", true);
+		chimesAudio.volume = chimesForestSpaceVolume;
         // Make objects in space pivot relative to this and set them up
 		spacePivot.position = player.transform.position;
         GameObject go;
