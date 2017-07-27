@@ -139,6 +139,7 @@ public class SpriteController : MonoBehaviour
 	public IEnumerator Explore(SwivelLocomotion swivel)
     {
 		Debug.Log("Starting coroutine Explore");
+		childAnim.SetBool("inSpace", true);
         // Make objects in space pivot relative to this and set them up
 		spacePivot.position = player.transform.position;
         GameObject go;
