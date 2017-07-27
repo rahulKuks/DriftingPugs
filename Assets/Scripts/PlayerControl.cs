@@ -62,10 +62,17 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private Transform spriteRotationPoint;
 	[SerializeField] private Material spaceSkybox;
 	[SerializeField] private Material morningSkybox;
+	[Tooltip("The duration it takes for the camera to fade out to black or in from black.")]
+	[SerializeField] private float fadeDuration = 1.0f;
+	[Tooltip("The duration in between the fade out and fade in.")]
+	[SerializeField] private float fadePauseDuration = 1.0f;
 
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
+	public float FadeDuration { get { return fadeDuration; } }
+
     // private variables
+	private Vector3 startPos = Vector3.zero;
     private Rigidbody rb;
 	private PlayerState currentState = PlayerState.Grounded;
     private Transform spriteParent;     // original parent of sprite
@@ -84,6 +91,7 @@ public class PlayerControl : MonoBehaviour
 
     void Start()
     {
+		startPos = transform.position;
         rb = GetComponent<Rigidbody>();
         if (rb == null)
         {
@@ -167,7 +175,8 @@ public class PlayerControl : MonoBehaviour
 		Debug.Log(currentState);
         switch (currentState)
         {
-            case (PlayerState.Grounded):
+			case (PlayerState.Grounded):
+				rb.useGravity = true;
                 break;
 			case (PlayerState.InWater_Falling):
 				spriteController.DisableParentAnimator ();
@@ -328,6 +337,29 @@ public class PlayerControl : MonoBehaviour
 
         // Trigger the next part
 		spriteController.TriggerEarthGaze(earth.transform, rotationPoint);
-        yield return null;
     }
+
+	public IEnumerator Resolution()
+	{
+		Debug.Log("Starting coroutine Resolution.");
+		sun.SetActive(false);
+		// Fade out
+		SteamVR_Fade.Start(Color.clear, 0f);    // Set start color
+		SteamVR_Fade.Start(Color.black, fadeDuration);  // Set and start fade to
+
+		yield return new WaitForSeconds(fadePauseDuration);
+		// Return to tent
+		transform.SetParent(null);
+		transform.position = startPos;
+		currentState = PlayerState.Grounded;
+		UpdateState();
+		rb.velocity = Vector3.zero;
+		swivel.enabled = false;
+		// Change skybox
+		RenderSettings.skybox = morningSkybox;
+
+		// Fade in
+		SteamVR_Fade.Start(Color.black, 0f);
+		SteamVR_Fade.Start(Color.clear, fadeDuration);
+	}
 }

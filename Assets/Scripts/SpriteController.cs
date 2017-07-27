@@ -38,6 +38,7 @@ public class SpriteController : MonoBehaviour
 	private float idleTime;
 	private AudioSource spriteAudioSource;
 	private GameObject dummyParent;
+	private PlayerControl playerControl;
 
 	// magic ratio...
 	private static readonly float SPEED_DURATION_RATIO = 20/11f;
@@ -54,6 +55,8 @@ public class SpriteController : MonoBehaviour
 		dummyParent.name = "dummyParent";
 		dummyParent.SetActive(false);
 		dummyParent.transform.SetParent(this.transform);
+
+		playerControl = player.gameObject.GetComponent<PlayerControl>();
     }
 
 	void Update()
@@ -212,10 +215,22 @@ public class SpriteController : MonoBehaviour
 		float rotationSpeed = 2 * Mathf.PI * radius / (RotationDuration * SPEED_DURATION_RATIO);
 		// Rotate around earth for the rotation duration
 		float progress = 0f;
-		while(progress <= RotationDuration)
+		/*while(progress <= RotationDuration)
 		{
 			progress += Time.fixedDeltaTime;
 			dummyParent.transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
+			yield return new WaitForFixedUpdate();
+		}*/
+		bool fadeTriggered = false;
+		while(progress <= (RotationDuration + playerControl.FadeDuration))
+		{
+			progress += Time.fixedDeltaTime;
+			dummyParent.transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
+			if (progress >= RotationDuration && !fadeTriggered)
+			{
+				fadeTriggered = true;
+				StartCoroutine(playerControl.Resolution());
+			}
 			yield return new WaitForFixedUpdate();
 		}
 	}
