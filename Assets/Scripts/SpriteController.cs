@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 
 public class SpriteController : MonoBehaviour
 {
@@ -129,6 +127,7 @@ public class SpriteController : MonoBehaviour
 	void EnableSpriteSeaBehaviour ()
 	{
 		childAnim.SetBool ("inForest", false);
+		childAnim.SetBool ("inLake", true);
 		//spriteAudioSource.clip = spriteSeaSound;
 		//spriteAudioSource.loop = true;
 		//spriteAudioSource.Play ();
