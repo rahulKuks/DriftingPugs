@@ -210,7 +210,6 @@ public class SpriteController : MonoBehaviour
          * This doesn't calculate exactly so doing workaround */
 		float radius = Vector3.Distance(dummyParent.transform.position, earth.position);
 		float rotationSpeed = 2 * Mathf.PI * radius / (RotationDuration * SPEED_DURATION_RATIO);
-		EditorApplication.isPaused = true;
 		// Rotate around earth for the rotation duration
 		float progress = 0f;
 		while(progress <= RotationDuration)
