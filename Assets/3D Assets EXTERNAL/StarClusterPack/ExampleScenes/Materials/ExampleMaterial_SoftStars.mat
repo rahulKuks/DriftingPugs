@@ -82,6 +82,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _Attenuation_Exponent: 0.8
+    - _Attenuation_Strength: 1
     - _BumpScale: 1
     - _Color_Multiplier: 1
     - _Cutoff: 0.5
@@ -96,9 +98,10 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Size_Multiplier: 5.5
+    - _Size_Multiplier: 1.07
     - _SrcBlend: 1
     - _UVSec: 0
+    - _Use_Attenuation: 0
     - _Use_Camera_Position: 0
     - _Use_Decay: 0
     - _Use_LensEffect: 0
