@@ -16,7 +16,7 @@ public class SteamVR_Overlay : MonoBehaviour
 	public bool highquality = true;
 
 	[Tooltip("Size of overlay view.")]
-	public float scale = 3.0f;
+	public float scale = 0.0f;
 
 	[Tooltip("Distance from surface.")]
 	public float distance = 1.25f;
@@ -186,4 +186,3 @@ public class SteamVR_Overlay : MonoBehaviour
 		return true;
 	}
 }
-

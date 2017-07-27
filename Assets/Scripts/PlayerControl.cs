@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine;
 using VRTK;
 using System;
+using UnityStandardAssets.ImageEffects;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -34,17 +35,18 @@ public class PlayerControl : MonoBehaviour
     [Tooltip("The time it takes for the player to rotate the Twist Angle while floating in the sea.")]
     [SerializeField] private float twistDuration = 20.0f;
 
-    // TODO: probably move this somewhere else
     [Tooltip("A flag to determine if the sea will fade out while the player is floating.")]
     [SerializeField] private bool doFade = false;
-    [Tooltip("The time it takes for the sea to fade completely away.")]
-    [SerializeField] private float fadeDuration = 20.0f;
 	[Tooltip("The location of the sprite relative to the player in the sea.")]
 	[SerializeField] private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f); 
 	[SerializeField] private WaterFog waterFog;
 	[SerializeField] private GameObject sea;
 	[SerializeField] private GameObject jellyfishes;
 	[SerializeField] private GameObject fishes;
+    [SerializeField] private GameObject bubbles;
+    [Tooltip("How far down (y-axis) the bubbles will be offset when entering the lake.")]
+    [SerializeField] private float bubblesOffset = 5.0f;
+	[SerializeField] private Material seaFadeMaterial;
 
     [Tooltip("The list of GameObjects to collide with to transition into the next state.")]
     [SerializeField] private List<GameObject> transitionColliders;
@@ -143,8 +145,7 @@ public class PlayerControl : MonoBehaviour
         // if it is the fadeTrigger
         if (other.gameObject == fadeTrigger)
         {
-            StartCoroutine("FadeOut");
-            StartCoroutine("FadeIn");
+			StartCoroutine(FadeTransition());
         }
     }
 
@@ -160,6 +161,10 @@ public class PlayerControl : MonoBehaviour
 				sprite.transform.SetParent (this.transform, true);
 				StartCoroutine ("MoveSpriteLake");
 				SoundController.Instance.EnterLake ();
+
+                bubbles.SetActive(true);
+                bubbles.transform.position = this.transform.position - new Vector3(0, bubblesOffset, 0);
+
 				//disable movement
 				if (swivel != null) 
 				{
@@ -171,6 +176,7 @@ public class PlayerControl : MonoBehaviour
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
+
 			case (PlayerState.Space):
 				SoundController.Instance.EnterSpace ();
 				StartCoroutine ("EarthGaze");
@@ -179,15 +185,10 @@ public class PlayerControl : MonoBehaviour
 				rb.useGravity = false;
 				rb.drag = 0;
                 rb.velocity = Vector3.zero;
-
-                //enable locomotion
-                /*if (swivel != null) 
-				{
-					swivel.enabled = true;
-				}*/
                 break;
         }
     }
+
 
     private IEnumerator MoveSpriteLake()
     {
@@ -199,9 +200,15 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeIn()
+	// fade out lake & fade in star clusters
+    private IEnumerator FadeTransition()
     {
-        // Set all renderers to not render anything to fade in
+		// TODO: fade these out properly
+		jellyfishes.SetActive(false);
+		fishes.SetActive(false);
+		seaRenderer.material = seaFadeMaterial;
+
+        // Set all star cluster renderers to not render anything to fade in
         Renderer[] renderers = starCluster.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
         {
@@ -213,33 +220,22 @@ public class PlayerControl : MonoBehaviour
         Vector3 prevPosition = transform.position;
         yield return new WaitForFixedUpdate();
 
-        // Do fade in;
+        // Do fade
         float progress = 0f;
+		Color color;
         while (progress <= distance)
         {
             progress += Vector3.Distance(prevPosition, transform.position) / distance;
             foreach (Renderer r in renderers)
             {
+				// fade in
                 r.material.SetColor("_Color_Tint", new Color(progress, progress, progress, progress));
             }
             prevPosition = transform.position;
-            yield return new WaitForFixedUpdate();
-        }
-    }
 
-    // TODO: probably move this somewhere else
-    private IEnumerator FadeOut()
-    {
-		jellyfishes.SetActive(false);
-		fishes.SetActive(false);
-
-		float fadeProgress = 0f;
-        while (fadeProgress < 1f)
-        {
-            fadeProgress += Time.fixedDeltaTime / fadeDuration;
-            float alpha = 1 - fadeProgress;
-            Color color = new Color(seaColor.r, seaColor.g, seaColor.b, alpha);
-            seaRenderer.material.color = color;
+			// fade out
+			color = new Color(seaColor.r, seaColor.g, seaColor.b, 1 - progress);
+			seaRenderer.material.color = color;
             yield return new WaitForFixedUpdate();
         }
     }
