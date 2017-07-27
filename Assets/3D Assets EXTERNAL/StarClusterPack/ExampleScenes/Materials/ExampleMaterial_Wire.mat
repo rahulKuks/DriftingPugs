@@ -22,7 +22,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Color:
-        m_Texture: {fileID: 2800000, guid: ff8562abe7128cd4885203b425f28e36, type: 3}
+        m_Texture: {fileID: 2800000, guid: dcea4b79353f60e468b622fce2a0cdab, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -82,8 +82,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _Attenuation_Exponent: 0.8
+    - _Attenuation_Strength: 1
     - _BumpScale: 1
-    - _Color_Multiplier: 1
+    - _Color_Multiplier: 0.19
     - _Cutoff: 0.5
     - _Decay_Exponent: 0.8
     - _Decay_Strength: 1
@@ -96,9 +98,10 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Size_Multiplier: 1.6
+    - _Size_Multiplier: 0.24
     - _SrcBlend: 1
     - _UVSec: 0
+    - _Use_Attenuation: 0
     - _Use_Camera_Position: 0
     - _Use_Decay: 0
     - _Use_LensEffect: 0
