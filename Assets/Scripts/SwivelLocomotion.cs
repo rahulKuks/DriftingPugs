@@ -613,9 +613,8 @@ public class SwivelLocomotion : MonoBehaviour
 				break;
 
 			case SwivelState.inSpace:
+				rb.velocity = Vector3.zero;	
 				constraintOrigin = transform.localPosition;
-				//debugOriginSeaCube.transform.localPosition = constraintOrigin;
-				Debug.Log("Swivel space state, Origin: " + constraintOrigin);
 				break;
 		}
 	}

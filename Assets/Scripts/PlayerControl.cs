@@ -50,13 +50,14 @@ public class PlayerControl : MonoBehaviour
     [Tooltip("The list of GameObjects to collide with to transition into the next state.")]
     [SerializeField] private List<GameObject> transitionColliders;
     [SerializeField] private GameObject starCluster;
+	[SerializeField] private float spriteSetupSpeed = 10.0f;
 
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject sun;
     [SerializeField] private GameObject space;
 	[Tooltip("The point where the rotation around earth will begin.")]
 	[SerializeField] private Transform rotationPoint;
-    [Tooltip("Where the sprite will be when rotating around earth.")]
+	[SerializeField] private Transform spriteExplorationPoint;
     [SerializeField] private Transform spriteRotationPoint;
 	[SerializeField] private Material spaceSkybox;
 	[SerializeField] private Material morningSkybox;
@@ -72,6 +73,13 @@ public class PlayerControl : MonoBehaviour
     private Color seaColor;
 	private SwivelLocomotion swivel;
 	private SpriteController spriteController;
+	private float sunEarthDeltaY;
+
+	void Awake()
+	{
+		// Compute here else the delta is different cuz the objects are moving
+		sunEarthDeltaY = sun.transform.position.y - earth.transform.position.y;
+	}
 
     void Start()
     {
@@ -180,9 +188,7 @@ public class PlayerControl : MonoBehaviour
 
 			case (PlayerState.Space):
 				SoundController.Instance.EnterSpace ();
-                //StartCoroutine ("EarthGaze");
-				sprite.transform.SetParent (spriteParent, true);
-                spriteRotationPoint.SetParent(Camera.main.transform, true);
+				sprite.transform.SetParent (spriteParent);
                 StartCoroutine(SpaceEploration());
 
 				rb.useGravity = false;
@@ -250,32 +256,46 @@ public class PlayerControl : MonoBehaviour
 	
     public IEnumerator SpaceEploration()
     {
+		Debug.Log("Starting coroutine SpaceExploration.");
         // Update state so it can't trigger again
         currentState = PlayerState.Earth_Gaze;
         // Disable the sea world
         sea.transform.parent.gameObject.SetActive(false); sprite.transform.position = this.transform.position;
 
 		spriteController.DisableParentAnimator();
-        // Parent to sprite to follow it
-        // Do dumb loop since it doesn't set the first time
-        while (this.transform.parent.parent == null)
-        {
-            this.transform.parent.SetParent(sprite.transform, true);
-            yield return new WaitForSeconds(1.0f);
-        }
+
+		/*  Move the sprite to where it should be position during exploration  */
+		swivel.enabled = false;
+		rb.velocity = Vector3.zero;
+		yield return new WaitForFixedUpdate();
+
+		while (Vector3.Distance(sprite.transform.position, spriteExplorationPoint.position) > 1)
+		{
+			sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, spriteExplorationPoint.position,
+				spriteSetupSpeed * Time.fixedDeltaTime);
+			yield return new WaitForFixedUpdate();
+		}
+		swivel.enabled = true;
+
+		yield return StartCoroutine(spriteController.Explore(swivel));
 
 		//Enable space constraints and parameters
-		if (swivel != null) 
-		{
-			swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSpace);
-		}
 
-        yield return StartCoroutine(spriteController.Explore());
         StartCoroutine(EarthGaze());
     }
 
     private IEnumerator EarthGaze()
     {
+		/*	Level objects so its not reliant on the angle the player is looking	*/
+		earth.transform.position = new Vector3(earth.transform.position.x, this.transform.position.y,
+			earth.transform.position.z);
+		sun.transform.position = new Vector3(sun.transform.position.x, this.transform.position.y + sunEarthDeltaY,
+			sun.transform.position.z);		// offset sun slightly in y axis
+		rotationPoint.transform.position = new Vector3(rotationPoint.transform.position.x,
+			this.transform.position.y, rotationPoint.transform.position.z);
+		spriteRotationPoint.transform.position = new Vector3(spriteRotationPoint.transform.position.x,
+			this.transform.position.y, spriteRotationPoint.transform.position.z);
+
 		/* Enable the earth & sun,
 		 * set earth at 23.5 tilt and reset sun's rotation,
 		 * and parent to space world*/
@@ -284,10 +304,18 @@ public class PlayerControl : MonoBehaviour
 		earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
 		sun.transform.rotation = Quaternion.identity;
 
-        earth.transform.SetParent(space.transform, true);
-        sun.transform.SetParent(space.transform, true);
-		rotationPoint.transform.SetParent(space.transform, true);
+        earth.transform.SetParent(space.transform);
+        sun.transform.SetParent(space.transform);
+		rotationPoint.transform.SetParent(space.transform);
+		spriteRotationPoint.SetParent(space.transform);
 
+		/*  Move the sprite to where it should be position during rotation  */
+		while (Vector3.Distance(sprite.transform.position, spriteRotationPoint.position) > 1e-6)
+		{
+			sprite.transform.position = Vector3.MoveTowards(sprite.transform.position, spriteRotationPoint.position,
+				spriteSetupSpeed * Time.fixedDeltaTime);
+			yield return new WaitForFixedUpdate();
+		}
 		//Disable leaning locomotion
 		if (swivel != null) 
 		{

@@ -27,7 +27,6 @@ public class SpriteController : MonoBehaviour
     [SerializeField]
     private Transform spriteRotationPoint;
     [Tooltip("The speed of the sprite when it move to the sprite rotation point at the beginning of earth gaze.")]
-    [SerializeField] private float spriteRotationSetupSpeed = 5.0f;
     [SerializeField] private Transform player;
 
     private Transform earth;
@@ -40,6 +39,7 @@ public class SpriteController : MonoBehaviour
 	private Vector3 previousPosition;
 	private float idleTime;
 	private AudioSource spriteAudioSource;
+	private GameObject dummyParent;
 
 	// magic ratio...
 	private static readonly float SPEED_DURATION_RATIO = 20/11f;
@@ -51,6 +51,11 @@ public class SpriteController : MonoBehaviour
 		previousPosition = transform.position;
 
 		spriteAudioSource = this.transform.Find ("Sprite").GetComponent<AudioSource> ();
+
+		dummyParent = new GameObject();
+		dummyParent.name = "dummyParent";
+		dummyParent.SetActive(false);
+		dummyParent.transform.SetParent(this.transform);
     }
 
 	void Update()
@@ -129,10 +134,11 @@ public class SpriteController : MonoBehaviour
 		//spriteAudioSource.Play ();
 	}
 
-    public IEnumerator Explore()
+	public IEnumerator Explore(SwivelLocomotion swivel)
     {
+		Debug.Log("Starting coroutine Explore");
         // Make objects in space pivot relative to this and set them up
-        spacePivot.position = this.transform.position;
+		spacePivot.position = player.transform.position;
         GameObject go;
         for (int i = spacePivot.childCount-1; i >= 0; i--)
         {
@@ -142,6 +148,19 @@ public class SpriteController : MonoBehaviour
         }
         spacePivot.gameObject.SetActive(false);
 
+		// Setup dummy parent that will do move the sprite and player
+		dummyParent.transform.position = player.transform.position;
+		dummyParent.transform.SetParent(null);
+		dummyParent.SetActive(true);
+		this.transform.SetParent(dummyParent.transform);
+		player.transform.SetParent(dummyParent.transform);
+		// TODO: move sprite to proper position
+
+		if (swivel != null) 
+		{
+			swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSpace);
+		}
+
         speed = initialMoveSpeed;
         Vector3 dest = Vector3.zero;
 
@@ -149,7 +168,7 @@ public class SpriteController : MonoBehaviour
         for (int i=0; i<landingPoint.childCount; i++)
         {
             dest = landingPoint.GetChild(i).transform.position;
-            while (Vector3.Distance(transform.position, dest) > 1e-6)
+            while (Vector3.Distance(dummyParent.transform.position, dest) > 1e-6)
             {
                 // Gradually speed up at speed up checkpoint
                 if (isSpeedUp)
@@ -157,7 +176,8 @@ public class SpriteController : MonoBehaviour
                     speed = Mathf.Lerp(speed, moveSpeed, Time.fixedDeltaTime);
                 }
 
-                transform.position = Vector3.MoveTowards(transform.position, dest, speed * Time.fixedDeltaTime);
+				dummyParent.transform.position = Vector3.MoveTowards(dummyParent.transform.position,
+					dest, speed * Time.fixedDeltaTime);
                 yield return new WaitForFixedUpdate();
             }
 
@@ -179,38 +199,25 @@ public class SpriteController : MonoBehaviour
 	{
 		Debug.Log("Moving towards rotation point.");
         // Move towards to position where the rotation will begin
-		while (Vector3.Distance(transform.position, rotationPoint.position) > 1e-6)
+		while (Vector3.Distance(dummyParent.transform.position, rotationPoint.position) > 1e-6)
         {
-			transform.position = Vector3.MoveTowards(transform.position, rotationPoint.position, speed * Time.fixedDeltaTime);
+			dummyParent.transform.position = Vector3.MoveTowards(dummyParent.transform.position, rotationPoint.position, speed * Time.fixedDeltaTime);
             yield return new WaitForFixedUpdate();
         }
-
-        /*  Move the sprite to where it should be position during rotation  */
-        // Un-parent from sprite for now
-        spriteRotationPoint.SetParent(null, true);
-        player.parent.SetParent(null, true);
-        // Move sprite
-        while (Vector3.Distance(transform.position, spriteRotationPoint.position) > 1e-6)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, spriteRotationPoint.position, spriteRotationSetupSpeed * Time.fixedDeltaTime);
-            yield return new WaitForFixedUpdate();
-        }
-        // Re-add player as a child
-        player.parent.SetParent(this.transform, true);
 
         Debug.Log("Do rotation");
         /* Calculate speed using rotation duration
          * Distant travelled is the circumference thus 2*pi*r
          * This doesn't calculate exactly so doing workaround */
-		float radius = Vector3.Distance(transform.position, earth.position);
+		float radius = Vector3.Distance(dummyParent.transform.position, earth.position);
 		float rotationSpeed = 2 * Mathf.PI * radius / (RotationDuration * SPEED_DURATION_RATIO);
-
+		EditorApplication.isPaused = true;
 		// Rotate around earth for the rotation duration
 		float progress = 0f;
 		while(progress <= RotationDuration)
 		{
 			progress += Time.fixedDeltaTime;
-			transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
+			dummyParent.transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
 			yield return new WaitForFixedUpdate();
 		}
 	}
