@@ -53,6 +53,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GameObject starCluster;
 	[SerializeField] private float spriteSetupSpeed = 10.0f;
 
+	[SerializeField] private GameObject forestWorld;
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject sun;
     [SerializeField] private GameObject space;
@@ -269,6 +270,7 @@ public class PlayerControl : MonoBehaviour
         // Update state so it can't trigger again
         currentState = PlayerState.Earth_Gaze;
         // Disable the sea world
+		forestWorld.SetActive(false);
         sea.transform.parent.gameObject.SetActive(false); sprite.transform.position = this.transform.position;
 
 		spriteController.DisableParentAnimator();
@@ -347,6 +349,7 @@ public class PlayerControl : MonoBehaviour
 		SteamVR_Fade.Start(Color.clear, 0f);    // Set start color
 		SteamVR_Fade.Start(Color.black, fadeDuration);  // Set and start fade to
 
+		forestWorld.SetActive(true);
 		yield return new WaitForSeconds(fadePauseDuration);
 		// Return to tent
 		transform.SetParent(null);
