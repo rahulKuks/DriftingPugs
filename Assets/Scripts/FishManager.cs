@@ -69,11 +69,17 @@ public class FishManager : MonoBehaviour {
             i = 0;
             while (i++ < fs.count)
             {
-                GameObject fish = ObjectPool.Instance.GetPooledObject(fs.fishPrefab.name);
-                if (fish == null)
-                {
-                    Debug.Log("Failed to find pooled object with id: " + fs.fishPrefab.name);
-                }
+				if (fs.fishPrefab == null)
+				{
+					Debug.LogError("Missing prefab at element: " + i);
+					continue;
+				}
+				GameObject fish = ObjectPool.Instance.GetPooledObject(fs.fishPrefab.name);
+				if (fish == null)
+				{
+					Debug.LogError("Failed to find pooled object with id: " + fs.fishPrefab.name);
+					continue;
+				}
                 fish.transform.SetParent(this.transform);
                 f = fish.GetComponent<Flock>();
                 f.SetId(fs.fishPrefab.name);
