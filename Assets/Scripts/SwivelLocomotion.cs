@@ -242,12 +242,12 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 		if (swivel360InitializeStep == 0) {
-			Debug.Log ("Ask the user to sit comfortable and look forward and then press Right ALT (prefably twice)");
+			Debug.Log ("Ask the user to sit comfortable and look forward and then press Space button or left vive controller trigger (prefably twice)");
 			swivel360InitializeStep = 2;
 		}
 
-		//if (Input.GetKeyDown ("space")) {
-		if(leftControllerDevice.GetPress(SteamVR_Controller.ButtonMask.Trigger))
+		// If either the left vive controller trigger was pressed, or space on the keyboard.
+		if(leftControllerDevice.GetPress(SteamVR_Controller.ButtonMask.Trigger) || Input.GetKeyDown(KeyCode.Space))
 		{
 			ViveControllerPitchZero = ViveControllerPitch;
 			InterfaceIsReady = true;
