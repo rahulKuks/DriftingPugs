@@ -67,6 +67,8 @@ public class PlayerControl : MonoBehaviour
 	[SerializeField] private float fadeDuration = 1.0f;
 	[Tooltip("The duration in between the fade out and fade in.")]
 	[SerializeField] private float fadePauseDuration = 1.0f;
+	[Tooltip("The time before completely fading out and ending the experience.")]
+	[SerializeField] private float finalFadeDuration = 5.0f;
 
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space, Earth_Gaze };
 
@@ -364,5 +366,9 @@ public class PlayerControl : MonoBehaviour
 		// Fade in
 		SteamVR_Fade.Start(Color.black, 0f);
 		SteamVR_Fade.Start(Color.clear, fadeDuration);
+
+		yield return new WaitForSeconds(finalFadeDuration);
+		SteamVR_Fade.Start(Color.clear, 0f);
+		SteamVR_Fade.Start(Color.black, fadeDuration);
 	}
 }
