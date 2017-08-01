@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4136585692959904}
   - component: {fileID: 33859739451080556}
   - component: {fileID: 23216332345873778}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Prefab_V2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4607575454664970}
   - component: {fileID: 33422226106338264}
   - component: {fileID: 23642861688121824}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: sub03_1_MeshPart2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 4090504908699874}
   - component: {fileID: 33913932713740046}
   - component: {fileID: 23852463537004504}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: pCylinder1_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4196276728205968}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: pillow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85,7 +85,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4451836744233712}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Flashlight_Prefab_V1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 4661408110649532}
   - component: {fileID: 33222036214865898}
   - component: {fileID: 23702546258856806}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sleeping bag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4000098867719438}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: 'Objects in tent '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4623061391351228}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: pillow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 4288806784913108}
   - component: {fileID: 33997459423699240}
   - component: {fileID: 23585839977774824}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: sub03_1_MeshPart2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 4865613086445242}
   - component: {fileID: 33488964672841398}
   - component: {fileID: 23052419311541490}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Prefab_V2 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 4205274891304124}
   - component: {fileID: 33514216794432890}
   - component: {fileID: 23015990165882762}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Prefab_V1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 4217029810038902}
   - component: {fileID: 33783645375780262}
   - component: {fileID: 23916786929662582}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Backpack_Prefab_V1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: 4755539961617316}
   - component: {fileID: 33690635966508182}
   - component: {fileID: 23197775736172714}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: BeachChair_Prefab_V1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4014459092442080}
   - component: {fileID: 95713331763528154}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: SleepingBag_Prefab_V1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 4117716424993510}
   - component: {fileID: 33500380574735186}
   - component: {fileID: 23479191567391970}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: sub03_1_MeshPart0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 4961577440378640}
   - component: {fileID: 33276282784103312}
   - component: {fileID: 23704582175136274}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: sub03_1_MeshPart1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,7 +283,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4988799789241480}
   - component: {fileID: 95895408549061260}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Prefab_V5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300,7 +300,7 @@ GameObject:
   - component: {fileID: 4979374463968190}
   - component: {fileID: 33778909400213086}
   - component: {fileID: 23156352431413736}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sleeping bag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 4164179596642998}
   - component: {fileID: 33680657669329174}
   - component: {fileID: 23622414067495794}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: sub03_1_MeshPart1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -334,7 +334,7 @@ GameObject:
   - component: {fileID: 4338120064817764}
   - component: {fileID: 33780362515892558}
   - component: {fileID: 23062282991715378}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Prefab_V1 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -351,7 +351,7 @@ GameObject:
   - component: {fileID: 4879055179173308}
   - component: {fileID: 33802595575230762}
   - component: {fileID: 23035184899572056}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Large_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -368,7 +368,7 @@ GameObject:
   - component: {fileID: 4650629587725328}
   - component: {fileID: 33417609261677080}
   - component: {fileID: 23848766247362982}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Prefab_V1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -384,7 +384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4459553284463760}
   - component: {fileID: 95113970453974872}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: SleepingBag_Prefab_V1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -401,7 +401,7 @@ GameObject:
   - component: {fileID: 4233691364750676}
   - component: {fileID: 33038981920206192}
   - component: {fileID: 23075075633324292}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: sub03_1_MeshPart0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -418,7 +418,7 @@ GameObject:
   - component: {fileID: 4612276533086678}
   - component: {fileID: 33007391118385270}
   - component: {fileID: 23946780175027586}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: handle_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -435,7 +435,7 @@ GameObject:
   - component: {fileID: 4900010396883454}
   - component: {fileID: 33482256771123308}
   - component: {fileID: 23655934789608134}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Small_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -452,7 +452,7 @@ GameObject:
   - component: {fileID: 4157270484456904}
   - component: {fileID: 33271806621122296}
   - component: {fileID: 23535720332156550}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pillow_Prefab_V1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -466,7 +466,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1163340671502264}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.000011885156, y: 0, z: -0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4217029810038902}
