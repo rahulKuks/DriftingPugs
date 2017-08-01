@@ -5,6 +5,7 @@ using UnityEngine;
 using VRTK;
 using System;
 using UnityStandardAssets.ImageEffects;
+using AC.TimeOfDaySystemFree;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -63,6 +64,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private Transform spriteRotationPoint;
 	[SerializeField] private Material spaceSkybox;
 	[SerializeField] private Material morningSkybox;
+	[SerializeField] private TimeOfDayManager timeManager;
+	[SerializeField] private float morningTime;
 	[Tooltip("The duration it takes for the camera to fade out to black or in from black.")]
 	[SerializeField] private float fadeDuration = 1.0f;
 	[Tooltip("The duration in between the fade out and fade in.")]
@@ -352,6 +355,7 @@ public class PlayerControl : MonoBehaviour
 		SteamVR_Fade.Start(Color.black, fadeDuration);  // Set and start fade to
 
 		forestWorld.SetActive(true);
+		timeManager.timeline = morningTime;
 		yield return new WaitForSeconds(fadePauseDuration);
 		// Return to tent
 		transform.SetParent(null);
