@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33805116290719886}
   - component: {fileID: 23246153047173356}
   - component: {fileID: 64092574840105226}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: TentCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4698599424938374}
   - component: {fileID: 95958008051052776}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Tent_Prefab_V3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 4595832575212556}
   - component: {fileID: 33055093400550930}
   - component: {fileID: 23250321307268558}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Tent_double
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1378726627874262}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_MotionVectors: 1
