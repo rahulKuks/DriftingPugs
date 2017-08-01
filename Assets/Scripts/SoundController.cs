@@ -9,7 +9,8 @@ public class SoundController : MonoBehaviour
 	[SerializeField] private AudioSource space;
 	[SerializeField] private AudioSource splash;
 	[SerializeField] private AudioSource earthGaze;
-	[SerializeField] private float crossfadeDuration = 1.0f;
+    [SerializeField] private AudioSource resolution;
+    [SerializeField] private float seaSpaceCrossfadeDuration = 1.0f;
 
     private static SoundController _instance;
     public static SoundController Instance
@@ -33,7 +34,7 @@ public class SoundController : MonoBehaviour
 
     public void EnterSpace()
     {
-		StartCoroutine(Crossfade(sea, space));
+		StartCoroutine(Crossfade(sea, space, seaSpaceCrossfadeDuration));
     }
 
     public void PlayEarthGaze()
@@ -41,7 +42,12 @@ public class SoundController : MonoBehaviour
         earthGaze.Play();
     }
 
-	private IEnumerator Crossfade(AudioSource source1, AudioSource source2)
+    public void PlayResolution(float fadeDuration)
+    {
+        StartCoroutine(Crossfade(space, resolution, fadeDuration));
+    }
+
+	private IEnumerator Crossfade(AudioSource source1, AudioSource source2, float duration)
 	{
 		// Play 2nd source with volume starting at 0 to fade in
 		source2.volume = 0;
@@ -50,11 +56,11 @@ public class SoundController : MonoBehaviour
 		float progress = 0.0f;
 
 		// Fade out 1st source & fade in 2nd source
-		while (progress <= crossfadeDuration)
+		while (progress <= seaSpaceCrossfadeDuration)
 		{
 			progress += Time.deltaTime;
-			source1.volume = Mathf.Min(1 - (progress / crossfadeDuration), 1.0f);
-			source2.volume = Mathf.Min(progress / crossfadeDuration, 1.0f);
+			source1.volume = Mathf.Min(1 - (progress / duration), 1.0f);
+			source2.volume = Mathf.Min(progress / duration, 1.0f);
 			yield return new WaitForEndOfFrame();
 		}
 

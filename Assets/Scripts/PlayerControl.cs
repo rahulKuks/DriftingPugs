@@ -350,6 +350,7 @@ public class PlayerControl : MonoBehaviour
 		// Fade out
 		SteamVR_Fade.Start(Color.clear, 0f);    // Set start color
 		SteamVR_Fade.Start(Color.black, fadeDuration);  // Set and start fade to
+        SoundController.Instance.PlayResolution(fadeDuration);
 
 		forestWorld.SetActive(true);
 		yield return new WaitForSeconds(fadePauseDuration);
