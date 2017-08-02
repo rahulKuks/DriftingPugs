@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class SpriteController : MonoBehaviour
 {
-
 	[Tooltip("The duration that the sprite needs to wait before it invites the user.")]
 	[SerializeField] float thresholdInvitationTime;
 
-	private Animator parentAnim;
 	[SerializeField] private Animator childAnim;
 	[SerializeField] private float chimesForestSpaceVolume;
 	[SerializeField] private float chimesLakeVolume;
@@ -18,28 +16,31 @@ public class SpriteController : MonoBehaviour
     [Tooltip("The speed at which the sprite will move towards from the speed up checkpoint to the rotation point during space.")]
 	[SerializeField] private float moveSpeed = 5.0f;
 	[SerializeField] AudioClip spriteSeaSound;
+    [Tooltip("The location of the sprite relative to the player in the sea.")]
+    [SerializeField]
+    private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f);
     [Tooltip("Objects in space that needs to placed relative to where the player will be in space.")]
     [SerializeField] private Transform spacePivot;
     [SerializeField] private Transform landingPoint;
     [SerializeField] private Transform speedUpCheckpoint;
     [SerializeField] private Transform space;
     [Tooltip("Where the sprite will be when rotating around earth.")]
-    [SerializeField]
-    private Transform spriteRotationPoint;
-    [SerializeField] private Transform player;
+    [SerializeField] private Transform spriteRotationPoint;
+    [SerializeField] private PlayerControl playerControl;
 
-    private Transform earth;
+    /*private Transform earth;
 	private Transform rotationPoint;
     private float speed;
-    private bool isSpeedUp = false;
+    private bool isSpeedUp = false;*/
 
     //Parameters to trigger sprite invitation
+	private Animator parentAnim;
     private bool invitationTrigger;
 	private Vector3 previousPosition;
 	private float idleTime;
 	private AudioSource spriteAudioSource;
-	private GameObject dummyParent;
-	private PlayerControl playerControl;
+	//private GameObject dummyParent;
+	//private PlayerControl playerControl;
 	private AudioSource chimesAudio;
 
 	// magic ratio...
@@ -53,12 +54,12 @@ public class SpriteController : MonoBehaviour
 
 		spriteAudioSource = this.transform.Find("Sprite").GetComponent<AudioSource>();
 
-		dummyParent = new GameObject();
+		/*dummyParent = new GameObject();
 		dummyParent.name = "dummyParent";
 		dummyParent.SetActive(false);
-		dummyParent.transform.SetParent(this.transform);
+		dummyParent.transform.SetParent(this.transform);*/
 
-		playerControl = player.gameObject.GetComponent<PlayerControl>();
+		//playerControl = player.gameObject.GetComponent<PlayerControl>();
 		chimesAudio = this.GetComponent<AudioSource>();
 		chimesAudio.volume = chimesForestSpaceVolume;
     }
@@ -130,11 +131,45 @@ public class SpriteController : MonoBehaviour
 		parentAnim.enabled = true;
 	}
 
-	private void EnableSpriteSeaBehaviour()
+    public void OnPlayerStateChange()
+    {
+        switch (playerControl.CurrentState)
+        {
+            case PlayerControl.PlayerState.Grounded:
+                break;
+            case PlayerControl.PlayerState.InWater_Falling:
+                StartCoroutine(MoveToSeaPosition());
+                break;
+            case PlayerControl.PlayerState.InWater_Float:
+                break;
+            case PlayerControl.PlayerState.Space:
+                EnableSpriteSpaceBehaviour();
+                break;
+        }
+    }
+
+    private void EnableSpriteSeaBehaviour()
 	{
 		childAnim.SetBool ("inForest", false);
 		childAnim.SetBool ("inLake", true);
 	}
+
+    private void EnableSpriteSpaceBehaviour()
+    {
+        childAnim.SetBool("inSpace", true);
+        chimesAudio.volume = chimesForestSpaceVolume;
+    }
+
+    private IEnumerator MoveToSeaPosition()
+    {
+        Debug.Log("Sprite moving towards player");
+        while (Vector3.Distance(this.transform.localPosition, spriteSeaLocation) > 1e-6)
+        {
+            this.transform.localPosition = Vector3.MoveTowards(this.transform.localPosition,
+                spriteSeaLocation, 10 * Time.deltaTime);
+            yield return new WaitForEndOfFrame();
+        }
+    }
 
 	/*public IEnumerator Explore(SwivelLocomotion swivel)
     {

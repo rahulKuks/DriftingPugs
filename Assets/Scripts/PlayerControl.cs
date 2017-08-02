@@ -158,12 +158,12 @@ public class PlayerControl : MonoBehaviour
 	void Awake()
 	{
 		// Compute here else the delta is different cuz the objects are moving
-		sunEarthDeltaY = sun.transform.position.y - earth.transform.position.y;
+		//sunEarthDeltaY = sun.transform.position.y - earth.transform.position.y;
 	}
 
     void Start()
     {
-		startPos = transform.position;
+		//startPos = transform.position;
         rb = GetComponent<Rigidbody>();
         if (rb == null)
         {
@@ -205,7 +205,6 @@ public class PlayerControl : MonoBehaviour
 				rb.velocity = Vector3.zero;
                 break;
         }
-
     }
 
     void OnTriggerEnter(Collider other)
@@ -243,6 +242,14 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
+    public void ResetPlayer()
+    {
+        currentState = PlayerState.Grounded;
+        UpdateState();
+        this.transform.position = startPos;
+        this.transform.SetParent(null);
+    }
+
     private void UpdateState()
     {
 		Debug.Log("Change state to: " + currentState);
@@ -252,11 +259,11 @@ public class PlayerControl : MonoBehaviour
 				rb.useGravity = true;
                 break;
 			case (PlayerState.InWater_Falling):
-				spriteController.DisableParentAnimator();
+				/*spriteController.DisableParentAnimator();
 				sprite.transform.SetParent(this.transform, true);
 				StartCoroutine("MoveSpriteLake");
 				SoundController.Instance.EnterLake();
-				RenderSettings.skybox = spaceSkybox;
+				RenderSettings.skybox = spaceSkybox;*/
 
                 // Re-position bubbles to where player is and offset in y-axis
                 bubbles.SetActive(true);
@@ -275,8 +282,6 @@ public class PlayerControl : MonoBehaviour
                 break;
 
 			case (PlayerState.Space):
-				SoundController.Instance.EnterSpace();
-				sprite.transform.SetParent(spriteParent);
                 //StartCoroutine(SpaceEploration());
 
 				rb.useGravity = false;
@@ -288,8 +293,7 @@ public class PlayerControl : MonoBehaviour
         PlayerUpdateStateEvent.Invoke();
     }
 
-    // TODO: move to SpriteController
-    private IEnumerator MoveSpriteLake()
+    /*private IEnumerator MoveSpriteLake()
     {
 		while (Vector3.Distance(sprite.transform.localPosition, spriteSeaLocation) > 1e-6)
         {
@@ -298,7 +302,7 @@ public class PlayerControl : MonoBehaviour
                 spriteSeaLocation, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
-    }
+    }*/
 
     // fade out lake & fade in star clusters
     /*private IEnumerator FadeTransition()
