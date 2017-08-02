@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Earth_Mat_V1
+  m_Name: Earth_Mat_V2
   m_Shader: {fileID: 4800000, guid: ac317edcb318f43c6988533a5ffc81d2, type: 3}
   m_ShaderKeywords: _EMISSION _NORMALMAP
   m_LightmapFlags: 1

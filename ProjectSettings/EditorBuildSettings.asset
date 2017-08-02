@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Main.unity
-    guid: 624ab53fa5dc64a489a322136152207a
+    path: Assets/Scenes/SunEarthFixes_Rahul.unity
+    guid: c4d966d16816d4b0ebaa4c1165fc5afe

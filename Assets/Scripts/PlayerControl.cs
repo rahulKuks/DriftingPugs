@@ -357,7 +357,7 @@ public class PlayerControl : MonoBehaviour
 
 		forestWorld.SetActive(true);
 		timeManager.timeline = morningTime;
-		yield return new WaitForSeconds(fadePauseDuration);
+		//yield return new WaitForSeconds(fadePauseDuration);
 		// Return to tent
 		transform.SetParent(null);
 		transform.position = startPos;
