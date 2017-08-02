@@ -12,13 +12,13 @@ public class SpriteController : MonoBehaviour
 	[SerializeField] private Animator childAnim;
 	[SerializeField] private float chimesForestSpaceVolume;
 	[SerializeField] private float chimesLakeVolume;
-	[SerializeField] private float RotationDuration = 180.0f;
+	[SerializeField] private float rotationDuration = 180.0f;
     [Tooltip("The speed the sprite will begin moving at in space until the speed up checkpoint.")]
     [SerializeField] private float initialMoveSpeed = 2.5f;
     [Tooltip("The speed at which the sprite will move towards from the speed up checkpoint to the rotation point during space.")]
 	[SerializeField] private float moveSpeed = 5.0f;
 	[SerializeField] AudioClip spriteSeaSound;
-    [Tooltip("Objects in space that neds to placed relative to where the player will be in space.")]
+    [Tooltip("Objects in space that needs to placed relative to where the player will be in space.")]
     [SerializeField] private Transform spacePivot;
     [SerializeField] private Transform landingPoint;
     [SerializeField] private Transform speedUpCheckpoint;
@@ -26,7 +26,6 @@ public class SpriteController : MonoBehaviour
     [Tooltip("Where the sprite will be when rotating around earth.")]
     [SerializeField]
     private Transform spriteRotationPoint;
-    [Tooltip("The speed of the sprite when it move to the sprite rotation point at the beginning of earth gaze.")]
     [SerializeField] private Transform player;
 
     private Transform earth;
@@ -52,7 +51,7 @@ public class SpriteController : MonoBehaviour
 		idleTime = 0;
 		previousPosition = transform.position;
 
-		spriteAudioSource = this.transform.Find ("Sprite").GetComponent<AudioSource> ();
+		spriteAudioSource = this.transform.Find("Sprite").GetComponent<AudioSource>();
 
 		dummyParent = new GameObject();
 		dummyParent.name = "dummyParent";
@@ -78,14 +77,13 @@ public class SpriteController : MonoBehaviour
 				idleTime = 0;
 			}
 		}
-
 	}
 
 	/// <summary>
 	/// Keeps track of the time spent idling and not moving. 
 	/// </summary>
 	/// <returns><c>true</c>, if time spent idling was greater than invitation threshold time, <c>false</c> otherwise.</returns>
-	bool CheckIdleTime ()
+	private bool CheckIdleTime ()
 	{
 		bool triggerAnimation = false;
 
@@ -132,7 +130,7 @@ public class SpriteController : MonoBehaviour
 		parentAnim.enabled = true;
 	}
 
-	void EnableSpriteSeaBehaviour ()
+	private void EnableSpriteSeaBehaviour()
 	{
 		childAnim.SetBool ("inForest", false);
 		childAnim.SetBool ("inLake", true);
@@ -148,7 +146,7 @@ public class SpriteController : MonoBehaviour
 		childAnim.SetBool("inSpace", true);
 		chimesAudio.volume = chimesForestSpaceVolume;
         // Make objects in space pivot relative to this and set them up
-		spacePivot.position = player.transform.position;
+		spacePivot.position = player.position;
         GameObject go;
         for (int i = spacePivot.childCount-1; i >= 0; i--)
         {
@@ -158,17 +156,17 @@ public class SpriteController : MonoBehaviour
         }
         spacePivot.gameObject.SetActive(false);
 
-		// Setup dummy parent that will do move the sprite and player
-		dummyParent.transform.position = player.transform.position;
+		// Setup dummy parent that will move the sprite and player
+		dummyParent.transform.position = player.position;
 		dummyParent.transform.SetParent(null);
 		dummyParent.SetActive(true);
 		this.transform.SetParent(dummyParent.transform);
-		player.transform.SetParent(dummyParent.transform);
-		// TODO: move sprite to proper position
+		player.SetParent(dummyParent.transform);
 
 		if (swivel != null) 
 		{
-			swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSpace);
+            //Enable space constraints and parameters
+            swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSpace);
 		}
 
         speed = initialMoveSpeed;
@@ -217,24 +215,18 @@ public class SpriteController : MonoBehaviour
 
         Debug.Log("Do rotation");
         /* Calculate speed using rotation duration
-         * Distant travelled is the circumference thus 2*pi*r
-         * This doesn't calculate exactly so doing workaround */
+         * Distant travelled is the circumference thus 2*pi*r */
 		float radius = Vector3.Distance(dummyParent.transform.position, earth.position);
-		float rotationSpeed = 2 * Mathf.PI * radius / (RotationDuration * SPEED_DURATION_RATIO);
+		float rotationSpeed = 2 * Mathf.PI * radius / (rotationDuration * SPEED_DURATION_RATIO);
+
 		// Rotate around earth for the rotation duration
 		float progress = 0f;
-		/*while(progress <= RotationDuration)
-		{
-			progress += Time.fixedDeltaTime;
-			dummyParent.transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
-			yield return new WaitForFixedUpdate();
-		}*/
 		bool fadeTriggered = false;
-		while(progress <= (RotationDuration + playerControl.FadeDuration))
+		while(progress <= (rotationDuration + playerControl.FadeDuration))
 		{
 			progress += Time.fixedDeltaTime;
 			dummyParent.transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
-			if (progress >= RotationDuration && !fadeTriggered)
+			if (progress >= rotationDuration && !fadeTriggered)
 			{
 				fadeTriggered = true;
 				StartCoroutine(playerControl.Resolution());

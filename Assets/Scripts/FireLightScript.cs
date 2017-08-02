@@ -2,17 +2,21 @@
 
 public class FireLightScript : MonoBehaviour
 {
-	public float minIntensity = 0.25f;
-	public float maxIntensity = 0.5f;
+	[SerializeField]
+    private float minIntensity = 0.25f;
+    [SerializeField]
+    private float maxIntensity = 0.5f;
+    [SerializeField]
+	private Light fireLight;
+    [SerializeField]
+    private float randomMax = 150;
 
-	public Light fireLight;
+    private float random;
 
-	float random;
-
-	void Update()
+    void Update()
 	{
-		random = Random.Range(0.0f, 150.0f);
+		random = Random.Range(0.0f, randomMax);
 		float noise = Mathf.PerlinNoise(random, Time.time);
-		fireLight.GetComponent<Light>().intensity = Mathf.Lerp(minIntensity, maxIntensity, noise);
+		fireLight.intensity = Mathf.Lerp(minIntensity, maxIntensity, noise);
 	}
 }
