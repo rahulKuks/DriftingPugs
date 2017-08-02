@@ -312,6 +312,9 @@ public class PlayerControl : MonoBehaviour
 		spriteRotationPoint.transform.position = new Vector3(spriteRotationPoint.transform.position.x,
 			this.transform.position.y, spriteRotationPoint.transform.position.z);
 
+		// Trigger earth gaze sound
+		SoundController.Instance.PlayEarthGaze();
+
 		/* Enable the earth & sun,
 		 * set earth at 23.5 tilt and reset sun's rotation,
 		 * and parent to space world*/
@@ -339,8 +342,7 @@ public class PlayerControl : MonoBehaviour
 			rb.velocity = Vector3.zero;
 		}
 
-        // Trigger earth gaze sound
-        SoundController.Instance.PlayEarthGaze();
+       
 
         // Trigger the next part
 		spriteController.TriggerEarthGaze(earth.transform, rotationPoint);
