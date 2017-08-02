@@ -139,10 +139,14 @@ public class SwivelLocomotion : MonoBehaviour
 		loadChairProfile (); //Load Chair Profile saved into a file by the chair calibration program
 	}
 
+    private void OnDisable()
+    {
+        if (rb != null)
+            rb.velocity = Vector3.zero;
+    }
 
-
-	// Update is called once per frame
-	void Update ()
+    // Update is called once per frame
+    void Update ()
 	{
 		// If controller hasn't been initialised yet, try to initialise it
 		if (leftControllerDevice == null) 

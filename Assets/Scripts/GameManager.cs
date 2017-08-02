@@ -72,8 +72,27 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private float rotationDuration = 180.0f;
 
+    #region Resolution Parameters
+    [Header("Resolution Parameters")]
+    [Space(5)]
+
+    [Tooltip("The duration it takes for the camera to fade out to black or in from black.")]
+    [SerializeField]
+    private float fadeDuration = 1.0f;
+    [Tooltip("The duration in between the fade out and fade in.")]
+    [SerializeField]
+    private float fadePauseDuration = 1.0f;
+    [SerializeField]
+    private Material morningSkybox;
+    [Tooltip("The time before completely fading out and ending the experience.")]
+    [SerializeField]
+    private float finalFadeDuration = 5.0f;
+    [SerializeField]
+    private float morningTime;
+    #endregion
+
     #region Private Variables
-	private static readonly float SPEED_DURATION_RATIO = 20/11f;
+    private static readonly float SPEED_DURATION_RATIO = 20/11f;
 
     private PlayerControl playerControl;
     private SwivelLocomotion swivel;
@@ -88,13 +107,29 @@ public class GameManager : MonoBehaviour {
 
     private float sunEarthDeltaY;
     private Transform rotationPoint;
-    
+
+    private Vector3 startPos;
     #endregion
+
+    // Singleton pattern
+    private static GameManager _instance;
+    public static GameManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType<GameManager>();
+            }
+            return _instance;
+        }
+    }
 
     void Awake()
     {
         // Compute here else the delta is different cuz the objects are moving
         sunEarthDeltaY = sun.transform.position.y - earth.transform.position.y;
+        startPos = player.position;
     }
 
     void Start()
@@ -103,6 +138,11 @@ public class GameManager : MonoBehaviour {
         swivel = player.gameObject.GetComponent<SwivelLocomotion>();
 
         spriteController = sprite.GetComponent<SpriteController>();
+    }
+
+    public void SeaSpaceFadeTransition()
+    {
+        StartCoroutine(FadeTransition());
     }
 
     public void OnPlayerStateChange()
@@ -116,6 +156,7 @@ public class GameManager : MonoBehaviour {
             case PlayerControl.PlayerState.InWater_Float:
                 break;
             case PlayerControl.PlayerState.Space:
+                StartCoroutine(Space());
                 break;
         }
     }
@@ -293,7 +334,7 @@ public class GameManager : MonoBehaviour {
         float rotationSpeed = 2 * Mathf.PI * radius / (rotationDuration * SPEED_DURATION_RATIO);
 
         // Rotate around earth for the rotation duration
-        /*float progress = 0f;
+        float progress = 0f;
         bool fadeTriggered = false;
         while (progress <= (rotationDuration + playerControl.FadeDuration))
         {
@@ -319,8 +360,9 @@ public class GameManager : MonoBehaviour {
         // Return to tent
         player.transform.SetParent(null);
         player.transform.position = startPos;
-        currentState = PlayerState.Grounded;
-        UpdateState();
+        // move to playercontrol
+        /*currentState = PlayerState.Grounded;
+        UpdateState();*/
         //rb.velocity = Vector3.zero; disable swivel
         swivel.enabled = false;
         // Change skybox
@@ -333,7 +375,7 @@ public class GameManager : MonoBehaviour {
         // Final fade out to end experience
         yield return new WaitForSeconds(finalFadeDuration);
         SteamVR_Fade.Start(Color.clear, 0f);
-        SteamVR_Fade.Start(Color.black, fadeDuration);*/
+        SteamVR_Fade.Start(Color.black, fadeDuration);
     }
     #endregion
 }

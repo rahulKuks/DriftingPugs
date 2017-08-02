@@ -134,13 +134,9 @@ public class SpriteController : MonoBehaviour
 	{
 		childAnim.SetBool ("inForest", false);
 		childAnim.SetBool ("inLake", true);
-		chimesAudio.volume = chimesLakeVolume;
-		//spriteAudioSource.clip = spriteSeaSound;
-		//spriteAudioSource.loop = true;
-		//spriteAudioSource.Play ();
 	}
 
-	public IEnumerator Explore(SwivelLocomotion swivel)
+	/*public IEnumerator Explore(SwivelLocomotion swivel)
     {
 		Debug.Log("Starting coroutine Explore");
 		childAnim.SetBool("inSpace", true);
@@ -192,18 +188,18 @@ public class SpriteController : MonoBehaviour
             if (!isSpeedUp)
                 isSpeedUp = landingPoint.GetChild(i).GetInstanceID() == speedUpCheckpoint.GetInstanceID();
         }
-    }
+    }*/
 
-    public void TriggerEarthGaze(Transform earth, Transform rotationPoint)
+    /*public void TriggerEarthGaze(Transform earth, Transform rotationPoint)
 	{
         // Set variables
 		this.earth = earth;
 		this.rotationPoint = rotationPoint;
 		spriteAudioSource.volume = Mathf.Lerp (spriteAudioSource.volume, 0, 1.5f);
         StartCoroutine("Rotate");
-	}
+	}*/
 
-	private IEnumerator Rotate()
+	/*private IEnumerator Rotate()
 	{
 		Debug.Log("Moving towards rotation point.");
         // Move towards to position where the rotation will begin
@@ -215,7 +211,7 @@ public class SpriteController : MonoBehaviour
 
         Debug.Log("Do rotation");
         /* Calculate speed using rotation duration
-         * Distant travelled is the circumference thus 2*pi*r */
+         * Distant travelled is the circumference thus 2*pi*r 
 		float radius = Vector3.Distance(dummyParent.transform.position, earth.position);
 		float rotationSpeed = 2 * Mathf.PI * radius / (rotationDuration * SPEED_DURATION_RATIO);
 
@@ -233,5 +229,5 @@ public class SpriteController : MonoBehaviour
 			}
 			yield return new WaitForFixedUpdate();
 		}
-	}
+	}*/
 }

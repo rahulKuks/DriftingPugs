@@ -238,7 +238,8 @@ public class PlayerControl : MonoBehaviour
         // if it is the fadeTrigger
         if (other.gameObject == fadeTrigger)
         {
-			StartCoroutine(FadeTransition());
+            GameManager.Instance.SeaSpaceFadeTransition();
+			//StartCoroutine(FadeTransition());
         }
     }
 
@@ -276,13 +277,15 @@ public class PlayerControl : MonoBehaviour
 			case (PlayerState.Space):
 				SoundController.Instance.EnterSpace();
 				sprite.transform.SetParent(spriteParent);
-                StartCoroutine(SpaceEploration());
+                //StartCoroutine(SpaceEploration());
 
 				rb.useGravity = false;
 				rb.drag = 0;
                 rb.velocity = Vector3.zero;
                 break;
         }
+
+        PlayerUpdateStateEvent.Invoke();
     }
 
     // TODO: move to SpriteController
@@ -297,8 +300,8 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-	// fade out lake & fade in star clusters
-    private IEnumerator FadeTransition()
+    // fade out lake & fade in star clusters
+    /*private IEnumerator FadeTransition()
     {
 		// TODO: fade these out properly
 		jellyfishes.SetActive(false);
@@ -337,9 +340,9 @@ public class PlayerControl : MonoBehaviour
 			seaRenderer.material.color = color;
             yield return new WaitForFixedUpdate();
         }
-    }
-	
-    public IEnumerator SpaceEploration()
+    }*/
+
+    /*public IEnumerator SpaceEploration()
     {
 		Debug.Log("Starting coroutine SpaceExploration.");
         // Disable the sea world
@@ -364,9 +367,9 @@ public class PlayerControl : MonoBehaviour
 		yield return StartCoroutine(spriteController.Explore(swivel));
 
         StartCoroutine(EarthGaze());
-    }
+    }*/
 
-    private IEnumerator EarthGaze()
+    /*private IEnumerator EarthGaze()
     {
 		// Level objects so its not reliant on the angle the player is looking
 		earth.transform.position = new Vector3(earth.transform.position.x, this.transform.position.y,
@@ -379,7 +382,7 @@ public class PlayerControl : MonoBehaviour
 			this.transform.position.y, spriteRotationPoint.transform.position.z);
 
         /* Enable the earth & sun, set earth at 23.5 tilt
-		 *  and reset sun's rotation, and parent to space world*/
+		 *  and reset sun's rotation, and parent to space world
         earth.SetActive(true);
         sun.SetActive(true);
 		earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
@@ -409,9 +412,9 @@ public class PlayerControl : MonoBehaviour
 
         // Trigger the next part
 		spriteController.TriggerEarthGaze(earth.transform, spriteRotationPoint);
-    }
+    }*/
 
-	public IEnumerator Resolution()
+	/*public IEnumerator Resolution()
 	{
 		Debug.Log("Starting coroutine Resolution.");
 		sun.SetActive(false);
@@ -441,5 +444,5 @@ public class PlayerControl : MonoBehaviour
 		yield return new WaitForSeconds(finalFadeDuration);
 		SteamVR_Fade.Start(Color.clear, 0f);
 		SteamVR_Fade.Start(Color.black, fadeDuration);
-	}
+	}*/
 }
