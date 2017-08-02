@@ -6,7 +6,7 @@ Flare:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Sun (from space)
-  m_FlareTexture: {fileID: 2800000, guid: 947d52c9a43d245919bc88921242a27b, type: 3}
+  m_FlareTexture: {fileID: 2800000, guid: 4f96db1198d0fb9439f44928b883215a, type: 3}
   m_TextureLayout: 0
   m_Elements:
   - m_ImageIndex: 0
