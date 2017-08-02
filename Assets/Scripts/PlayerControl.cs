@@ -25,6 +25,7 @@ public class PlayerControl : MonoBehaviour
     [Tooltip("The factor to calculate the drag force when in the water. The bigger this percentage, the more the drag force will be according to the current speed, and the faster the player is going to reach a stable speed.")]
     [Range(0, 1)]
 	[SerializeField] private float dragPercentageWater = 0.2f;
+	[SerializeField] private GameObject upperLakesurface;
 
 	[Header("Fade Out Parameters")]
 	[Space(5)]
@@ -185,11 +186,12 @@ public class PlayerControl : MonoBehaviour
 				rb.useGravity = true;
                 break;
 			case (PlayerState.InWater_Falling):
-				spriteController.DisableParentAnimator ();
-				sprite.transform.SetParent (this.transform, true);
-				StartCoroutine ("MoveSpriteLake");
-				SoundController.Instance.EnterLake ();
+				spriteController.DisableParentAnimator();
+				sprite.transform.SetParent(this.transform, true);
+				StartCoroutine("MoveSpriteLake");
+				SoundController.Instance.EnterLake();
 				RenderSettings.skybox = spaceSkybox;
+				
 
                 bubbles.SetActive(true);
                 bubbles.transform.position = this.transform.position - new Vector3(0, bubblesOffset, 0);
@@ -202,6 +204,7 @@ public class PlayerControl : MonoBehaviour
 				break;
 				
             case (PlayerState.InWater_Float):
+				upperLakesurface.SetActive(false);
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
@@ -236,6 +239,7 @@ public class PlayerControl : MonoBehaviour
 		jellyfishes.SetActive(false);
 		fishes.SetActive(false);
 		seaRenderer.material = seaFadeMaterial;
+		forestWorld.SetActive(false);
 
         // Set all star cluster renderers to not render anything to fade in
         Renderer[] renderers = starCluster.GetComponentsInChildren<Renderer>();
@@ -275,7 +279,7 @@ public class PlayerControl : MonoBehaviour
         // Update state so it can't trigger again
         currentState = PlayerState.Earth_Gaze;
         // Disable the sea world
-		forestWorld.SetActive(false);
+
         sea.transform.parent.gameObject.SetActive(false); sprite.transform.position = this.transform.position;
 
 		spriteController.DisableParentAnimator();
