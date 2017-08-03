@@ -148,6 +148,8 @@ public class GameManager : MonoBehaviour {
     // Fade out lake & fade in star clusters
     private IEnumerator FadeTransition()
     {
+		Debug.Log("Starting fade transition.");
+
         // TODO: fade these out properly
         jellyfishes.SetActive(false);
         // TODO: probably should gc with object pool
@@ -163,8 +165,7 @@ public class GameManager : MonoBehaviour {
         }
 
         starCluster.SetActive(true);
-		//float distance = player.position.y - fadeTrigger.position.y;
-		float distance = Mathf.Abs(fadeTrigger.position.y - spaceTrigger.position.y);
+		float distance = player.position.y - spaceTrigger.position.y;
         Vector3 prevPosition = player.position;
         yield return new WaitForFixedUpdate();
 
@@ -174,19 +175,14 @@ public class GameManager : MonoBehaviour {
         float progress = 0f;
 		float value;
         Color color;
-		//while (progress <= distance)
-		while ((distance - progress) > 2.0f)
+		while (progress <= 1.0f)
         {
-			//progress += Vector3.Distance(prevPosition, player.position) / distance;
-			progress += Mathf.Abs(prevPosition.y - player.position.y);
-			Debug.Log(progress);
+			progress += Vector3.Distance(prevPosition, player.position) / distance;
 			value = progress / distance;
-			//Debug.Log(value);
             foreach (Renderer r in renderers)
             {
                 // fade in
-				//r.material.SetColor("_Color_Tint", new Color(progress, progress, progress, progress));
-				r.material.SetColor("_Color_Tint", new Color(value, value, value, value));
+				r.material.SetColor("_Color_Tint", new Color(progress, progress, progress, progress));
             }
 			prevPosition = player.position;
 
@@ -195,7 +191,6 @@ public class GameManager : MonoBehaviour {
             seaRenderer.material.color = color;
             yield return new WaitForFixedUpdate();
         }
-		Debug.Log("here");
     }
 
     private IEnumerator LakeFall()
