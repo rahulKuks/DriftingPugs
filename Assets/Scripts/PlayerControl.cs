@@ -136,6 +136,13 @@ public class PlayerControl : MonoBehaviour
     private float morningTime;
     #endregion
 
+	#region Debug Parameters
+	[Header("Debug Parameters")]
+	[Space(5)]
+	[SerializeField]
+	private float debug_SinkSpeed = 10;
+	#endregion
+
     #region Public Variables
     public enum PlayerState { Grounded, InWater_Falling, InWater_Float, Space };
     public PlayerState CurrentState { get { return currentState; } }
@@ -198,7 +205,11 @@ public class PlayerControl : MonoBehaviour
             case (PlayerState.InWater_Float):
                 vel = rb.velocity;
                 rb.useGravity = false;
-                rb.AddForce(1f * Physics.gravity);
+				#if UNITY_EDITOR
+					rb.AddForce(debug_SinkSpeed * Physics.gravity);
+				#else
+                	rb.AddForce(Physics.gravity);
+				#endif
                 rb.drag = -dragPercentageWater * vel.y;
                 break;
 		    case (PlayerState.Space):

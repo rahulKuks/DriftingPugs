@@ -28,16 +28,15 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private Transform spriteExplorationPoint;
     [Tooltip("The point where the rotation around earth will begin.")]
     [SerializeField] private Transform spriteRotationPoint;
+	[SerializeField] private Transform playerRotationPoint;
     [Tooltip("Objects in space that needs to placed relative to where the player will be in space.")]
     [SerializeField] private Transform spacePivot;
     [SerializeField] private Transform landingPoint;
     [SerializeField] private Transform speedUpCheckpoint;
 
     // For transitions
-    [SerializeField] private Transform fadeTrigger;
-    [Tooltip("The list of GameObjects to collide with to transition into the next state." +
-        " Order of the GameObjects are important.")]
-    [SerializeField] private List<GameObject> transitionColliders;
+	[SerializeField] private Transform fadeTrigger;
+	[SerializeField] private Transform spaceTrigger;
     #endregion
 
     #region Space Parameters
@@ -81,7 +80,6 @@ public class GameManager : MonoBehaviour {
     private bool isSpeedUp = false;
 
     private float sunEarthDeltaY;
-    private Transform rotationPoint;
     #endregion
 
     // Singleton pattern
@@ -109,6 +107,9 @@ public class GameManager : MonoBehaviour {
         playerControl = player.gameObject.GetComponent<PlayerControl>();
         playerSwivel = player.gameObject.GetComponent<SwivelLocomotion>();
         spriteController = sprite.GetComponent<SpriteController>();
+
+		seaRenderer = sea.GetComponent<Renderer>();
+		seaColor = seaRenderer.material.color;
 
         // Setup dummy parent object
         spaceParent = new GameObject()
@@ -159,34 +160,45 @@ public class GameManager : MonoBehaviour {
         }
 
         starCluster.SetActive(true);
-        float distance = transform.position.y - fadeTrigger.position.y;
-        Vector3 prevPosition = transform.position;
+		//float distance = player.position.y - fadeTrigger.position.y;
+		float distance = Mathf.Abs(fadeTrigger.position.y - spaceTrigger.position.y);
+        Vector3 prevPosition = player.position;
         yield return new WaitForFixedUpdate();
+
+		Debug.Log(distance);
 
         // Do fade
         float progress = 0f;
+		float value;
         Color color;
-        while (progress <= distance)
+		//while (progress <= distance)
+		while ((distance - progress) > 2.0f)
         {
-            progress += Vector3.Distance(prevPosition, transform.position) / distance;
+			//progress += Vector3.Distance(prevPosition, player.position) / distance;
+			progress += Mathf.Abs(prevPosition.y - player.position.y);
+			Debug.Log(progress);
+			value = progress / distance;
+			//Debug.Log(value);
             foreach (Renderer r in renderers)
             {
                 // fade in
-                r.material.SetColor("_Color_Tint", new Color(progress, progress, progress, progress));
+				//r.material.SetColor("_Color_Tint", new Color(progress, progress, progress, progress));
+				r.material.SetColor("_Color_Tint", new Color(value, value, value, value));
             }
-            prevPosition = transform.position;
+			prevPosition = player.position;
 
             // fade out
-            color = new Color(seaColor.r, seaColor.g, seaColor.b, 1 - progress);
+            color = new Color(seaColor.r, seaColor.g, seaColor.b, 1 - value);
             seaRenderer.material.color = color;
             yield return new WaitForFixedUpdate();
         }
+		Debug.Log("here");
     }
 
     private IEnumerator LakeFall()
     {
         spriteController.DisableParentAnimator();
-        sprite.transform.SetParent(this.transform, true);
+		sprite.transform.SetParent(player, true);
         SoundController.Instance.EnterLake();
         RenderSettings.skybox = spaceSkybox;
         yield return null;
@@ -265,14 +277,14 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Starting earth gaze");
         // Level objects so its not reliant on the angle the player is looking
-        earth.transform.position = new Vector3(earth.transform.position.x, this.transform.position.y,
+		earth.transform.position = new Vector3(earth.transform.position.x, player.transform.position.y,
             earth.transform.position.z);
-        sun.transform.position = new Vector3(sun.transform.position.x, this.transform.position.y +
+		sun.transform.position = new Vector3(sun.transform.position.x, player.transform.position.y +
             sunEarthDeltaY, sun.transform.position.z);      // offset sun slightly in y-axis
         spriteRotationPoint.position = new Vector3(spriteRotationPoint.position.x,
-            this.transform.position.y, spriteRotationPoint.position.z);
-        spriteRotationPoint.transform.position = new Vector3(spriteRotationPoint.transform.position.x,
-            this.transform.position.y, spriteRotationPoint.transform.position.z);
+			player.transform.position.y, spriteRotationPoint.position.z);
+		playerRotationPoint.transform.position = new Vector3(playerRotationPoint.transform.position.x,
+			player.transform.position.y, playerRotationPoint.transform.position.z);
 
         /* Enable the earth & sun, set earth at 23.5 tilt
 		 *  and reset sun's rotation, and parent to space world*/
@@ -284,6 +296,7 @@ public class GameManager : MonoBehaviour {
         earth.transform.SetParent(space.transform);
         sun.transform.SetParent(space.transform);
         spriteRotationPoint.SetParent(space.transform);
+		playerRotationPoint.SetParent(space.transform);
 
         // Move the sprite to where it should be position during rotation
         while (Vector3.Distance(sprite.position, spriteRotationPoint.position) > 1e-6)
@@ -303,10 +316,10 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Moving towards rotation point.");
         // Move towards to position where the rotation will begin
-        while (Vector3.Distance(spaceParent.transform.position, rotationPoint.position) > 1e-6)
+		while (Vector3.Distance(spaceParent.transform.position, playerRotationPoint.position) > 1e-6)
         {
             spaceParent.transform.position = Vector3.MoveTowards(spaceParent.transform.position,
-                rotationPoint.position, spaceSpeed * Time.fixedDeltaTime);
+				playerRotationPoint.position, spaceSpeed * Time.fixedDeltaTime);
             yield return new WaitForFixedUpdate();
         }
 
