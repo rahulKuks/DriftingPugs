@@ -6,45 +6,23 @@ public class SpriteController : MonoBehaviour
 {
 	[Tooltip("The duration that the sprite needs to wait before it invites the user.")]
 	[SerializeField] float thresholdInvitationTime;
-
 	[SerializeField] private Animator childAnim;
 	[SerializeField] private float chimesForestSpaceVolume;
 	[SerializeField] private float chimesLakeVolume;
-	[SerializeField] private float rotationDuration = 180.0f;
-    [Tooltip("The speed the sprite will begin moving at in space until the speed up checkpoint.")]
-    [SerializeField] private float initialMoveSpeed = 2.5f;
-    [Tooltip("The speed at which the sprite will move towards from the speed up checkpoint to the rotation point during space.")]
-	[SerializeField] private float moveSpeed = 5.0f;
-	[SerializeField] AudioClip spriteSeaSound;
     [Tooltip("The location of the sprite relative to the player in the sea.")]
-    [SerializeField]
-    private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f);
-    [Tooltip("Objects in space that needs to placed relative to where the player will be in space.")]
-    [SerializeField] private Transform spacePivot;
-    [SerializeField] private Transform landingPoint;
-    [SerializeField] private Transform speedUpCheckpoint;
-    [SerializeField] private Transform space;
-    [Tooltip("Where the sprite will be when rotating around earth.")]
-    [SerializeField] private Transform spriteRotationPoint;
+    [SerializeField] private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f);
     [SerializeField] private PlayerControl playerControl;
 
-    /*private Transform earth;
-	private Transform rotationPoint;
-    private float speed;
-    private bool isSpeedUp = false;*/
-
+    #region Private Variables
     //Parameters to trigger sprite invitation
-	private Animator parentAnim;
+    private Animator parentAnim;
     private bool invitationTrigger;
 	private Vector3 previousPosition;
 	private float idleTime;
+    
 	private AudioSource spriteAudioSource;
-	//private GameObject dummyParent;
-	//private PlayerControl playerControl;
 	private AudioSource chimesAudio;
-
-	// magic ratio...
-	private static readonly float SPEED_DURATION_RATIO = 20/11f;
+    #endregion
 
     private void Awake()
     {
@@ -54,12 +32,6 @@ public class SpriteController : MonoBehaviour
 
 		spriteAudioSource = this.transform.Find("Sprite").GetComponent<AudioSource>();
 
-		/*dummyParent = new GameObject();
-		dummyParent.name = "dummyParent";
-		dummyParent.SetActive(false);
-		dummyParent.transform.SetParent(this.transform);*/
-
-		//playerControl = player.gameObject.GetComponent<PlayerControl>();
 		chimesAudio = this.GetComponent<AudioSource>();
 		chimesAudio.volume = chimesForestSpaceVolume;
     }
@@ -152,6 +124,7 @@ public class SpriteController : MonoBehaviour
 	{
 		childAnim.SetBool ("inForest", false);
 		childAnim.SetBool ("inLake", true);
+        chimesAudio.volume = chimesLakeVolume;
 	}
 
     private void EnableSpriteSpaceBehaviour()
@@ -170,99 +143,4 @@ public class SpriteController : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
     }
-
-	/*public IEnumerator Explore(SwivelLocomotion swivel)
-    {
-		Debug.Log("Starting coroutine Explore");
-		childAnim.SetBool("inSpace", true);
-		chimesAudio.volume = chimesForestSpaceVolume;
-        // Make objects in space pivot relative to this and set them up
-		spacePivot.position = player.position;
-        GameObject go;
-        for (int i = spacePivot.childCount-1; i >= 0; i--)
-        {
-            go = spacePivot.GetChild(i).gameObject;
-            go.SetActive(true);
-            go.transform.SetParent(space, true);
-        }
-        spacePivot.gameObject.SetActive(false);
-
-		// Setup dummy parent that will move the sprite and player
-		dummyParent.transform.position = player.position;
-		dummyParent.transform.SetParent(null);
-		dummyParent.SetActive(true);
-		this.transform.SetParent(dummyParent.transform);
-		player.SetParent(dummyParent.transform);
-
-		if (swivel != null) 
-		{
-            //Enable space constraints and parameters
-            swivel.SetSwivelState(SwivelLocomotion.SwivelState.inSpace);
-		}
-
-        speed = initialMoveSpeed;
-        Vector3 dest = Vector3.zero;
-
-        // Move through space checkpoints
-        for (int i=0; i<landingPoint.childCount; i++)
-        {
-            dest = landingPoint.GetChild(i).transform.position;
-            while (Vector3.Distance(dummyParent.transform.position, dest) > 1e-6)
-            {
-                // Gradually speed up at speed up checkpoint
-                if (isSpeedUp)
-                {
-                    speed = Mathf.Lerp(speed, moveSpeed, Time.fixedDeltaTime);
-                }
-
-				dummyParent.transform.position = Vector3.MoveTowards(dummyParent.transform.position,
-					dest, speed * Time.fixedDeltaTime);
-                yield return new WaitForFixedUpdate();
-            }
-
-            if (!isSpeedUp)
-                isSpeedUp = landingPoint.GetChild(i).GetInstanceID() == speedUpCheckpoint.GetInstanceID();
-        }
-    }*/
-
-    /*public void TriggerEarthGaze(Transform earth, Transform rotationPoint)
-	{
-        // Set variables
-		this.earth = earth;
-		this.rotationPoint = rotationPoint;
-		spriteAudioSource.volume = Mathf.Lerp (spriteAudioSource.volume, 0, 1.5f);
-        StartCoroutine("Rotate");
-	}*/
-
-	/*private IEnumerator Rotate()
-	{
-		Debug.Log("Moving towards rotation point.");
-        // Move towards to position where the rotation will begin
-		while (Vector3.Distance(dummyParent.transform.position, rotationPoint.position) > 1e-6)
-        {
-			dummyParent.transform.position = Vector3.MoveTowards(dummyParent.transform.position, rotationPoint.position, speed * Time.fixedDeltaTime);
-            yield return new WaitForFixedUpdate();
-        }
-
-        Debug.Log("Do rotation");
-        /* Calculate speed using rotation duration
-         * Distant travelled is the circumference thus 2*pi*r 
-		float radius = Vector3.Distance(dummyParent.transform.position, earth.position);
-		float rotationSpeed = 2 * Mathf.PI * radius / (rotationDuration * SPEED_DURATION_RATIO);
-
-		// Rotate around earth for the rotation duration
-		float progress = 0f;
-		bool fadeTriggered = false;
-		while(progress <= (rotationDuration + playerControl.FadeDuration))
-		{
-			progress += Time.fixedDeltaTime;
-			dummyParent.transform.RotateAround(earth.position, Vector3.up, rotationSpeed * Time.fixedDeltaTime);
-			if (progress >= rotationDuration && !fadeTriggered)
-			{
-				fadeTriggered = true;
-				StartCoroutine(playerControl.Resolution());
-			}
-			yield return new WaitForFixedUpdate();
-		}
-	}*/
 }

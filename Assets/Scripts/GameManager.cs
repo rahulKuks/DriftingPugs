@@ -68,6 +68,7 @@ public class GameManager : MonoBehaviour {
 
     #region Private Variables
     private static readonly float SPEED_DURATION_RATIO = 20/11f;
+    private static GameManager _instance;
 
     private PlayerControl playerControl;
     private SwivelLocomotion playerSwivel;
@@ -84,7 +85,6 @@ public class GameManager : MonoBehaviour {
     #endregion
 
     // Singleton pattern
-    private static GameManager _instance;
     public static GameManager Instance
     {
         get
@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour {
         spaceParent.transform.SetParent(this.transform);
     }
 
-    public void SeaSpaceFadeTransition()
+    public void LakeSpaceFadeTransition()
     {
         StartCoroutine(FadeTransition());
     }
@@ -335,7 +335,7 @@ public class GameManager : MonoBehaviour {
         // Rotate around earth for the rotation duration
         float progress = 0f;
         bool fadeTriggered = false;
-        while (progress <= (rotationDuration + playerControl.FadeDuration))
+        while (progress <= (rotationDuration + fadeDuration))
         {
             progress += Time.fixedDeltaTime;
             spaceParent.transform.RotateAround(earth.transform.position, Vector3.up,
