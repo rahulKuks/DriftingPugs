@@ -127,7 +127,6 @@ public class GameManager : MonoBehaviour {
         spriteController = sprite.GetComponent<SpriteController>();
 
 		fishesTriggerCheckpointIndex = checkpointController.IndexOfCheckpoint(fishesTriggerCheckpoint);
-		Debug.Log(fishesTriggerCheckpointIndex);
 		lakeRenderer = lake.GetComponent<Renderer>();
 		lakeColor = lakeRenderer.material.color;
 

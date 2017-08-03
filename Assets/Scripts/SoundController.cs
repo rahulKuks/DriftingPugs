@@ -7,7 +7,6 @@ public class SoundController : MonoBehaviour
 	[SerializeField] private AudioSource forest;
 	[SerializeField] private AudioSource sea;
 	[SerializeField] private AudioSource space;
-	[SerializeField] private AudioSource splash;
 	[SerializeField] private AudioSource earthGaze;
     [SerializeField] private AudioSource resolution;
     [SerializeField] private float seaSpaceCrossfadeDuration = 1.0f;
@@ -28,8 +27,7 @@ public class SoundController : MonoBehaviour
     public void EnterLake()
     {
 		forest.Stop();
-		splash.Play();
-		sea.PlayDelayed(1.0f);
+		sea.Play();
     }
 
     public void EnterSpace()
