@@ -6,6 +6,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
     #region GameObject variables
+	[Header("GameObjects")]
+	[Space(5)]
     [SerializeField] private Transform player;
     [SerializeField] private Transform sprite;
     [SerializeField] private AC.TimeOfDaySystemFree.TimeOfDayManager timeManager;
@@ -13,11 +15,10 @@ public class GameManager : MonoBehaviour {
     // For forest world
     [SerializeField] private GameObject forestWorld;
 
-    // For sea world
-    [SerializeField] private GameObject sea;
+
+    // For lake world
+	[SerializeField] private GameObject lake;
     [SerializeField] private GameObject jellyfishes;
-    [SerializeField] private GameObject fishes;
-    [SerializeField] private Material seaFadeMaterial;
     [SerializeField] private GameObject upperLakesurface;
 
     // For space world
@@ -40,13 +41,28 @@ public class GameManager : MonoBehaviour {
 	[SerializeField] private Transform spaceTrigger;
     #endregion
 
+	#region Forest Parameters
+	[Header("Forest Parameters")]
+	[Space(5)]
+	[SerializeField] private CheckpointController checkpointController;
+	[Tooltip("The checkpoint to start spawning all the fishes in the lake.")]
+	[SerializeField] private Checkpoint fishesTriggerCheckpoint;
+	#endregion
+
+	#region Lake Parameters
+	[Header("Lake Parameters")]
+	[Space(5)]
+	[SerializeField] private Material lakeFadeMaterial;
+	#endregion
+
     #region Space Parameters
+	[Header("Space Parameters")]
+	[Space(5)]
     [SerializeField] private Material spaceSkybox;
     [SerializeField] private float initialSpaceSpeed = 2.5f;
     [Tooltip("The speed at which the sprite will move towards from the speed up checkpoint to the rotation" +
         "point during space.")]
     [SerializeField] private float spaceSpedUpSpeed = 5.0f;
-
     [Tooltip("The speed of the sprite moving towards the sprite exploration point.")]
     [SerializeField] private float spriteSetupSpeed = 10.0f;
     [SerializeField] private float rotationDuration = 180.0f;
@@ -74,8 +90,9 @@ public class GameManager : MonoBehaviour {
     private SwivelLocomotion playerSwivel;
     private SpriteController spriteController;
 
-    private Renderer seaRenderer;       // Used to get the material to change the opacity
-    private Color seaColor;             // Used to preserve the color while changing the alpha level
+	private int fishesTriggerCheckpointIndex;
+	private Renderer lakeRenderer;       // Used to get the material to change the opacity
+	private Color lakeColor;             // Used to preserve the color while changing the alpha level
 
     private GameObject spaceParent;
     private float spaceSpeed;
@@ -97,20 +114,22 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    void Awake()
+    private void Awake()
     {
         // Compute here else the delta is different cuz the objects are moving
         sunEarthDeltaY = sun.transform.position.y - earth.transform.position.y;
     }
 
-    void Start()
+	private void Start()
     {
         playerControl = player.gameObject.GetComponent<PlayerControl>();
         playerSwivel = player.gameObject.GetComponent<SwivelLocomotion>();
         spriteController = sprite.GetComponent<SpriteController>();
 
-		seaRenderer = sea.GetComponent<Renderer>();
-		seaColor = seaRenderer.material.color;
+		fishesTriggerCheckpointIndex = checkpointController.IndexOfCheckpoint(fishesTriggerCheckpoint);
+		Debug.Log(fishesTriggerCheckpointIndex);
+		lakeRenderer = lake.GetComponent<Renderer>();
+		lakeColor = lakeRenderer.material.color;
 
         // Setup dummy parent object
         spaceParent = new GameObject()
@@ -121,6 +140,7 @@ public class GameManager : MonoBehaviour {
         spaceParent.transform.SetParent(this.transform);
     }
 
+	#region Public Methods
     public void LakeSpaceFadeTransition()
     {
         StartCoroutine(FadeTransition());
@@ -144,6 +164,13 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+	public void SpawnFishes(int index)
+	{
+		if (index == fishesTriggerCheckpointIndex)
+			FishManager.Instance.SpawnFishes();
+	}
+	#endregion
+
     #region Coroutines
     // Fade out lake & fade in star clusters
     private IEnumerator FadeTransition()
@@ -153,9 +180,9 @@ public class GameManager : MonoBehaviour {
         // TODO: fade these out properly
         jellyfishes.SetActive(false);
         // TODO: probably should gc with object pool
-        fishes.SetActive(false);
+		FishManager.Instance.gameObject.SetActive(false);
         forestWorld.SetActive(false);
-        seaRenderer.material = seaFadeMaterial;
+        lakeRenderer.material = lakeFadeMaterial;
 
         // Set all star cluster renderers to not render anything to fade in
         Renderer[] renderers = starCluster.GetComponentsInChildren<Renderer>();
@@ -187,8 +214,8 @@ public class GameManager : MonoBehaviour {
 			prevPosition = player.position;
 
             // fade out
-            color = new Color(seaColor.r, seaColor.g, seaColor.b, 1 - value);
-            seaRenderer.material.color = color;
+            color = new Color(lakeColor.r, lakeColor.g, lakeColor.b, 1 - value);
+            lakeRenderer.material.color = color;
             yield return new WaitForFixedUpdate();
         }
     }
@@ -208,7 +235,7 @@ public class GameManager : MonoBehaviour {
         SoundController.Instance.EnterSpace();
         // Disable the other worlds
         forestWorld.SetActive(false);
-        sea.transform.parent.gameObject.SetActive(false);
+        lake.transform.parent.gameObject.SetActive(false);
 
         spriteController.DisableParentAnimator();
 

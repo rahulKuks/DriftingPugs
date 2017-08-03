@@ -16,6 +16,7 @@ public class FishManager : MonoBehaviour {
 
     private List<Flock> fishes;
     private Dictionary<string, Vector3> goalPositions;
+	private bool isInitialized = false;
 
     public List<Flock> Fishes
     { get { return fishes; } }
@@ -34,13 +35,9 @@ public class FishManager : MonoBehaviour {
         }
     }
 
-    void Start () {
-        StartCoroutine(InitializeFishes());
-	}
-
     private void Update()
     {
-        if (Random.Range(0, 10000) < 50)
+		if (isInitialized && (Random.Range(0, 10000) < 50))
         {
             foreach (FishSpawn fs in typesOfFishes)
             {
@@ -56,6 +53,12 @@ public class FishManager : MonoBehaviour {
             Debug.LogError("Failed to get goal position for fish id: " + fishId);
         return goal;
     }
+
+	public void SpawnFishes()
+	{
+		if (!isInitialized)
+			StartCoroutine(InitializeFishes());
+	}
 
     private IEnumerator InitializeFishes()
     {
@@ -92,6 +95,7 @@ public class FishManager : MonoBehaviour {
             goalPositions[fs.fishPrefab.name] = randomFishRange(fs.fishPrefab.name);
         }
 
+		isInitialized = true;
         yield return null;
     }
 

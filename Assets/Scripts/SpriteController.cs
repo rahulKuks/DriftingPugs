@@ -9,9 +9,12 @@ public class SpriteController : MonoBehaviour
 	[SerializeField] private Animator childAnim;
 	[SerializeField] private float chimesForestSpaceVolume;
 	[SerializeField] private float chimesLakeVolume;
-    [Tooltip("The location of the sprite relative to the player in the sea.")]
-    [SerializeField] private Vector3 spriteSeaLocation = new Vector3(-3.6f, 1.2f, -5.5f);
+    [Tooltip("The location of the sprite relative to the player in the lake.")]
+	[SerializeField] private Vector3 spriteLakeLocation = new Vector3(-3.6f, 1.2f, -5.5f);
     [SerializeField] private PlayerControl playerControl;
+	[SerializeField] private CheckpointController checkpointController;
+	[Tooltip("The checkpoint the user hits before entering the lake. This is used to trigger the sprite's lake behaviour.")]
+	[SerializeField] private Checkpoint beforeLakeCheckpoint;
 
     #region Private Variables
     //Parameters to trigger sprite invitation
@@ -19,7 +22,8 @@ public class SpriteController : MonoBehaviour
     private bool invitationTrigger;
 	private Vector3 previousPosition;
 	private float idleTime;
-    
+	private int beforeLakeCheckpointIndex;
+
 	private AudioSource spriteAudioSource;
 	private AudioSource chimesAudio;
     #endregion
@@ -32,6 +36,7 @@ public class SpriteController : MonoBehaviour
 
 		spriteAudioSource = this.transform.Find("Sprite").GetComponent<AudioSource>();
 
+		beforeLakeCheckpointIndex = checkpointController.IndexOfCheckpoint(beforeLakeCheckpoint);
 		chimesAudio = this.GetComponent<AudioSource>();
 		chimesAudio.volume = chimesForestSpaceVolume;
     }
@@ -87,9 +92,9 @@ public class SpriteController : MonoBehaviour
 			childAnim.SetBool ("isIdling", true);
 		}
 
-		if (index == 9) 
+		if (index == beforeLakeCheckpointIndex) 
 		{
-			EnableSpriteSeaBehaviour ();
+			EnableSpriteLakeBehaviour ();
 		}
     }
 
@@ -110,7 +115,7 @@ public class SpriteController : MonoBehaviour
             case PlayerControl.PlayerState.Grounded:
                 break;
             case PlayerControl.PlayerState.InWater_Falling:
-                StartCoroutine(MoveToSeaPosition());
+                StartCoroutine(MoveToLakePosition());
                 break;
             case PlayerControl.PlayerState.InWater_Float:
                 break;
@@ -120,7 +125,7 @@ public class SpriteController : MonoBehaviour
         }
     }
 
-    private void EnableSpriteSeaBehaviour()
+    private void EnableSpriteLakeBehaviour()
 	{
 		childAnim.SetBool ("inForest", false);
 		childAnim.SetBool ("inLake", true);
@@ -133,13 +138,13 @@ public class SpriteController : MonoBehaviour
         chimesAudio.volume = chimesForestSpaceVolume;
     }
 
-    private IEnumerator MoveToSeaPosition()
+    private IEnumerator MoveToLakePosition()
     {
         Debug.Log("Sprite moving towards player");
-        while (Vector3.Distance(this.transform.localPosition, spriteSeaLocation) > 1e-6)
+        while (Vector3.Distance(this.transform.localPosition, spriteLakeLocation) > 1e-6)
         {
             this.transform.localPosition = Vector3.MoveTowards(this.transform.localPosition,
-                spriteSeaLocation, 10 * Time.deltaTime);
+                spriteLakeLocation, 10 * Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
     }

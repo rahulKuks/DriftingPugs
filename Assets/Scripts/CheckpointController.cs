@@ -38,4 +38,9 @@ public class CheckpointController : MonoBehaviour
 
         checkpointEvent.Invoke(index);
     }
+
+	public int IndexOfCheckpoint(Checkpoint cp)
+	{
+		return checkpoints.IndexOf(cp);
+	}
 }
