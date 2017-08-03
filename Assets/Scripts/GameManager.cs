@@ -310,6 +310,9 @@ public class GameManager : MonoBehaviour {
 		playerRotationPoint.transform.position = new Vector3(playerRotationPoint.transform.position.x,
 			player.transform.position.y, playerRotationPoint.transform.position.z);
 
+		// Play earth gaze sound
+		SoundController.Instance.PlayEarthGaze();
+
         /* Enable the earth & sun, set earth at 23.5 tilt
 		 *  and reset sun's rotation, and parent to space world*/
         earth.SetActive(true);
@@ -335,11 +338,8 @@ public class GameManager : MonoBehaviour {
             playerSwivel.enabled = false;
         }
 
-        // Play earth gaze sound
-        SoundController.Instance.PlayEarthGaze();
-
         Debug.Log("Moving towards rotation point.");
-        // Move towards to position where the rotation will begin
+        // Move the player to position where the rotation will begin
 		while (Vector3.Distance(spaceParent.transform.position, playerRotationPoint.position) > 1e-6)
         {
             spaceParent.transform.position = Vector3.MoveTowards(spaceParent.transform.position,
@@ -353,7 +353,7 @@ public class GameManager : MonoBehaviour {
         float radius = Vector3.Distance(spaceParent.transform.position, earth.transform.position);
         float rotationSpeed = 2 * Mathf.PI * radius / (rotationDuration * SPEED_DURATION_RATIO);
 
-        // Rotate around earth for the rotation duration
+        // Rotate player around earth for the rotation duration
         float progress = 0f;
         bool fadeTriggered = false;
         while (progress <= (rotationDuration + fadeDuration))
@@ -390,6 +390,7 @@ public class GameManager : MonoBehaviour {
 
         // Final fade out to end experience
         yield return new WaitForSeconds(finalFadeDuration);
+		SoundController.Instance.EndResolution(fadeDuration);
         SteamVR_Fade.Start(Color.clear, 0f);
         SteamVR_Fade.Start(Color.black, fadeDuration);
     }
