@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private GameObject jellyfishes;
     [SerializeField] private GameObject fishes;
     [SerializeField] private Material seaFadeMaterial;
+    [SerializeField] private GameObject upperLakesurface;
 
     // For space world
     [SerializeField] private GameObject starCluster;
@@ -135,6 +136,7 @@ public class GameManager : MonoBehaviour {
                 StartCoroutine(LakeFall());
                 break;
             case PlayerControl.PlayerState.InWater_Float:
+                upperLakesurface.SetActive(false);
                 break;
             case PlayerControl.PlayerState.Space:
                 StartCoroutine(Space());
@@ -150,6 +152,7 @@ public class GameManager : MonoBehaviour {
         jellyfishes.SetActive(false);
         // TODO: probably should gc with object pool
         fishes.SetActive(false);
+        forestWorld.SetActive(false);
         seaRenderer.material = seaFadeMaterial;
 
         // Set all star cluster renderers to not render anything to fade in
