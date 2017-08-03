@@ -74,8 +74,7 @@ public class PlayerControl : MonoBehaviour
     #endregion
 
     #region In Sea Parameters
-    [Header("In Sea Parameters")]
-    [Space(5)]
+	[SerializeField] private GameObject upperLakesurface;
 
     // Parameters to rotate the player while they are floating down in the sea
     [Tooltip("A flag to determine if the player is rotation while floating in the sea.")]
@@ -275,7 +274,12 @@ public class PlayerControl : MonoBehaviour
 				StartCoroutine("MoveSpriteLake");
 				SoundController.Instance.EnterLake();
 				RenderSettings.skybox = spaceSkybox;*/
-
+				spriteController.DisableParentAnimator();
+				sprite.transform.SetParent(this.transform, true);
+				StartCoroutine("MoveSpriteLake");
+				SoundController.Instance.EnterLake();
+				RenderSettings.skybox = spaceSkybox;
+				
                 // Re-position bubbles to where player is and offset in y-axis
                 bubbles.SetActive(true);
                 bubbles.transform.position = this.transform.position - new Vector3(0, bubblesOffset, 0);
@@ -288,6 +292,7 @@ public class PlayerControl : MonoBehaviour
 				break;
 				
             case (PlayerState.InWater_Float):
+				upperLakesurface.SetActive(false);
                 if (doTwist)
                     StartCoroutine("Rotate");
                 break;
@@ -323,6 +328,7 @@ public class PlayerControl : MonoBehaviour
         // TODO: probably should gc with object pool
 		fishes.SetActive(false);
 		seaRenderer.material = seaFadeMaterial;
+		forestWorld.SetActive(false);
 
         // Set all star cluster renderers to not render anything to fade in
         Renderer[] renderers = starCluster.GetComponentsInChildren<Renderer>();
@@ -361,7 +367,7 @@ public class PlayerControl : MonoBehaviour
     {
 		Debug.Log("Starting coroutine SpaceExploration.");
         // Disable the sea world
-		forestWorld.SetActive(false);
+
         sea.transform.parent.gameObject.SetActive(false); sprite.transform.position = this.transform.position;
 
 		spriteController.DisableParentAnimator();
@@ -398,6 +404,14 @@ public class PlayerControl : MonoBehaviour
 
         /* Enable the earth & sun, set earth at 23.5 tilt
 		 *  and reset sun's rotation, and parent to space world
+		
+        // Trigger earth gaze sound
+		SoundController.Instance.PlayEarthGaze();
+
+		/* Enable the earth & sun,
+		 * set earth at 23.5 tilt and reset sun's rotation,
+		 * and parent to space world
+
         earth.SetActive(true);
         sun.SetActive(true);
 		earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
@@ -422,8 +436,7 @@ public class PlayerControl : MonoBehaviour
 			rb.velocity = Vector3.zero;
 		}
 
-        // Trigger earth gaze sound
-        SoundController.Instance.PlayEarthGaze();
+       
 
         // Trigger the next part
 		spriteController.TriggerEarthGaze(earth.transform, spriteRotationPoint);
