@@ -514,12 +514,12 @@ public class SwivelLocomotion : MonoBehaviour
 				switch (currentState) 
 				{
 					case SwivelState.inSea:
-						Debug.Log("Constraining in sea"); 
+						//Debug.Log("Constraining in sea"); 
 						ConstrainXZ ();
 						break;
 
 					case SwivelState.inSpace:
-						Debug.Log("Constraining in space"); 
+						//Debug.Log("Constraining in space"); 
 						ConstrainAll();
 						break;
 				}
