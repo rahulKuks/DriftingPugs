@@ -313,6 +313,11 @@ public class GameManager : MonoBehaviour {
 		// Play earth gaze sound
 		SoundController.Instance.PlayEarthGaze();
 
+		earth.transform.SetParent(space.transform);
+		sun.transform.SetParent(space.transform);
+		spriteRotationPoint.SetParent(space.transform);
+		playerRotationPoint.SetParent(space.transform);
+
         /* Enable the earth & sun, set earth at 23.5 tilt
 		 *  and reset sun's rotation, and parent to space world*/
         earth.SetActive(true);
@@ -320,10 +325,7 @@ public class GameManager : MonoBehaviour {
         earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
         sun.transform.rotation = Quaternion.identity;
 
-        earth.transform.SetParent(space.transform);
-        sun.transform.SetParent(space.transform);
-        spriteRotationPoint.SetParent(space.transform);
-		playerRotationPoint.SetParent(space.transform);
+		yield return new WaitForEndOfFrame();
 
         // Move the sprite to where it should be position during rotation
         while (Vector3.Distance(sprite.position, spriteRotationPoint.position) > 1e-6)
