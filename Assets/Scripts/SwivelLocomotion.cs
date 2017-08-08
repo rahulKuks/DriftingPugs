@@ -54,9 +54,9 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float maxSeaUpwardsSpeed = 0f;
 	[Tooltip("The force applied in the sea to enforce constraints")]
 	[SerializeField] private float seaConstraintForce = 3f;
-	[Tooltip("the range of freedom if movement has been constrained")]
+	[Tooltip("The range of freedom of movement from the origin point")]
 	[SerializeField] private float seaConstraintRange = 2f;
-	[Tooltip("The range from the distance where no force is applied")]
+	[Tooltip("A deadzone size where no constraint force is applied.")]
 	[SerializeField] private float seaConstraintDeadZoneThreshold = 0.2f;
 
 	[Header("Space Parameters")]
@@ -69,9 +69,9 @@ public class SwivelLocomotion : MonoBehaviour
 	[SerializeField] private float maxSpaceUpwardsSpeed = 2.25f;
 	[Tooltip("The force applied in the sea to enforce constraints")]
 	[SerializeField] private float spaceConstraintForce = 3f;
-	[Tooltip("the range of freedom if movement has been constrained")]
+	[Tooltip("The range of freedom of movement from the origin point")]
 	[SerializeField] private float spaceConstraintRange = 2f;
-	[Tooltip("The range from the distance where no force is applied")]
+	[Tooltip("A deadzone size where no constraint force is applied.")]
 	[SerializeField] private float spaceConstraintDeadZoneThreshold = 0.2f;
 
 	[Header("Debug Parameters")]
@@ -164,7 +164,8 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 
 		//This method applies the Vive Controller data to the user position in Virtual Environment
-		//Each argument define one velocity limit either forward, sideway, or upward velocity limit
+		//Each argument define one velocity limit either forward, sideway, or upward velocity limit.
+		//This are different for each world to allow for greater control over the feel of movement.
 		//For each argument:
 		//			- positive number limits the speed. For example if you put the first argument equals to 1, maximum forward speed will be 1 meter/second
 		//			- negative value disables the speed limit. For example -1 means no speed limit
@@ -503,23 +504,23 @@ public class SwivelLocomotion : MonoBehaviour
 
 	}
 
+
 	void FixedUpdate ()
 	{
 		if(leftControllerDevice != null) 	// ensure device initialisation before reading data
 		{
 			readControllerData (); //Read Vive Controller data and store them inside internal variables
 
+			// If interface is ready check state and apply relevant constraints.
 			if (InterfaceIsReady) 
 			{
 				switch (currentState) 
 				{
 					case SwivelState.inSea:
-						//Debug.Log("Constraining in sea"); 
 						ConstrainXZ ();
 						break;
 
 					case SwivelState.inSpace:
-						//Debug.Log("Constraining in space"); 
 						ConstrainAll();
 						break;
 				}
@@ -530,7 +531,10 @@ public class SwivelLocomotion : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Adds a force onto the user that pushes it back to its origin point. The force is smaller than the forward speed until the user hits max speed, when the force is greater. This is done on all three axes.
+	/// Adds a force onto the user that pushes it back to its origin point. This method takes into consideration movement in all three axes
+	/// The force increases linearly as player distance from their origin point increases.
+	/// The origin point is the local coordinates of the player position when they enter a new phase (sea or space).
+	/// This is the constraint to apply in space. 
 	/// </summary>
 	private void ConstrainAll()
 	{
@@ -545,7 +549,7 @@ public class SwivelLocomotion : MonoBehaviour
 		//calculate force and apply
 		if(constraintForceFactor >= spaceConstraintDeadZoneThreshold)
 		{
-			// if gone too far, disable locomotion
+			// if gone too far, disable locomotion and let the force push the user back in towards the origin
 			if(constraintForceFactor >= 1)
 			{
 				locomotionDisabled = true;
@@ -564,23 +568,26 @@ public class SwivelLocomotion : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Adds a force onto the user that pushes it back to its origin point on the XZ plane. The force is smaller than the forward speed until the user hits max speed, when the force is greater.
+	/// Adds a force onto the user that pushes it back to its origin point. This method takes into consideration movement in the XZ plane.
+	/// The force increases linearly as player distance from their origin point increases.
+	/// The origin point is the local coordinates of the player position when they enter a new phase (sea or space). 
+	/// This is the constraint to apply in the sea.
 	/// </summary>
 	private void ConstrainXZ()
 	{
+		//Calculate the origin, the Y coordinate of the origin point is dictated by the player as they fall through the sea.
 		Vector3 originXZ = new Vector3 (constraintOrigin.x, this.transform.localPosition.y, constraintOrigin.z);
-		//debugOriginSeaCube.transform.position = originXZ;
 		Vector3 vectorToOrigin = originXZ - this.transform.localPosition;
 		Vector3 forceDirection = vectorToOrigin.normalized;
 
-		//update debug serialiszed parameters
+		//update debug serialized parameters
 		vectorToOriginMagnitude = vectorToOrigin.magnitude;
 		constraintForceFactor = vectorToOrigin.magnitude / seaConstraintRange;
 
 		//calculate force and apply
 		if(constraintForceFactor >= seaConstraintDeadZoneThreshold)
 		{
-			// if gone too far, disable locomotion
+			// if gone too far, disable locomotion and let the force push the user back in towards the origin
 			if(constraintForceFactor >= 1)
 			{
 				locomotionDisabled = true;
@@ -623,6 +630,10 @@ public class SwivelLocomotion : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Returns the swivel state enum.
+	/// </summary>
+	/// <returns>The swivel state.</returns>
 	public SwivelState GetSwivelState()
 	{
 		return this.currentState;

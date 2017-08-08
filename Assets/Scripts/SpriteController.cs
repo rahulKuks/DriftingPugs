@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class SpriteController : MonoBehaviour
 {
-	[Tooltip("The duration that the sprite needs to wait before it invites the user.")]
+	[Tooltip("The duration that the sprite needs to wait before it invites the user by using the invitation animation clip.")]
 	[SerializeField] float thresholdInvitationTime;
+	[Tooltip("The Animator  of the inner sprite. This is responsible for playing all sprite animations in local coordinates.")]
 	[SerializeField] private Animator childAnim;
-	[SerializeField] private float chimesForestSpaceVolume;
-	[SerializeField] private float chimesLakeVolume;
     [Tooltip("The location of the sprite relative to the player in the lake.")]
 	[SerializeField] private Vector3 spriteLakeLocation = new Vector3(-3.6f, 1.2f, -5.5f);
     [SerializeField] private PlayerControl playerControl;
 	[SerializeField] private CheckpointController checkpointController;
 	[Tooltip("The checkpoint the user hits before entering the lake. This is used to trigger the sprite's lake behaviour.")]
 	[SerializeField] private Checkpoint beforeLakeCheckpoint;
+	[Tooltip("The sprite chime volume in Forest and Space.")]
+	[SerializeField] private float chimesForestSpaceVolume;
+	[Tooltip("The sprite chime volume in the Lake.")]
+	[SerializeField] private float chimesLakeVolume;
 
     #region Private Variables
     //Parameters to trigger sprite invitation
@@ -98,15 +101,22 @@ public class SpriteController : MonoBehaviour
 		}
     }
 
+	/// <summary>
+	/// Disables the parent animator.
+	/// </summary>
 	public void DisableParentAnimator()
 	{
 		parentAnim.enabled = false;
 	}
 
+	/// <summary>
+	/// Enables the parent animator.
+	/// </summary>
 	public void EnableParentAnimator()
 	{
 		parentAnim.enabled = true;
 	}
+
 
     public void OnPlayerStateChange()
     {
