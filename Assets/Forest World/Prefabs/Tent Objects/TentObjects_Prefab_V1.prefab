@@ -118,7 +118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4000098867719438}
   m_Layer: 14
-  m_Name: 'Objects in tent '
+  m_Name: TentObjects_Prefab_V1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
