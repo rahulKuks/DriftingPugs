@@ -127,6 +127,9 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resets the players position and state to where it was at the beginning.
+    /// </summary>
     public void ResetPlayer()
     {
         currentState = PlayerState.Grounded;
@@ -135,6 +138,10 @@ public class PlayerControl : MonoBehaviour
         this.transform.SetParent(null);
     }
 
+    /// <summary>
+    /// Update player based on the state it is in.
+    /// Also invokes the PlayerUpdateState event for all observers.
+    /// </summary>
     private void UpdateState()
     {
 		Debug.Log("Change state to: " + currentState);

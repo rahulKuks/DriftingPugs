@@ -12,6 +12,7 @@ public class FishManager : MonoBehaviour {
     }
 
     [SerializeField] private List<FishSpawn> typesOfFishes;
+    [Tooltip("The range of movement in the Y axis a fish has from their original position.")]
     [SerializeField] private float fishYAxisRange;
 
     private List<Flock> fishes;
@@ -37,15 +38,22 @@ public class FishManager : MonoBehaviour {
 
     private void Update()
     {
+        // Set a new goal position if fishes are initialized but don't do it too often
 		if (isInitialized && (Random.Range(0, 10000) < 50))
         {
+            // Set the goal position for each type of fish
             foreach (FishSpawn fs in typesOfFishes)
             {
                 goalPositions[fs.fishPrefab.name] = randomFishRange(fs.fishPrefab.name);
             }
         }
     }
-
+    
+    /// <summary>
+    /// Gets the goal position for a specific type of fish.
+    /// </summary>
+    /// <param name="fishId">Type of fish.</param>
+    /// <returns>A Vector3 of the new goal position.</returns>
     public Vector3 FishGoalPosition(string fishId)
     {
         Vector3 goal = Vector3.zero;
@@ -54,12 +62,20 @@ public class FishManager : MonoBehaviour {
         return goal;
     }
 
+    /// <summary>
+    /// Spawn fishes if they have not already.
+    /// </summary>
 	public void SpawnFishes()
 	{
 		if (!isInitialized)
 			StartCoroutine(InitializeFishes());
 	}
 
+    /// <summary>
+    /// Go through the types of fishes to spawn and spawn them via getting the object through
+    /// the object pool.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator InitializeFishes()
     {
         fishes = new List<Flock>();
@@ -77,12 +93,14 @@ public class FishManager : MonoBehaviour {
 					Debug.LogError("Missing prefab at element: " + i);
 					continue;
 				}
+                // Get the object from object pool
 				GameObject fish = ObjectPool.Instance.GetPooledObject(fs.fishPrefab.name);
 				if (fish == null)
 				{
 					Debug.LogError("Failed to find pooled object with id: " + fs.fishPrefab.name);
 					continue;
 				}
+                // Spawns the fish
                 fish.transform.SetParent(this.transform);
                 f = fish.GetComponent<Flock>();
                 f.SetId(fs.fishPrefab.name);
@@ -99,12 +117,22 @@ public class FishManager : MonoBehaviour {
         yield return null;
     }
 
+    /// <summary>
+    /// Get a random point in the tank.
+    /// </summary>
+    /// <returns>A Vector3 in the tank.</returns>
     private Vector3 randomTankRange()
     {
         return new Vector3(Random.Range(-20, 80),
             Random.Range(-25, -200), Random.Range(135, 230));
     }
 
+    /// <summary>
+    /// Gets a random point in the tank for a specific type of fish. This random point's position's
+    /// y value is restricted depending on the type of the fish.
+    /// </summary>
+    /// <param name="fishName">Type of fish.</param>
+    /// <returns>A Vector3 in the tank.</returns>
     private Vector3 randomFishRange(string fishName)
     {
         foreach (FishSpawn fs in typesOfFishes)

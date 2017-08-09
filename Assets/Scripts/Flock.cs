@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A script to simulate the flocking behaviour of fishes.
+/// </summary>
 public class Flock : MonoBehaviour
 {
+    [Tooltip("Speed of the fish before flocking.")]
     [SerializeField] private float moveSpeed = 0.1f;
+    [Tooltip("Speed the fish will rotate at.")]
     [SerializeField] private float rotationSpeed = 4.0f;
+    [Tooltip("The threshold distance to flock with another fish.")]
     [SerializeField] private float neighbourDistance = 3.0f;
+    [Tooltip("The maximum speed when fishes flock together.")]
     [SerializeField] private float maxSpeed = 7.0f;
 
     private bool turning = false;
@@ -30,32 +37,15 @@ public class Flock : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*if (Vector3.Distance(transform.position, Vector3.zero) >= 100)
-        {
-            turning = true;
-        }
-        else
-            turning = false;
-        if (turning)
-        {
-            Vector3 diretion = Vector3.zero - transform.position;
-            transform.rotation = Quaternion.Slerp(transform.rotation,
-                Quaternion.LookRotation(diretion),
-                rotationSpeed * Time.deltaTime);
-            speed = Random.Range(0.5f, 1);
-        }
-        else
-        {
-            if (Random.Range(0, 5) < 1)
-                ApplyRules();
-        }*/
         if (Random.Range(0, 5) < 1)
             ApplyRules();
 
         transform.Translate(0, 0, Time.deltaTime * moveSpeed);
-
     }
 
+    /// <summary>
+    /// Determines which fishes to flock with.
+    /// </summary>
     private void ApplyRules()
     {
         // Reset vars
@@ -72,11 +62,13 @@ public class Flock : MonoBehaviour
             if (otherFish.GetInstanceID() != this.gameObject.GetInstanceID())
             {
                 dist = Vector3.Distance(otherFish.transform.position, this.transform.position);
+                // Add to flock group if within threshold
                 if (dist <= neighbourDistance)
                 {
                     vCentre += otherFish.transform.position;
                     groupSize++;
 
+                    // Avoid colliding with other fish
                     if (dist < 1.0f)
                     {
                         vAvoid = vAvoid + (this.transform.position - otherFish.transform.position);
@@ -87,6 +79,7 @@ public class Flock : MonoBehaviour
         }
         if (groupSize > 0)
         {
+            // Calculate variables in flock
             vCentre = vCentre / groupSize + (goalPos - this.transform.position);
             moveSpeed = Mathf.Min(gSpeed / groupSize, maxSpeed);
 
@@ -98,5 +91,9 @@ public class Flock : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Changes the type of the fish.
+    /// </summary>
+    /// <param name="name">Type of fish.</param>
     public void SetId(string name) { this.id = name; }
 }
