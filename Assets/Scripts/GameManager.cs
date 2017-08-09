@@ -140,17 +140,11 @@ public class GameManager : MonoBehaviour {
     }
 
 	#region Public Methods
-    /// <summary>
-    /// Start the coroutine to do the fade out.
-    /// </summary>
     public void LakeSpaceFadeTransition()
     {
         StartCoroutine(FadeTransition());
     }
 
-    /// <summary>
-    /// Call corresponding methods to progress the experience when the player's state updates.
-    /// </summary>
     public void OnPlayerStateChange()
     {
         switch(playerControl.CurrentState)
@@ -169,30 +163,22 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// Start spawning fishes in lake if the player has hit the checkpoint that corresponds
-    /// to fishesTriggerCheckpointIndex.
-    /// </summary>
-    /// <param name="index">The checkpoint index</param>
 	public void SpawnFishes(int index)
 	{
 		if (index == fishesTriggerCheckpointIndex)
 			FishManager.Instance.SpawnFishes();
 	}
-    #endregion
+	#endregion
 
     #region Coroutines
-    /// <summary>
-    /// Disable forest world & fishes, and Fade out lake & fade in star clusters.
-    /// </summary>
-    /// <returns></returns>
+    // Fade out lake & fade in star clusters
     private IEnumerator FadeTransition()
     {
 		Debug.Log("Starting fade transition.");
 
         // TODO: fade these out properly
         jellyfishes.SetActive(false);
-        // TODO: should cleanup with object pool instead of just setting to inactive
+        // TODO: probably should gc with object pool
 		FishManager.Instance.gameObject.SetActive(false);
         forestWorld.SetActive(false);
         lakeRenderer.material = lakeFadeMaterial;
@@ -208,6 +194,8 @@ public class GameManager : MonoBehaviour {
 		float distance = player.position.y - spaceTrigger.position.y;
         Vector3 prevPosition = player.position;
         yield return new WaitForFixedUpdate();
+
+		Debug.Log(distance);
 
         // Do fade
         float progress = 0f;
@@ -231,10 +219,6 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// Start the lake experience.
-    /// </summary>
-    /// <returns></returns>
     private IEnumerator LakeFall()
     {
         spriteController.DisableParentAnimator();
@@ -244,10 +228,6 @@ public class GameManager : MonoBehaviour {
         yield return null;
     }
 
-    /// <summary>
-    /// The entire space experience.
-    /// </summary>
-    /// <returns></returns>
     private IEnumerator Space()
     {
         Debug.Log("Entered space.");
@@ -333,17 +313,19 @@ public class GameManager : MonoBehaviour {
 		// Play earth gaze sound
 		SoundController.Instance.PlayEarthGaze();
 
-        // Enable the earth & sun, set earth at 23.5 tilt
-		// and reset sun's rotation, and parent to space world
+		// Parent to space world
+		earth.transform.SetParent(space.transform);
+		sun.transform.SetParent(space.transform);
+		spriteRotationPoint.SetParent(space.transform);
+		playerRotationPoint.SetParent(space.transform);
+
+        // Enable the earth & sun, set earth at 23.5 tilt and reset sun's rotation
         earth.SetActive(true);
         sun.SetActive(true);
         earth.transform.eulerAngles = new Vector3(0, 0, 23.5f);
         sun.transform.rotation = Quaternion.identity;
 
-        earth.transform.SetParent(space.transform);
-        sun.transform.SetParent(space.transform);
-        spriteRotationPoint.SetParent(space.transform);
-		playerRotationPoint.SetParent(space.transform);
+		yield return new WaitForEndOfFrame();
 
         // Move the sprite to where it should be position during rotation
         while (Vector3.Distance(sprite.position, spriteRotationPoint.position) > 1e-6)
