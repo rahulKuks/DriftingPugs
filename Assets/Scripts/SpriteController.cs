@@ -117,7 +117,9 @@ public class SpriteController : MonoBehaviour
 		parentAnim.enabled = true;
 	}
 
-
+    /// <summary>
+    /// Updates the sprites behaviour when the player's state updates.
+    /// </summary>
     public void OnPlayerStateChange()
     {
         switch (playerControl.CurrentState)
@@ -148,6 +150,10 @@ public class SpriteController : MonoBehaviour
         chimesAudio.volume = chimesForestSpaceVolume;
     }
 
+    /// <summary>
+    /// Move the sprite to where it should be relative to the player while in the lake.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator MoveToLakePosition()
     {
         Debug.Log("Sprite moving towards player");

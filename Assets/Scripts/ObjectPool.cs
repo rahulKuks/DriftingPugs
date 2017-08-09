@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// An object pool to control the way objects are initialized.
+/// </summary>
 public class ObjectPool : MonoBehaviour
 {
-
     [Serializable]
     public class ObjectPoolItem
     {
@@ -55,6 +57,11 @@ public class ObjectPool : MonoBehaviour
 		}
 	}       
 
+    /// <summary>
+    /// Get an item in the object pool.
+    /// </summary>
+    /// <param name="identifier">Type of object.</param>
+    /// <returns></returns>
     public GameObject GetPooledObject(string identifier)
     {
         // Check if there object wanted is pooled
@@ -84,8 +91,13 @@ public class ObjectPool : MonoBehaviour
         return newObject;
     }
 
+    /// <summary>
+    /// Garbage collect the allocated object.
+    /// </summary>
+    /// <param name="go">Allocated object.</param>
     public void Destroy(GameObject go)
     {
+        // Disable and re-add to pool
         go.transform.SetParent(this.transform);
         go.SetActive(false);
     }
